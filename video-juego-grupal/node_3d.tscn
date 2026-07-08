@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://mgp02mkor0at"]
 
 [ext_resource type="Texture2D" uid="uid://4q335xxs2p" path="res://icon.svg" id="1_a202f"]
-[ext_resource type="Script" uid="uid://ein38m14b6pc" path="res://CharacterBody2d.cs" id="2_a0tk4"]
-[ext_resource type="Script" uid="uid://cuu3nudct7om2" path="res://Generation.cs" id="2_noarx"]
+[ext_resource type="Script" uid="uid://ein38m14b6pc" path="res://Scripts/CharacterBody2d.cs" id="2_a0tk4"]
+[ext_resource type="Script" uid="uid://cuu3nudct7om2" path="res://Scripts/Generation.cs" id="2_noarx"]
 [ext_resource type="Texture2D" uid="uid://c6ylula0ufava" path="res://room_images/main.png" id="4_r3fl7"]
 [ext_resource type="Texture2D" uid="uid://b4sbjosmsy7ev" path="res://room_images/path.png" id="5_jka67"]
 
@@ -32,12 +32,18 @@ texture = ExtResource("4_r3fl7")
 
 [node name="Generation" type="Node" parent="." unique_id=1942814147]
 script = ExtResource("2_noarx")
-Width = 21
-Height = 15
-MinMainPathLength = 60
-MaxMainPathLength = 1000
+Width = 17
+Height = 11
+UseCustomSeed = true
+mainPathDirectness = 50
+MinMainPathLength = 20
+MaxMainPathLength = 100
+populatingDirectness = 100
 BranchChance = 100
-MaxBranchLength = 100
+MaxBranchLength = 10
+closedBranchEndChance = 100
+closedStart = true
+closedEnd = true
 
 [node name="Sprite2D2" type="Sprite2D" parent="." unique_id=502048093]
 position = Vector2(-2, -469)
