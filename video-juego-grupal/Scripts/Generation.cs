@@ -44,6 +44,14 @@ public partial class Generation : Node
     [Export] public bool closedStart = false; //If True, the Start Tile will only have one path to follow (the Main one).
     [Export] public bool closedEnd = false; //Same as above but with the End Tile.
 
+    // --- PRESETS ---
+    [ExportGroup("Preset")]
+    [Export(PropertyHint.Enum, "No,Heart,H-shape")] public string preset = "No";
+
+    // --- TILES ---
+    [ExportGroup("Room Tiles")]
+    [Export] public PackedScene room; //This Scene contains the Room wich will be used to generate the Dungeon
+
     // --- PRIVATE VARIABLES ---
     private int[,] grid; //The Main Grid: It contains the info of the type of Tiles. It starts filled with EMPTY Tiles.
     private Random random; //The Random Variable.
@@ -93,7 +101,16 @@ public partial class Generation : Node
 
         GD.PrintRich("\n[color=green]DUNGEON GENERATION FINALIZED\n");
         PrintDungeon();
+
+        GD.PrintRich("\n[color=green]GENERATING DUNGEON IN 3D SPACE\n");
+        SpawnMap();
+
+        GD.PrintRich("\n[color=green]FINISHED\n");
     }
+
+    // =====================================================
+    //                 MAIN STEPS FUNCTIONS
+    // =====================================================
 
     /// <summary>
     /// Before Generation, some variables and User Settings need to check if they are valid.
@@ -380,6 +397,84 @@ public partial class Generation : Node
         }
     }
 
+        /// <summary>
+    /// This function is responsable of Spawning Rooms in 3D Space that the Character can traverse.
+    /// It goes thru the grid checking if the Tile is a Room, and spawns a Room mesh at the apropiate coordinates.
+    /// Then, it checks the surrouding Tiles and places Bridges and Doors acordingly.
+    /// </summary>
+    private void SpawnMap()
+    {
+        
+        float roomSeparation = (float)15.5; //The space between 2 Rooms.
+        bool[,] generated = new bool[Width, Height]; //Keeps track of already generated Tiles.
+
+        //It goes thru the whole grid.
+        for (int y = 0; y < Height; y++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+
+                if (CheckTileIsRoom(x, y)) //If the Tile is a Room, it will go thru the Room Spawning ordeal.
+                {
+                    Node3D instance = (Node3D)room.Instantiate(); //Instantiates the Room.
+
+                    instance.Position = new Vector3(roomSeparation * x, 2, roomSeparation * y); //Moves the Room to the apropiate location. 
+
+                    Room roomScript = instance.GetNode<Room>("Room"); //Gets the script for the Room Bridge and Wall management.
+
+                    // If it finds the scrip, it will check each neighboring Tile and check if it is another Room
+                    // and if it has been Generated already, and remove Bridges/Walls acordingly.
+                    if (roomScript != null)
+                    {
+                        // North (-Z in 3D space)
+                        bool northIsRoom = CheckTileIsRoom(x, y - 1);
+                        roomScript.removeWallNorth = northIsRoom;
+                        roomScript.removeBridgeNorth = !northIsRoom || generated[x, y - 1];
+
+                        // South (+Z in 3D space)
+                        bool southIsRoom = CheckTileIsRoom(x, y + 1);
+                        roomScript.removeWallSouth = southIsRoom;
+                        roomScript.removeBridgeSouth = !southIsRoom || generated[x, y + 1];
+
+                        // East (+X in 3D space)
+                        bool eastIsRoom = CheckTileIsRoom(x + 1, y);
+                        roomScript.removeWallEast = eastIsRoom;
+                        roomScript.removeBridgeEast = !eastIsRoom || generated[x + 1, y];
+
+                        // West (-X in 3D space)
+                        bool westIsRoom = CheckTileIsRoom(x - 1, y);
+                        roomScript.removeWallWest = westIsRoom;
+                        roomScript.removeBridgeWest = !westIsRoom || generated[x - 1, y];
+
+                        if (grid[x,y] == STARTTILE)
+                        {
+                            roomScript.setStartTile();
+                        }
+
+                        if (grid[x,y] == ENDTILE)
+                        {
+                            roomScript.setEndTile();
+                        }
+
+                        if (grid[x,y] == MAINPATH)
+                        {
+                            roomScript.setMainTile();
+                        }
+
+                        roomScript.setRoom(); //Runs the Object removal function.
+                    }
+                    else
+                    {
+                        GD.PrintErr($"ERROR: ROOM SCRIPT NOT FOUND FOR X={x}, Y={y}");
+                    }
+
+                    AddChild(instance); //Adds the Room to the Scene
+                    generated[x, y] = true; //The Tile has already been generated.
+                }
+            }
+        }
+    }
+
     // =====================================================
     //                    MAIN FUNCTIONS
     // =====================================================
@@ -391,7 +486,48 @@ public partial class Generation : Node
     /// </summary>
     private void MarkIllegalTiles()
     {
-        // 1. Loop through every column to mark the Top and Bottom rows
+        if (preset == "H-shape")
+        {
+            Width = 15;
+            Height = 15;
+            grid = new int[Width, Height];
+
+            for (int y = 0; y < Height; y++)
+            {
+                grid[7, y] = ILLEGAL;         // Left Column (x = 0)
+                grid[Width - 1, y] = ILLEGAL; // Right Column (x = Max)
+            }
+            for (int y = 0; y < Height; y++)
+            {
+                grid[8, y] = ILLEGAL;         // Left Column (x = 0)
+                grid[Width - 1, y] = ILLEGAL; // Right Column (x = Max)
+            }
+            for (int y = 0; y < Height; y++)
+            {
+                grid[6, y] = ILLEGAL;         // Left Column (x = 0)
+                grid[Width - 1, y] = ILLEGAL; // Right Column (x = Max)
+            }
+
+            for (int x = 0; x < Width; x++)
+            {
+                grid[x, 6] = EMPTY;          // Top Row (y = 0)
+                grid[x, Height - 1] = EMPTY; // Bottom Row (y = Max)
+            }
+            for (int x = 0; x < Width; x++)
+            {
+                grid[x, 7] = EMPTY;          // Top Row (y = 0)
+                grid[x, Height - 1] = EMPTY; // Bottom Row (y = Max)
+            }
+            for (int x = 0; x < Width; x++)
+            {
+                grid[x, 8] = EMPTY;          // Top Row (y = 0)
+                grid[x, Height - 1] = EMPTY; // Bottom Row (y = Max)
+            }
+
+
+
+        }
+        // 1. Loop through every collumn to mark the Top and Bottom rows
         for (int x = 0; x < Width; x++)
         {
             grid[x, 0] = ILLEGAL;          // Top Row (y = 0)
@@ -853,6 +989,63 @@ public partial class Generation : Node
             }
         }
         return count;
+    }
+
+    /// <summary>
+    /// This function checks if the set of coordinates contains a Room Tile, independent of its actual Type
+    /// </summary>
+    /// <returns>True if its a Room, False if its Empty or Illegal</returns>
+    private bool CheckTileIsRoom(int x, int y)
+    {
+        if (x < 0 || x >= Width || y < 0 || y >= Height)
+        {
+            return false;
+        }
+
+        if (grid[x, y] == MAINPATH || grid[x, y] == TILE || grid[x, y] == STARTTILE || grid[x, y] == ENDTILE)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Checks the provided Tile's type, and returns it.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    private int CheckTileType(int x, int y)
+    {
+        if (x > 0 && x < Width - 1 && y > 0 && y < Height - 1) //Checks if coordinates are inbounds
+        {
+            if (grid[x, y] == EMPTY)
+            {
+                return EMPTY;
+            }
+            else if (grid[x, y] == TILE)
+            {
+                return TILE;
+            }
+            else if (grid[x, y] == MAINPATH)
+            {
+                return MAINPATH;
+            }
+            else if (grid[x, y] == STARTTILE)
+            {
+                return STARTTILE;
+            }
+            else if (grid[x, y] == ENDTILE)
+            {
+                return ENDTILE;
+            }
+            else if (grid[x, y] == ILLEGAL)
+            {
+                return ILLEGAL;
+            }
+        }
+        GD.Print("Room type not found. Fix issue");
+        return ILLEGAL; //If there is no mach, reurns ILLEGAL as a failsave
     }
 
 

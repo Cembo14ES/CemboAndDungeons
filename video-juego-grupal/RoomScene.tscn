@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://l68shjfx8bi1"]
+
+[ext_resource type="PackedScene" uid="uid://dv1hduxv5tl2i" path="res://room_assets/Salas.blend" id="1_r4m18"]
+[ext_resource type="Script" uid="uid://e48eks16eje5" path="res://Scripts/Room.cs" id="2_mikwc"]
+[ext_resource type="PackedScene" uid="uid://m8x0vv40llq8" path="res://room_assets/Pasillo_Dungeon.blend" id="3_lfyi4"]
+[ext_resource type="PackedScene" uid="uid://c77veney1in4y" path="res://room_assets/Muro_Salas.blend" id="4_bqh23"]
+[ext_resource type="Texture2D" uid="uid://86xrn2one1y3" path="res://room_assets/start.png" id="5_mikwc"]
+[ext_resource type="Texture2D" uid="uid://cx2bamsodhh87" path="res://room_assets/end.png" id="6_lfyi4"]
+[ext_resource type="Texture2D" uid="uid://bah5dmrtnakmc" path="res://room_assets/main.png" id="7_bqh23"]
+
+[node name="RoomScene" type="Node3D" unique_id=1152993696]
+
+[node name="Room" parent="." unique_id=4266349 node_paths=PackedStringArray("BridgeNorth", "BridgeEast", "BridgeSouth", "BridgeWest", "WallNorth", "WallEast", "WallSouth", "WallWest", "StartSprite", "EndSprite", "MainSprite") instance=ExtResource("1_r4m18")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+script = ExtResource("2_mikwc")
+BridgeNorth = NodePath("BridgeNorth")
+BridgeEast = NodePath("BridgeEast")
+BridgeSouth = NodePath("BridgeSouth")
+BridgeWest = NodePath("BridgeWest")
+WallNorth = NodePath("WallNorth")
+WallEast = NodePath("WallEast")
+WallSouth = NodePath("WallSouth")
+WallWest = NodePath("WallWest")
+StartSprite = NodePath("StartSprite")
+EndSprite = NodePath("EndSprite")
+MainSprite = NodePath("MainSprite")
+
+[node name="BridgeNorth" parent="Room" unique_id=414768707 instance=ExtResource("3_lfyi4")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -1, -1.25, -5)
+
+[node name="BridgeEast" parent="Room" unique_id=465051657 instance=ExtResource("3_lfyi4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, -1.25, 1)
+
+[node name="BridgeSouth" parent="Room" unique_id=1651654592 instance=ExtResource("3_lfyi4")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1, -1.25, 5)
+
+[node name="BridgeWest" parent="Room" unique_id=1580964916 instance=ExtResource("3_lfyi4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -1.25, 1)
+
+[node name="WallNorth" parent="Room" unique_id=1499483188 instance=ExtResource("4_bqh23")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -4)
+
+[node name="WallEast" parent="Room" unique_id=332764823 instance=ExtResource("4_bqh23")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.5, -0.25, 0)
+
+[node name="WallSouth" parent="Room" unique_id=1419060933 instance=ExtResource("4_bqh23")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 5.5)
+
+[node name="WallWest" parent="Room" unique_id=1697031844 instance=ExtResource("4_bqh23")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4, -0.25, 0)
+
+[node name="StartSprite" type="Sprite3D" parent="Room" unique_id=1145060694]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -1.249, 0)
+visible = false
+texture = ExtResource("5_mikwc")
+
+[node name="EndSprite" type="Sprite3D" parent="Room" unique_id=573792563]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -1.249, 0)
+visible = false
+texture = ExtResource("6_lfyi4")
+
+[node name="MainSprite" type="Sprite3D" parent="Room" unique_id=1081604475]
+transform = Transform3D(1.8, 0, 0, 0, -7.86805e-08, 1.8, 0, -1.8, -7.86805e-08, 0, -1.249, 0)
+visible = false
+texture = ExtResource("7_bqh23")
