@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://dixrc5fgovu18"]
+
+[ext_resource type="Texture2D" uid="uid://cfwstbmb8xuya" path="res://Sprites/Knight.png" id="1_2838w"]
+[ext_resource type="Script" uid="uid://bdgs70kf7pip4" path="res://Scripts/PrimerScript.gd" id="2_axd1x"]
+
+[node name="PersonajePrueba" type="Node3D" unique_id=928317053]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=772622779]
+script = ExtResource("2_axd1x")
+
+[node name="Sprite3D" type="Sprite3D" parent="CharacterBody3D" unique_id=293455671]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
+texture = ExtResource("1_2838w")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=943076758]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 2.255344, 0)
