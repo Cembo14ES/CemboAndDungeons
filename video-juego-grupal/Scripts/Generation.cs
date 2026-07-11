@@ -55,6 +55,9 @@ public partial class Generation : Node
     // --- PRIVATE VARIABLES ---
     private int[,] grid; //The Main Grid: It contains the info of the type of Tiles. It starts filled with EMPTY Tiles.
     private Random random; //The Random Variable.
+    private bool firtsGeneration = true;
+    private bool setStart;
+    private bool[] setEnds;
 
     // --- TILE TYPE CONSTANTS ---
     const int ILLEGAL = -1; //Illegal Tiles cannot be replaced by any other type of tile.
@@ -63,6 +66,20 @@ public partial class Generation : Node
     const int STARTTILE = 2; //The Tile where the Dungeon Main Path starts generating.
     const int ENDTILE = 3; //The Tile where the Dungeon Main Path ends generating.
     const int MAINPATH = 4; //This is a regular Tile that forms the Main Path of the Dungeon. 
+
+    public override void _Ready()
+    {
+        GenerateDungeon();
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (@event.IsActionPressed("ReloadMap"))
+        {
+            deleteMap();
+            GenerateDungeon();
+        }
+    }
 
 
     /// <summary>
@@ -76,7 +93,7 @@ public partial class Generation : Node
     /// 
     /// Finaly, it prints the dungeon on the Output
     /// </summary>
-    public override void _Ready()
+    public void GenerateDungeon()
     {
         GD.PrintRich("\n[color=green]Step 1: INITIAL VALIDATIONS AND CHECKS\n");
         STEP1_InitialValidationsAndChecks();
@@ -276,14 +293,14 @@ public partial class Generation : Node
         {
             if (IsLineEmpty(y, true))
             {
-                int randomTileX = random.Next(1, Width - 1); //Chooses a random Tile
-                randomTileX = randomTileX % 2 == 0 ? randomTileX-- : randomTileX; //Makes the tile Odd
+                int randomTileX = ValidateOdd(random.Next(1, Width - 1), Width); //Chooses a random Tile
 
                 while (grid[randomTileX, y] == ILLEGAL) //If the Tile is Illegal, finds a new one
                 {
-                    randomTileX = random.Next(1, Width - 1);
-                    randomTileX = randomTileX % 2 == 0 ? randomTileX-- : randomTileX;
+                    randomTileX = ValidateOdd(random.Next(1, Width - 1), Width);
                 }
+
+                GD.Print("x=" + randomTileX);
 
                 //The random Tile and the clostest Tile.
                 Vector2I randomEmptyTile = new Vector2I(randomTileX, y);
@@ -303,13 +320,11 @@ public partial class Generation : Node
         {
             if (IsLineEmpty(x, false))
             {
-                int randomTileY = random.Next(1, Height - 1); //Chooses a random Tile
-                randomTileY = randomTileY % 2 == 0 ? randomTileY-- : randomTileY; //Makes the tile Odd
+                int randomTileY = ValidateOdd(random.Next(1, Height - 1), Height); //Chooses a random Tile
 
                 while (grid[x, randomTileY] == ILLEGAL) //If the Tile is Illegal, finds a new one
                 {
-                    randomTileY = random.Next(1, Height - 1);
-                    randomTileY = randomTileY % 2 == 0 ? randomTileY-- : randomTileY; //Makes the tile Odd
+                    randomTileY = ValidateOdd(random.Next(1, Height - 1), Height);
                 }
 
                 //The random Tile and the clostest Tile.
@@ -397,16 +412,16 @@ public partial class Generation : Node
         }
     }
 
-        /// <summary>
+    /// <summary>
     /// This function is responsable of Spawning Rooms in 3D Space that the Character can traverse.
     /// It goes thru the grid checking if the Tile is a Room, and spawns a Room mesh at the apropiate coordinates.
     /// Then, it checks the surrouding Tiles and places Bridges and Doors acordingly.
     /// </summary>
     private void SpawnMap()
     {
-        
         float roomSeparation = (float)15.5; //The space between 2 Rooms.
         bool[,] generated = new bool[Width, Height]; //Keeps track of already generated Tiles.
+        Vector3 cameraStartPosition = new Vector3();
 
         //It goes thru the whole grid.
         for (int y = 0; y < Height; y++)
@@ -446,17 +461,18 @@ public partial class Generation : Node
                         roomScript.removeWallWest = westIsRoom;
                         roomScript.removeBridgeWest = !westIsRoom || generated[x - 1, y];
 
-                        if (grid[x,y] == STARTTILE)
+                        if (grid[x, y] == STARTTILE)
                         {
                             roomScript.setStartTile();
+                            cameraStartPosition = new Vector3(roomSeparation * x, 50, (roomSeparation * y) + 15);
                         }
 
-                        if (grid[x,y] == ENDTILE)
+                        if (grid[x, y] == ENDTILE)
                         {
                             roomScript.setEndTile();
                         }
 
-                        if (grid[x,y] == MAINPATH)
+                        if (grid[x, y] == MAINPATH)
                         {
                             roomScript.setMainTile();
                         }
@@ -473,6 +489,14 @@ public partial class Generation : Node
                 }
             }
         }
+
+        if (firtsGeneration)
+        {
+            CameraController camera = GetNode<CameraController>("../Camera3D");
+            camera.setPosition(cameraStartPosition);
+            firtsGeneration = false;
+        }
+
     }
 
     // =====================================================
@@ -782,7 +806,6 @@ public partial class Generation : Node
                 {
                     break;
                 }
-
             }
         }
     }
@@ -940,7 +963,17 @@ public partial class Generation : Node
     {
         if (value % 2 == 0) value++;
         if (value < 1) value = 1;
-        if (value >= maxBound - 1) value = maxBound - 2;
+
+        if (value >= maxBound - 1)
+        {
+            value = maxBound - 2;
+
+            // Safety check
+            if (value % 2 == 0)
+            {
+                value--;
+            }
+        }
         return value;
     }
 
@@ -1046,6 +1079,20 @@ public partial class Generation : Node
         }
         GD.Print("Room type not found. Fix issue");
         return ILLEGAL; //If there is no mach, reurns ILLEGAL as a failsave
+    }
+
+    private void deleteMap()
+    {
+        foreach (Node n in GetChildren())
+        {
+            RemoveChild(n);
+            n.QueueFree();
+        }
+        startTile = new Vector2I(-1, -1);
+
+        endTiles.Clear();
+
+        random = null;
     }
 
 

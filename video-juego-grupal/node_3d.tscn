@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://4q335xxs2p" path="res://icon.svg" id="1_a202f"]
 [ext_resource type="Script" uid="uid://cuu3nudct7om2" path="res://Scripts/Generation.cs" id="2_noarx"]
 [ext_resource type="PackedScene" uid="uid://l68shjfx8bi1" path="res://RoomScene.tscn" id="2_r3fl7"]
-[ext_resource type="Script" uid="uid://dnp4r0ulyj82w" path="res://CameraController.cs" id="3_a0tk4"]
+[ext_resource type="Script" uid="uid://dnp4r0ulyj82w" path="res://Scripts/CameraController.cs" id="3_a0tk4"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_njnsn"]
 
@@ -11,10 +11,9 @@
 
 [node name="Generation" type="Node" parent="." unique_id=1324325913]
 script = ExtResource("2_noarx")
-Width = 15
-Height = 15
+Width = 7
+Height = 7
 mainPathDirectness = 50
-MinMainPathLength = 20
 MaxMainPathLength = 100
 populatingDirectness = 50
 BranchChance = 50

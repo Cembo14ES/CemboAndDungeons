@@ -39,4 +39,10 @@ public partial class CameraController : Camera3D
             GlobalPosition = pos;
         }
     }
+
+    public void setPosition(Vector3 position)
+    {
+        position = new Vector3(position.X, _currentZoom ,position.Z);
+        Position = position;
+    }
 }
