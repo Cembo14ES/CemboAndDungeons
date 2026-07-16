@@ -30,6 +30,37 @@ public partial class Room : Node3D
 	[Export] public Sprite3D EndSprite;
 	[Export] public Sprite3D MainSprite;
 
+	[Export] public Node3D SpawnPoint1;
+	[Export] public Node3D SpawnPoint2;
+	[Export] public Node3D SpawnPoint3;
+	[Export] public Node3D SpawnPoint4;
+
+	private Random random;
+
+
+	public void SpawnElements()
+    {
+		if (random.Next(0, 100) >= 50)
+		{
+			
+		}
+        RandomizeSpawnPoint(SpawnPoint1);
+		RandomizeSpawnPoint(SpawnPoint2);
+		RandomizeSpawnPoint(SpawnPoint3);
+		RandomizeSpawnPoint(SpawnPoint4);
+    }
+
+	private void RandomizeSpawnPoint(Node3D SpawnPoint)
+	{
+		float xDisplacement = (float) random.NextDouble();
+		SpawnPoint.Position = new Vector3();
+	}
+
+	public void SetRandom(Random genRandom)
+	{
+		random = genRandom;
+	}
+	
 
 	public void setStartTile()
 	{
