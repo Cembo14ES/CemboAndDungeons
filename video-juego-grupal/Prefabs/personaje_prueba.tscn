@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dixrc5fgovu18"]
+
+[ext_resource type="Texture2D" uid="uid://dgjcrk0gy3yg4" path="res://Sprites/Pistola.png" id="1_22kpl"]
+[ext_resource type="Script" uid="uid://bdgs70kf7pip4" path="res://Scripts/PrimerScript.gd" id="2_lmcws"]
+[ext_resource type="Texture2D" uid="uid://cfwstbmb8xuya" path="res://Sprites/Knight_Idle.png" id="3_wvnb4"]
+[ext_resource type="PackedScene" uid="uid://j26ehiwffi0o" path="res://Prefabs/bullet.tscn" id="4_lmcws"]
+
+[node name="PersonajePrueba" type="Node3D" unique_id=928317053]
+
+[node name="Personaje" type="CharacterBody3D" parent="." unique_id=772622779]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
+script = ExtResource("2_lmcws")
+
+[node name="Pistola" type="CharacterBody3D" parent="Personaje" unique_id=513937956]
+
+[node name="Sprite3D" type="Sprite3D" parent="Personaje/Pistola" unique_id=397786243]
+transform = Transform3D(0.5, 0, 0, 0, -2.1855694e-08, 0.5, 0, -0.5, -2.1855694e-08, 1, 0.2, 0.5)
+texture = ExtResource("1_22kpl")
+
+[node name="Sprite3D" type="Sprite3D" parent="Personaje" unique_id=293455671]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
+texture = ExtResource("3_wvnb4")
+
+[node name="Camera3D" type="Camera3D" parent="Personaje" unique_id=943076758]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 5, 0)
+
+[node name="Bullet" parent="Personaje" unique_id=1427582097 instance=ExtResource("4_lmcws")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0.2)
+visible = false

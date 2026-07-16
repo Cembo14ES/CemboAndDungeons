@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://j26ehiwffi0o"]
+
+[ext_resource type="Texture2D" uid="uid://cyxvxsxsdfh7x" path="res://Sprites/Bala.png" id="1_62lvt"]
+[ext_resource type="Script" uid="uid://wyego75165c0" path="res://Scripts/SegundoScript.gd" id="1_pv5ng"]
+
+[node name="Bullet" type="Node3D" unique_id=1427582097]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1949793232]
+script = ExtResource("1_pv5ng")
+
+[node name="Sprite3D" type="Sprite3D" parent="CharacterBody3D" unique_id=1989492055]
+transform = Transform3D(-1.7484555e-07, 4, 1.7484555e-07, 0, -1.7484555e-07, 4, 4, 1.7484555e-07, 7.642742e-15, 0, 0.2, 0)
+texture = ExtResource("1_62lvt")

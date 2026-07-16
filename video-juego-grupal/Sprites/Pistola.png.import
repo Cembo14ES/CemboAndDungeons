@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfwstbmb8xuya"
-path.s3tc="res://.godot/imported/Knight.png-b65ab9a2ebf73946f6942d2d46cabe88.s3tc.ctex"
+uid="uid://dgjcrk0gy3yg4"
+path.s3tc="res://.godot/imported/Pistola.png-85502f9ee3efcfcb0c15db14247e5e16.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Sprites/Knight.png"
-dest_files=["res://.godot/imported/Knight.png-b65ab9a2ebf73946f6942d2d46cabe88.s3tc.ctex"]
+source_file="res://Sprites/Pistola.png"
+dest_files=["res://.godot/imported/Pistola.png-85502f9ee3efcfcb0c15db14247e5e16.s3tc.ctex"]
 
 [params]
 
