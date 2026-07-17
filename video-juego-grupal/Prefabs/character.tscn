@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://dvyi816eq6wyn"]
+
+[ext_resource type="Script" uid="uid://dg7pckgl2jveu" path="res://Scripts/Character.cs" id="1_7iube"]
+[ext_resource type="Texture2D" uid="uid://cfwstbmb8xuya" path="res://Sprites/Knight_Idle.png" id="2_ulf0j"]
+[ext_resource type="Texture2D" uid="uid://dgjcrk0gy3yg4" path="res://Sprites/Pistola.png" id="3_j1uod"]
+
+[node name="Character" type="Node3D" unique_id=9168581]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1780338015]
+script = ExtResource("1_7iube")
+
+[node name="Sprite3D" type="Sprite3D" parent="CharacterBody3D" unique_id=2038590288]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
+texture = ExtResource("2_ulf0j")
+
+[node name="Gun" type="CharacterBody3D" parent="CharacterBody3D" unique_id=1487162124]
+
+[node name="Sprite3D" type="Sprite3D" parent="CharacterBody3D/Gun" unique_id=623564456]
+transform = Transform3D(0.5, 0, 0, 0, -2.1855694e-08, 0.5, 0, -0.5, -2.1855694e-08, 1, 0.2, 0.5)
+texture = ExtResource("3_j1uod")
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=1872536430]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 10, 0)
