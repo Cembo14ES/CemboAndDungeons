@@ -12,21 +12,21 @@ public partial class Generation : Node
 
     // --- SEED SETTINGS ---
     [ExportGroup("Seed")]
-    [Export] public int Seed; //The random Seed used to randomize the Doungeon. Doungeon.
     [Export] public bool UseCustomSeed; //If true, it will use the Seed value. If False, it will use a Randomly generated Seed.
+    [Export] public int Seed; //The random Seed used to randomize the Doungeon. Doungeon.
 
     // --- MAIN PATH SETTINGS ---
     [ExportGroup("Main Path")]
     [Export(PropertyHint.Range, "0,100")] public int mainPathDirectness; //This % determines how direct the Main Path is from start to finish. At 100%, the Main Path will be as short as posible, while at 0%, it will be either Random or Longest.
-    [Export(PropertyHint.Enum, "Longest,Random")] public string mainDirectionType = "Random"; //If not 100% direct, the Main Path can be random or the longest posible.
-    [Export] public int MinMainPathLength; //The Minimun amount of tiles the Main Path should have.
-    [Export] public int MaxMainPathLength; //the Maximun amount of tiles the Main Path should have.
+    [Export(PropertyHint.Enum, "Longest,Random")] public string mainDirectionFailType = "Random"; //If not 100% direct, the Main Path can be random or the longest posible.
+    [Export] public int MinMainPathLength = -1; //The Minimun amount of tiles the Main Path should have.
+    [Export] public int MaxMainPathLength = -1; //the Maximun amount of tiles the Main Path should have.
     private int mainPathGenerationAttemps = 5000; //The number of atempts the algorithm will try to generate a Main Path between the Min and Max lenght
 
     // --- POPULATION SETTINGS ---
     [ExportGroup("Population")]
     [Export(PropertyHint.Range, "0,100")] public int populatingDirectness; //Same as the Main Path one.
-    [Export(PropertyHint.Enum, "Longest,Random")] public string populatingDirectionType = "Random"; //Same as the Main Path one.
+    [Export(PropertyHint.Enum, "Longest,Random")] public string populatingDirectionFailType = "Random"; //Same as the Main Path one.
 
 
     // --- BRANCH SETTINGS ---
@@ -58,6 +58,7 @@ public partial class Generation : Node
     private bool firtsGeneration = true;
     private bool setStart;
     private bool[] setEnds;
+    private bool areMinMaxMainValuesValid = true;
 
     // --- TILE TYPE CONSTANTS ---
     const int ILLEGAL = -1; //Illegal Tiles cannot be replaced by any other type of tile.
@@ -120,7 +121,7 @@ public partial class Generation : Node
         PrintDungeon();
 
         GD.PrintRich("\n[color=green]GENERATING DUNGEON IN 3D SPACE\n");
-        SpawnMap();
+        STEP6_SpawnMap();
 
         GD.PrintRich("\n[color=green]FINISHED\n");
     }
@@ -158,6 +159,18 @@ public partial class Generation : Node
         //RNG initizlization
         random = new Random(currentSeed);
         GD.PrintRich($"\n[color=yellow]Generating dungeon using Seed: {currentSeed}\n");
+
+        // Min/Max Main Path Lenght values check.
+        if (MinMainPathLength < 0)
+            MinMainPathLength = 0;
+
+        if (MaxMainPathLength < 0)
+            MaxMainPathLength = int.MaxValue;
+
+        if (MinMainPathLength > MaxMainPathLength){
+            areMinMaxMainValuesValid = false;
+            GD.PushWarning("Min/Max Main Path Lenght values are contradictory, and will be ignored");
+        }
 
         //Mark the ILLEGAL Tiles into the Grid
         MarkIllegalTiles();
@@ -247,7 +260,7 @@ public partial class Generation : Node
             ClearMainPathsFromGrid();
 
             // 2. Generate and carve the primary Main Path
-            List<Vector2I> mainPath = FindPath(startTile.X, startTile.Y, firstEnd.X, firstEnd.Y, mainPathDirectness, mainDirectionType);
+            List<Vector2I> mainPath = FindPath(startTile.X, startTile.Y, firstEnd.X, firstEnd.Y, mainPathDirectness, mainDirectionFailType);
             CarvePathIntoGrid(mainPath, MAINPATH);
 
             // 3. Hook up remaining End tiles to the closest Main Path
@@ -256,7 +269,7 @@ public partial class Generation : Node
                 Vector2I currentEnd = endTiles[i];
                 Vector2I closestTile = GetClosestExistingPath(currentEnd);
 
-                List<Vector2I> branchPath = FindPath(currentEnd.X, currentEnd.Y, closestTile.X, closestTile.Y, mainPathDirectness, mainDirectionType);
+                List<Vector2I> branchPath = FindPath(currentEnd.X, currentEnd.Y, closestTile.X, closestTile.Y, mainPathDirectness, mainDirectionFailType);
                 CarvePathIntoGrid(branchPath, MAINPATH);
             }
 
@@ -264,13 +277,22 @@ public partial class Generation : Node
             int totalPathLength = CountMainTilesOnGrid();
 
             // 5. Validate the Main Path length
-            if (totalPathLength >= MinMainPathLength && totalPathLength <= MaxMainPathLength)
+            if (areMinMaxMainValuesValid)
             {
-                GD.Print($"Total combined length of all main paths: {totalPathLength}");
-                GD.Print($"Number of Main Path attempts: {pathAttempts}");
-                validPathFound = true;
-                break; // Perfect path length found.
+                if (totalPathLength >= MinMainPathLength && totalPathLength <= MaxMainPathLength)
+                {
+                    GD.Print($"Total combined length of all main paths: {totalPathLength}");
+                    GD.Print($"Number of Main Path attempts: {pathAttempts}");
+                    validPathFound = true;
+                    break; // Perfect path length found.
+                }
             }
+            else
+            {
+                validPathFound = true;
+                break;
+            }
+
 
             pathAttempts++;
         }
@@ -309,7 +331,7 @@ public partial class Generation : Node
                 GD.PrintRich($"[color=orange]Empty row detected, starting branch from [X:{randomEmptyTile.X}, Y:{randomEmptyTile.Y}] to [X:{closestTile.X}, Y:{closestTile.Y}]");
 
                 //Finds the connecting Path and Carves it.
-                List<Vector2I> populationRow = FindPath(randomEmptyTile.X, randomEmptyTile.Y, closestTile.X, closestTile.Y, populatingDirectness, populatingDirectionType);
+                List<Vector2I> populationRow = FindPath(randomEmptyTile.X, randomEmptyTile.Y, closestTile.X, closestTile.Y, populatingDirectness, populatingDirectionFailType);
                 CarvePathIntoGrid(populationRow, TILE);
 
             }
@@ -334,7 +356,7 @@ public partial class Generation : Node
                 GD.PrintRich($"[color=orange]Empty collumn detected, starting branch from [X:{randomEmptyTile.X}, Y:{randomEmptyTile.Y}] to [X:{closestTile.X}, Y:{closestTile.Y}]");
 
                 //Finds the connecting Path and Carves it.
-                List<Vector2I> populationCollumn = FindPath(randomEmptyTile.X, randomEmptyTile.Y, closestTile.X, closestTile.Y, populatingDirectness, populatingDirectionType);
+                List<Vector2I> populationCollumn = FindPath(randomEmptyTile.X, randomEmptyTile.Y, closestTile.X, closestTile.Y, populatingDirectness, populatingDirectionFailType);
                 CarvePathIntoGrid(populationCollumn, TILE);
             }
         }
@@ -417,7 +439,7 @@ public partial class Generation : Node
     /// It goes thru the grid checking if the Tile is a Room, and spawns a Room mesh at the apropiate coordinates.
     /// Then, it checks the surrouding Tiles and places Bridges and Doors acordingly.
     /// </summary>
-    private void SpawnMap()
+    private void STEP6_SpawnMap()
     {
         float roomSeparation = (float)15.5; //The space between 2 Rooms.
         bool[,] generated = new bool[Width, Height]; //Keeps track of already generated Tiles.
@@ -431,7 +453,7 @@ public partial class Generation : Node
 
                 if (CheckTileIsRoom(x, y)) //If the Tile is a Room, it will go thru the Room Spawning ordeal.
                 {
-                    Node3D instance = (Node3D) room.Instantiate(); //Instantiates the Room.
+                    Node3D instance = (Node3D)room.Instantiate(); //Instantiates the Room.
 
                     instance.Position = new Vector3(roomSeparation * x, 2, roomSeparation * y); //Moves the Room to the apropiate location. 
 
