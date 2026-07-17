@@ -3,44 +3,55 @@ using System;
 
 public partial class Character : CharacterBody3D
 {
-    // En C#, las constantes o variables exportadas suelen ir arriba
     private const float Speed = 5.0f;
-
-    // Cargamos la escena de la bala usando PackedScene
     private readonly PackedScene _bulletScene = GD.Load<PackedScene>("res://Prefabs/bullet.tscn");
 
     public override void _PhysicsProcess(double delta)
     {
-        // 1. Leer las teclas pulsadas (AWSD)
+        // 1. Movimiento (AWSD)
         Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
-
-        // 2. Convertir los controles a una dirección en 3D
-        // Nota: 'Transform.Basis' va con mayúscula
         Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
-
-        // Creamos una copia de la velocidad actual para modificarla
-        Vector3 currentVelocity = Velocity;
-
-        // 3. Aplicar la velocidad
+        
+        Vector3 velocity = Velocity;
+        
         if (direction != Vector3.Zero)
         {
-            currentVelocity.X = direction.X * Speed;
-            currentVelocity.Z = direction.Z * Speed;
+            velocity.X = direction.X * Speed;
+            velocity.Z = direction.Z * Speed;
         }
         else
         {
-            // Frenar suavemente si no pulsas nada
-            currentVelocity.X = Mathf.MoveToward(currentVelocity.X, 0, Speed);
-            currentVelocity.Z = Mathf.MoveToward(currentVelocity.Z, 0, Speed);
+            velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
+            velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
         }
 
-        // Asignamos la velocidad modificada de vuelta al personaje
-        Velocity = currentVelocity;
-
-        // 4. Ejecutar el movimiento
+        Velocity = velocity;
         MoveAndSlide();
 
-        // 5. Detectar el ataque e instanciar el objeto
+        // 2. Detección de colisiones (física)
+        int colisiones = GetSlideCollisionCount();
+        for (int i = 0; i < colisiones; i++)
+        {
+            KinematicCollision3D col = GetSlideCollision(i);
+            Node objetoChocado = (Node)col.GetCollider();
+
+            // Debug para ver qué estamos tocando
+            //GD.Print($"[DEBUG] Chocando con: {objetoChocado.Name}");
+
+            if (objetoChocado.Name.ToString().ToLower().Contains("enemy"))
+            {
+                //GD.Print("[DEBUG] ¡Colisión con enemigo! Ocultando personaje...");
+                
+                // Ocultamos el nodo
+                Hide(); 
+                
+                // Desactivamos el procesamiento físico para que no siga detectando colisiones
+                SetPhysicsProcess(false);
+                break; 
+            }
+        }
+
+        // 3. Ataque
         if (Input.IsActionJustPressed("atack"))
         {
             Atacar();
@@ -49,16 +60,10 @@ public partial class Character : CharacterBody3D
 
     private void Atacar()
     {
-        // Creamos una copia (instancia) del objeto tirando de la escena cargada
-        // En C# es necesario hacer un "cast" al tipo de nodo que maneja la bala (ej: Node3D)
         Node3D nuevoObjeto = _bulletScene.Instantiate<Node3D>();
-
-        // Lo añadimos a la escena principal (get_parent() pasa a ser GetParent())
         GetParent().AddChild(nuevoObjeto);
-
+        
         Vector3 offsetLocal = new Vector3(2.0f, 0.0f, 0.2f);
-
-        // Le damos la posición con el offset correspondiente
         nuevoObjeto.GlobalPosition = GlobalPosition + (GlobalTransform.Basis * offsetLocal);
     }
 }
