@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Room : Node3D
+public partial class Room : StaticBody3D
 {
 	//If one of the booleans get sets to True, the Bridge/Wall will be deleted.
 	[Export] public bool removeBridgeNorth =  false;

@@ -11,8 +11,8 @@
 
 [node name="Generation" type="Node" parent="." unique_id=1324325913]
 script = ExtResource("2_noarx")
-Width = 7
-Height = 7
+Width = 15
+Height = 15
 mainPathDirectness = 50
 MaxMainPathLength = 100
 populatingDirectness = 50
