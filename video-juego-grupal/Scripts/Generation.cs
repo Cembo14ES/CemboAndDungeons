@@ -52,6 +52,10 @@ public partial class Generation : Node
     [ExportGroup("Room Tiles")]
     [Export] public PackedScene room; //This Scene contains the Room wich will be used to generate the Dungeon
 
+    // --- OTHER ---
+    [ExportGroup("Other")]
+    [Export] public Node3D character;
+
     // --- PRIVATE VARIABLES ---
     private int[,] grid; //The Main Grid: It contains the info of the type of Tiles. It starts filled with EMPTY Tiles.
     private Random random; //The Random Variable.
@@ -443,7 +447,6 @@ public partial class Generation : Node
     {
         float roomSeparation = (float)15.5; //The space between 2 Rooms.
         bool[,] generated = new bool[Width, Height]; //Keeps track of already generated Tiles.
-        Vector3 cameraStartPosition = new Vector3();
 
         //It goes thru the whole grid.
         for (int y = 0; y < Height; y++)
@@ -486,7 +489,7 @@ public partial class Generation : Node
                         if (grid[x, y] == STARTTILE)
                         {
                             roomScript.setStartTile();
-                            cameraStartPosition = new Vector3(roomSeparation * x, 50, (roomSeparation * y) + 15);
+                            character.Position = new Vector3(roomSeparation * x, (float)4, roomSeparation * y);
                         }
 
                         if (grid[x, y] == ENDTILE)
@@ -517,8 +520,8 @@ public partial class Generation : Node
 
         if (firtsGeneration)
         {
-            CameraController camera = GetNode<CameraController>("../Camera3D");
-            camera.setPosition(cameraStartPosition);
+            //CameraController camera = GetNode<CameraController>("../Camera3D");
+            //camera.setPosition(cameraStartPosition);
             firtsGeneration = false;
         }
 

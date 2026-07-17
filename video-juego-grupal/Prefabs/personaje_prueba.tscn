@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://c7d1fqioixhpb"]
+
+[ext_resource type="PackedScene" path="res://Prefabs/character.tscn" id="1_1fil1"]
+[ext_resource type="PackedScene" path="res://Prefabs/enemy.tscn" id="2_llytt"]
+
+[node name="PersonajePrueba" type="Node3D" unique_id=928317053]
+
+[node name="Character" parent="." unique_id=9168581 instance=ExtResource("1_1fil1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Enemy" parent="." unique_id=252092932 instance=ExtResource("2_llytt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.175, 1, 0)
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=2132650086]
+transform = Transform3D(1, 0, 0, 0, 0.24149233, 0.9704027, 0, -0.9704027, 0.24149233, 0, 9.209377, 1.2408485)
+current = true

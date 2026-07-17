@@ -29,4 +29,14 @@ public partial class Item : CharacterBody3D
 		body.Velocity = new Vector3(body.Velocity.X, body.Velocity.Z, zSpeed);
 		body.MoveAndSlide();
 	}
+
+	private void _OnBodyEntered(Node3D body)
+    {
+        GD.Print("Body entered");
+        if (body.IsInGroup("player"))
+        {
+            GD.Print("player entered");
+            body.QueueFree();
+        }
+    }
 }

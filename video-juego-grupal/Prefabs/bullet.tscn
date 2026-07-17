@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://ctp0o18g7yp8p"]
+
+[ext_resource type="Script" uid="uid://v0sycjif74i2" path="res://Scripts/Bullet.cs" id="1_v8qja"]
+[ext_resource type="Texture2D" uid="uid://cyxvxsxsdfh7x" path="res://Sprites/Bala.png" id="2_t4vbm"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_njnsn"]
+size = Vector3(0.0154418945, 0.017828126, 0.009765625)
+
+[node name="Bullet" type="Node3D" unique_id=1427582097]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+
+[node name="Bullet" type="CharacterBody3D" parent="." unique_id=1949793232]
+script = ExtResource("1_v8qja")
+
+[node name="Sprite3D" type="Sprite3D" parent="Bullet" unique_id=1989492055]
+transform = Transform3D(-4, 3.496911e-07, 1.5285484e-14, 0, -1.7484555e-07, 4, 3.496911e-07, 4, 1.7484555e-07, 0, 0, 0)
+layers = 512
+texture = ExtResource("2_t4vbm")
+
+[node name="Area3D" type="Area3D" parent="Bullet" unique_id=1252100367]
+transform = Transform3D(40, 0, 0, 0, 40, 0, 0, 0, 40, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bullet/Area3D" unique_id=960266520]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00012499989, -0.00048828125)
+shape = SubResource("BoxShape3D_njnsn")

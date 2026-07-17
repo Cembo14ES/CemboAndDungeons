@@ -7,16 +7,13 @@ public partial class CameraController : Camera3D
     [Export] public float MinZoom = 5.0f;
     [Export] public float MaxZoom = 50.0f;
 
+    [Export] public Node3D character;
+
     private float _currentZoom = 20.0f;
 
     public override void _Process(double delta)
     {
-        // 1. Handle Movement (Uses default UI actions: Arrow keys or WASD)
-        Vector2 input = Input.GetVector("Left", "Right", "Up", "Down");
-        
-        // We move on X and Z (ignoring Y) for a top-down view
-        Vector3 moveDir = new Vector3(input.X, 0, input.Y);
-        GlobalPosition += moveDir * MoveSpeed * (float)delta;
+        Position = new Vector3(character.Position.X, 25, character.Position.Z + 5);
     }
 
     public override void _UnhandledInput(InputEvent @event)

@@ -85,7 +85,6 @@ public partial class Room : StaticBody3D
 		random = genRandom;
 	}
 
-
 	public void setStartTile()
 	{
 		StartSprite.Visible = true;

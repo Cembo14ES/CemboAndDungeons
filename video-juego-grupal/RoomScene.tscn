@@ -8,9 +8,6 @@
 [ext_resource type="Texture2D" uid="uid://cx2bamsodhh87" path="res://room_assets/end.png" id="6_lfyi4"]
 [ext_resource type="Texture2D" uid="uid://bah5dmrtnakmc" path="res://room_assets/main.png" id="7_bqh23"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_v6vjn"]
-size = Vector3(10.62146, 1, 10.534058)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_43k2e"]
 size = Vector3(3.9886475, 3.7328491, 0.82543945)
 
@@ -35,23 +32,14 @@ size = Vector3(1, 3.831543, 4.826172)
 [sub_resource type="BoxShape3D" id="BoxShape3D_uhf4c"]
 size = Vector3(4.835022, 3.9455566, 1)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_njnsn"]
-size = Vector3(6.4225464, 0.6591797, 2.1982422)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_r6a4o"]
 size = Vector3(5.740143, 3.2372437, 0.90075684)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_0my43"]
-size = Vector3(2.4958496, 1, 5.7122803)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_biyqc"]
 size = Vector3(1, 4.0235596, 5.8725586)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vgeyr"]
 size = Vector3(1, 3.781128, 6.0599365)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_annww"]
-size = Vector3(6.2247314, 1, 2.7584229)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ylso4"]
 size = Vector3(5.809082, 4.6381836, 1)
@@ -90,10 +78,6 @@ SpawnPoint1 = NodePath("SpawnPoint1")
 SpawnPoint2 = NodePath("SpawnPoint2")
 SpawnPoint3 = NodePath("SpawnPoint3")
 SpawnPoint4 = NodePath("SpawnPoint4")
-
-[node name="FloorCollision" type="CollisionShape3D" parent="Room" unique_id=43115103]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16668701, 0.236938, -0.04864502)
-shape = SubResource("BoxShape3D_v6vjn")
 
 [node name="WallCollision1" type="CollisionShape3D" parent="Room" unique_id=1172146316]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0149975, 2.1002502, -4.892828)
@@ -136,10 +120,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 [node name="BridgeNorthMesh" parent="Room/BridgeNorth" unique_id=414768707 instance=ExtResource("3_lfyi4")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -1, -1.25, -5)
 
-[node name="BridgeFloor" type="CollisionShape3D" parent="Room/BridgeNorth" unique_id=579941317]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -0.06494129, -1.5518398, -7.5071106)
-shape = SubResource("BoxShape3D_njnsn")
-
 [node name="BridgeWall1" type="CollisionShape3D" parent="Room/BridgeNorth" unique_id=1496726203]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.4631959, -0.433218, -7.711334)
 shape = SubResource("BoxShape3D_r6a4o")
@@ -153,10 +133,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
 [node name="BridgeEastMesh" parent="Room/BridgeEast" unique_id=465051657 instance=ExtResource("3_lfyi4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, -1.25, 1)
-
-[node name="BridgeFloor" type="CollisionShape3D" parent="Room/BridgeEast" unique_id=645190888]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5259967, -1.5518398, 0.07668209)
-shape = SubResource("BoxShape3D_njnsn")
 
 [node name="BridgeWall1" type="CollisionShape3D" parent="Room/BridgeEast" unique_id=1259241228]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6881123, -0.433218, 1.4021714)
@@ -172,10 +148,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 [node name="BridgeSouthMesh" parent="Room/BridgeSouth" unique_id=1651654592 instance=ExtResource("3_lfyi4")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1, -1.25, 5)
 
-[node name="BridgeFloor" type="CollisionShape3D" parent="Room/BridgeSouth" unique_id=1388638082]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00036621094, -1.6839126, 7.822151)
-shape = SubResource("BoxShape3D_0my43")
-
 [node name="BridgeWall1" type="CollisionShape3D" parent="Room/BridgeSouth" unique_id=191918302]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5305324, 0.49197626, 7.772869)
 shape = SubResource("BoxShape3D_biyqc")
@@ -189,10 +161,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
 [node name="BridgeWestMesh" parent="Room/BridgeWest" unique_id=1580964916 instance=ExtResource("3_lfyi4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -1.25, 1)
-
-[node name="BridgeFloor" type="CollisionShape3D" parent="Room/BridgeWest" unique_id=1104132508]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9776154, -1.7099245, -0.057678223)
-shape = SubResource("BoxShape3D_annww")
 
 [node name="BridgeWall1" type="CollisionShape3D" parent="Room/BridgeWest" unique_id=362144249]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.861555, 0.7372272, -1.5033047)
