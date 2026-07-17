@@ -15,11 +15,9 @@ public partial class Item : CharacterBody3D
 
 		if(zSpeed > maxSpeed){
 			goingUp = false;
-			GD.Print("FALSE" + zSpeed);
 		}
 		if(zSpeed < -maxSpeed){
 			goingUp = true;
-			GD.Print("TRUE" + zSpeed);
 		}
 
 		if (goingUp){

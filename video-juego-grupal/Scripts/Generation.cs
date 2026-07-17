@@ -431,7 +431,7 @@ public partial class Generation : Node
 
                 if (CheckTileIsRoom(x, y)) //If the Tile is a Room, it will go thru the Room Spawning ordeal.
                 {
-                    Node3D instance = (Node3D)room.Instantiate(); //Instantiates the Room.
+                    Node3D instance = (Node3D) room.Instantiate(); //Instantiates the Room.
 
                     instance.Position = new Vector3(roomSeparation * x, 2, roomSeparation * y); //Moves the Room to the apropiate location. 
 
@@ -484,7 +484,10 @@ public partial class Generation : Node
                         GD.PrintErr($"ERROR: ROOM SCRIPT NOT FOUND FOR X={x}, Y={y}");
                     }
 
-                    AddChild(instance); //Adds the Room to the Scene
+                    roomScript.SetRandom(random); //Passes the random variable to spawn things.
+                    roomScript.SpawnElements(); //Spawn things in the tile.
+
+                    AddChild(instance); //Adds the Room to the Scene.
                     generated[x, y] = true; //The Tile has already been generated.
                 }
             }

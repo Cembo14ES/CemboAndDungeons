@@ -73,7 +73,7 @@ size = Vector3(1, 4.9194336, 3.854248)
 
 [node name="RoomScene" type="Node3D" unique_id=1152993696]
 
-[node name="Room" type="StaticBody3D" parent="." unique_id=1413422181 node_paths=PackedStringArray("BridgeNorth", "BridgeEast", "BridgeSouth", "BridgeWest", "WallNorth", "WallEast", "WallSouth", "WallWest", "StartSprite", "EndSprite", "MainSprite")]
+[node name="Room" type="StaticBody3D" parent="." unique_id=1413422181 node_paths=PackedStringArray("BridgeNorth", "BridgeEast", "BridgeSouth", "BridgeWest", "WallNorth", "WallEast", "WallSouth", "WallWest", "StartSprite", "EndSprite", "MainSprite", "SpawnPoint1", "SpawnPoint2", "SpawnPoint3", "SpawnPoint4")]
 script = ExtResource("2_mikwc")
 BridgeNorth = NodePath("BridgeNorth")
 BridgeEast = NodePath("BridgeEast")
@@ -86,6 +86,10 @@ WallWest = NodePath("WallWest")
 StartSprite = NodePath("StartSprite")
 EndSprite = NodePath("EndSprite")
 MainSprite = NodePath("MainSprite")
+SpawnPoint1 = NodePath("SpawnPoint1")
+SpawnPoint2 = NodePath("SpawnPoint2")
+SpawnPoint3 = NodePath("SpawnPoint3")
+SpawnPoint4 = NodePath("SpawnPoint4")
 
 [node name="FloorCollision" type="CollisionShape3D" parent="Room" unique_id=43115103]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16668701, 0.236938, -0.04864502)
