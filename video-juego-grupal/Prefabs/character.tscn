@@ -8,7 +8,7 @@
 
 [node name="Character" type="Node3D" unique_id=9168581]
 
-[node name="Character" type="CharacterBody3D" parent="." unique_id=1780338015]
+[node name="Character" type="CharacterBody3D" parent="." unique_id=1780338015 groups=["player"]]
 script = ExtResource("1_7iube")
 
 [node name="Sprite3D" type="Sprite3D" parent="Character" unique_id=2038590288]

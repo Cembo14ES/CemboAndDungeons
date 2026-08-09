@@ -3,6 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://cyxvxsxsdfh7x" path="res://Sprites/Bala.png" id="1_62lvt"]
 [ext_resource type="Script" uid="uid://v0sycjif74i2" path="res://Scripts/Bullet.cs" id="1_m4f65"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
+
 [node name="Bullet" type="Node3D" unique_id=1427582097]
 
 [node name="Bullet" type="CharacterBody3D" parent="." unique_id=1949793232]
@@ -13,4 +15,7 @@ transform = Transform3D(-4, 3.496911e-07, 1.5285484e-14, 0, -1.7484555e-07, 4, 3
 texture = ExtResource("1_62lvt")
 
 [node name="Area3D" type="Area3D" parent="Bullet" unique_id=1252100367]
-transform = Transform3D(40, 0, 0, 0, 40, 0, 0, 0, 40, 0, 0.2, 0)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0.2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bullet/Area3D" unique_id=1276335571]
+shape = SubResource("BoxShape3D_8erxc")
