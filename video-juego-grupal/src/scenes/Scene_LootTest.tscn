@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://db2ur1084tcyp"]
+
+[ext_resource type="Texture2D" uid="uid://d33oredpav3yu" path="res://assets/sprites/room_assets/gem_blue.png" id="1_ckycu"]
+[ext_resource type="Script" uid="uid://3f0itdakp3fm" path="res://src/scripts/TestScripts/Item.cs" id="1_tdn7b"]
+[ext_resource type="Texture2D" uid="uid://sb17xa6lauak" path="res://assets/sprites/room_assets/item_shadow.png" id="3_jcfso"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jcfso"]
+height = 4.4921875
+
+[node name="Loot" type="Node3D" unique_id=1149431647 node_paths=PackedStringArray("body") groups=["item"]]
+script = ExtResource("1_tdn7b")
+maxSpeed = 3.0
+acceleration = 5.0
+force = 2.5
+body = NodePath("CharacterBody3D")
+
+[node name="Sprite3D2" type="Sprite3D" parent="." unique_id=1133821313 groups=["item"]]
+transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, 0, 1, 0)
+texture = ExtResource("3_jcfso")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1854942475 groups=["item"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+axis_lock_linear_x = true
+axis_lock_linear_y = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+
+[node name="Sprite3D" type="Sprite3D" parent="CharacterBody3D" unique_id=905235412 groups=["item"]]
+transform = Transform3D(1, 0, 0, 0, 0.5002661, 0.8658717, 0, -0.8658717, 0.5002661, 0, 0, 0)
+texture = ExtResource("1_ckycu")
+
+[node name="Area3D" type="Area3D" parent="." unique_id=1698992611 groups=["item"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1481311490 groups=["item"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5869141, 0)
+shape = SubResource("CapsuleShape3D_jcfso")
+
+[connection signal="body_entered" from="Area3D" to="." method="On_PlayerColision"]

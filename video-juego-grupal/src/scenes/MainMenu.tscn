@@ -1,0 +1,111 @@
+[gd_scene format=3 uid="uid://dimfn47e65r3o"]
+
+[ext_resource type="Script" uid="uid://cext1qsta04u4" path="res://src/scripts/MainNode/MainMenu.cs" id="1_oll1y"]
+[ext_resource type="Script" uid="uid://befwdivdnf61d" path="res://src/scripts/MainNode/Minecraft.cs" id="2_oll1y"]
+[ext_resource type="AudioStream" uid="uid://bguuvtuqbf83m" path="res://assets/audio/splat.mp3" id="3_oll1y"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0my43"]
+font_size = 30
+font_color = Color(1, 1, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_biyqc"]
+font_size = 100
+
+[node name="MainMenu" type="CanvasLayer" unique_id=1105755416 node_paths=PackedStringArray("setting")]
+script = ExtResource("1_oll1y")
+setting = NodePath("Panel/VBoxContainer/Settings/AudioStreamPlayer2D")
+
+[node name="Label" type="Label" parent="." unique_id=1889778390]
+z_index = 1
+anchors_preset = -1
+anchor_left = 0.65
+anchor_top = 0.3
+anchor_right = 1.0
+anchor_bottom = 0.4
+offset_left = 1.2000122
+offset_top = 17.59999
+offset_right = -6.366699
+offset_bottom = 0.32891846
+grow_horizontal = 2
+rotation = -0.2617994
+text = "jajajajsjajsja como el minecraft"
+label_settings = SubResource("LabelSettings_0my43")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("2_oll1y")
+
+[node name="TiltlePanel" type="Panel" parent="." unique_id=882730324]
+anchors_preset = -1
+anchor_left = 0.15
+anchor_top = 0.1
+anchor_right = 0.85
+anchor_bottom = 0.3
+offset_left = -0.22400665
+offset_top = 0.055999994
+offset_right = 0.063964844
+offset_bottom = 1.9440002
+grow_horizontal = 2
+
+[node name="Title" type="Label" parent="TiltlePanel" unique_id=611578347]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "JUEGO DE VIDEO"
+label_settings = SubResource("LabelSettings_biyqc")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel" type="Panel" parent="." unique_id=1409192431]
+anchors_preset = -1
+anchor_left = 0.3
+anchor_top = 0.4
+anchor_right = 0.7
+anchor_bottom = 0.9
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel" unique_id=193193791]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 3.0517578e-05
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Play" type="Button" parent="Panel/VBoxContainer" unique_id=1765912053]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Play (jurgar)"
+
+[node name="Settings" type="Button" parent="Panel/VBoxContainer" unique_id=523624929]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Settings (opciones)"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Panel/VBoxContainer/Settings" unique_id=774508187]
+stream = ExtResource("3_oll1y")
+
+[node name="Exit" type="Button" parent="Panel/VBoxContainer" unique_id=1945974124]
+custom_minimum_size = Vector2(250, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Exit (Salida)"
+
+[connection signal="pressed" from="Panel/VBoxContainer/Play" to="." method="On_PlayPressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Settings" to="." method="On_SettingsPressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Settings" to="Label" method="On_SettingsButton"]
+[connection signal="finished" from="Panel/VBoxContainer/Settings/AudioStreamPlayer2D" to="." method="exitGameSignal"]
+[connection signal="pressed" from="Panel/VBoxContainer/Exit" to="." method="On_ExitPressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Exit" to="Label" method="On_ExitButton"]

@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bxrthnxuundfb"]
+
+[ext_resource type="Script" uid="uid://dalg4k5wlb3ft" path="res://src/scripts/MainNode/GlobalManager.cs" id="1_x4os5"]
+[ext_resource type="PackedScene" uid="uid://dimfn47e65r3o" path="res://src/scenes/MainMenu.tscn" id="2_8oy5r"]
+[ext_resource type="PackedScene" uid="uid://mgp02mkor0at" path="res://src/scenes/Scene_GenerationTest.tscn" id="3_akft7"]
+
+[node name="Main" type="Node" unique_id=561419243]
+script = ExtResource("1_x4os5")
+mainMenu = ExtResource("2_8oy5r")
+geneartionTest = ExtResource("3_akft7")
+
+[node name="World" type="Node3D" parent="." unique_id=264984720]
