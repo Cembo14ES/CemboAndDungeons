@@ -4,6 +4,7 @@ using System;
 public partial class Room : StaticBody3D
 {
 	[Signal] public delegate void ExitEnteredEventHandler();
+	[Signal] public delegate void PlayerEnteredEventHandler(int x, int y);
 	//If one of the booleans get sets to True, the Bridge/Wall will be deleted.
 	[Export] public bool removeBridgeNorth = false;
 	[Export] public bool removeBridgeEast = false;
@@ -37,6 +38,10 @@ public partial class Room : StaticBody3D
 	[Export] public Node3D SpawnPoint4;
 
 	private Random random;
+
+	public int roomX;
+	public int roomY;
+
 	[Export] private PackedScene item;
 	[Export] private PackedScene end;
 
@@ -71,7 +76,7 @@ public partial class Room : StaticBody3D
 			itemInstance.Position = SpawnPoint4.Position;
 			AddChild(itemInstance);
 		}
-		
+
 	}
 
 	private void RandomizeSpawnPoint(Node3D SpawnPoint)
@@ -85,26 +90,56 @@ public partial class Room : StaticBody3D
 		random = genRandom;
 	}
 
-	public void setStartTile()
+	public void SetStartTile()
 	{
 		StartSprite.Visible = true;
 	}
 
-	public void setEndTile()
+	public void SetEndTile()
 	{
 		EndLevel endInstance = (EndLevel)end.Instantiate();
-		endInstance.Position = new Vector3(0, (float) 0.751,0);
+		endInstance.Position = new Vector3(0, (float)0.751, 0);
 		endInstance.ExitEntered += On_End;
 		AddChild(endInstance);
 	}
-	public void setMainTile()
+	public void SetMainTile()
 	{
 		MainSprite.Visible = true;
+	}
+
+	//Makes the Room visible and working
+	public void SetActive()
+	{
+		Visible = true;
+		ProcessMode = ProcessModeEnum.Inherit;
+	}
+
+	//Makes the Room visible, but it stops working (paused)
+	public void SetInactive()
+	{
+		Visible = true;
+		ProcessMode = ProcessModeEnum.Disabled;
+	}
+
+	//Makes the Room invisible and it stops working
+	public void SetDisabled()
+	{
+		Visible = false;
+		SetDeferred(Node.PropertyName.ProcessMode, (int) ProcessModeEnum.Disabled);
 	}
 
 	public void On_End()
 	{
 		EmitSignal(SignalName.ExitEntered);
+	}
+
+	public void On_PlayerEntered(Node3D body)
+	{
+		if (body.Name == "Character")
+		{
+			EmitSignal(SignalName.PlayerEntered, roomX, roomY);
+		}
+		
 	}
 
 

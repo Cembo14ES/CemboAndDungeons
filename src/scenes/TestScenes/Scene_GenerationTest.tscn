@@ -2,11 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://oea2uyph2jxn" path="res://src/scenes/TestScenes/character.tscn" id="1_3v2ol"]
 [ext_resource type="Script" uid="uid://cuu3nudct7om2" path="res://src/scripts/TestScripts/Generation.cs" id="2_3v2ol"]
-[ext_resource type="PackedScene" uid="uid://l68shjfx8bi1" path="res://src/scenes/Scene_RoomTest.tscn" id="3_trcv5"]
+[ext_resource type="PackedScene" uid="uid://l68shjfx8bi1" path="res://src/scenes/TestScenes/Scene_RoomTest.tscn" id="3_trcv5"]
+[ext_resource type="Script" uid="uid://cvlki4bt8aiai" path="res://src/scripts/TestScripts/RoomManager.cs" id="3_v343e"]
 [ext_resource type="Script" uid="uid://dnp4r0ulyj82w" path="res://src/scripts/TestScripts/CameraController.cs" id="4_n3reg"]
-[ext_resource type="Script" uid="uid://bvvs7qprgf780" path="res://src/scenes/LootCountLabel.cs" id="5_n3reg"]
+[ext_resource type="Script" uid="uid://bvvs7qprgf780" path="res://src/scripts/LootCountLabel.cs" id="5_n3reg"]
 
-[node name="GenerationTest" type="Node" unique_id=1324325913 node_paths=PackedStringArray("character")]
+[node name="GenerationTest" type="Node" unique_id=1324325913 node_paths=PackedStringArray("character", "roomManager")]
 script = ExtResource("2_3v2ol")
 Width = 5
 Height = 5
@@ -17,6 +18,10 @@ MaxBranchLength = 100
 closedBranchEndChance = 50
 room = ExtResource("3_trcv5")
 character = NodePath("Character")
+roomManager = NodePath("Rooms")
+
+[node name="Rooms" type="Node3D" parent="." unique_id=1303306311]
+script = ExtResource("3_v343e")
 
 [node name="Character" parent="." unique_id=9168581 instance=ExtResource("1_3v2ol")]
 transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)

@@ -8,10 +8,10 @@ public partial class GlobalManager : Node
 
 	public override void _Ready()
 	{
-		loadMainMenu();
+		LoadMainMenu();
 	}
 
-	public void loadMainMenu()
+	public void LoadMainMenu()
 	{
 		MainMenu menu = (MainMenu)mainMenu.Instantiate();
 		menu.PlayGame += PlayButtonPressed;
@@ -19,35 +19,35 @@ public partial class GlobalManager : Node
 		GetNode("World").AddChild(menu);
 	}
 
-	public void removeMainMenu()
+	public void RemoveMainMenu()
 	{
 		GetNode("World/MainMenu").QueueFree();
 	}
 
-	public void loadGenerationTest()
+	public void LoadGenerationTest()
 	{
 		Generation generationTest = (Generation)geneartionTest.Instantiate();
-		generationTest.UnloadLevel += levelEnds;
+		generationTest.UnloadLevel += LevelEnds;
 		GetNode("World").AddChild(generationTest);
 	}
 
-	public void removeGenerationTest()
+	public void RemoveGenerationTest()
 	{
 		GetNode("World/GenerationTest").QueueFree();
 	}
 
-	public void levelEnds()
+	public void LevelEnds()
 	{
 		GD.Print("Unload!");
-		removeGenerationTest();
-		loadMainMenu();
+		RemoveGenerationTest();
+		LoadMainMenu();
 	}
 
 	public void PlayButtonPressed()
 	{
 		GD.Print("Play!");
-		removeMainMenu();
-		loadGenerationTest();
+		RemoveMainMenu();
+		LoadGenerationTest();
 	}
 
 	public void ExitButtonPressed()

@@ -58,6 +58,7 @@ public partial class Generation : Node
     // --- OTHER ---
     [ExportGroup("Other")]
     [Export] public Node3D character;
+    [Export] public RoomManager roomManager;
 
     // --- PRIVATE VARIABLES ---
     private int[,] grid; //The Main Grid: It contains the info of the type of Tiles. It starts filled with EMPTY Tiles.
@@ -451,24 +452,31 @@ public partial class Generation : Node
         float roomSeparation = (float)15.5; //The space between 2 Rooms.
         bool[,] generated = new bool[Width, Height]; //Keeps track of already generated Tiles.
 
+        int startX = -1;
+        int startY = -1;
+
         //It goes thru the whole grid.
         for (int y = 0; y < Height; y++)
         {
             for (int x = 0; x < Width; x++)
             {
 
-                if (CheckTileIsRoom(x, y)) //If the Tile is a Room, it will go thru the Room Spawning ordeal.
+                if (CheckTileIsRoom(x, y)) //If the Tile is a Room, it will go thru the whole Room Spawning ordeal.
                 {
                     Node3D instance = (Node3D)room.Instantiate(); //Instantiates the Room.
+                    instance.Name = "Room " + x.ToString() + "," + y.ToString();
 
                     instance.Position = new Vector3(roomSeparation * x, 2, roomSeparation * y); //Moves the Room to the apropiate location. 
 
-                    Room roomScript = instance.GetNode<Room>("Room"); //Gets the script for the Room Bridge and Wall management.
+                    Room roomScript = (Room) instance; //Gets the script for the Room Bridge and Wall management.
 
                     // If it finds the scrip, it will check each neighboring Tile and check if it is another Room
                     // and if it has been Generated already, and remove Bridges/Walls acordingly.
                     if (roomScript != null)
                     {
+                        roomScript.roomX = x;
+                        roomScript.roomY = y;
+
                         // North (-Z in 3D space)
                         bool northIsRoom = CheckTileIsRoom(x, y - 1);
                         roomScript.removeWallNorth = northIsRoom;
@@ -491,19 +499,21 @@ public partial class Generation : Node
 
                         if (grid[x, y] == STARTTILE)
                         {
-                            roomScript.setStartTile();
+                            roomScript.SetStartTile();
                             character.Position = new Vector3(roomSeparation * x, (float)4, roomSeparation * y);
+                            startX = x;
+                            startY = y;
                         }
 
                         if (grid[x, y] == ENDTILE)
                         {
-                            roomScript.setEndTile();
+                            roomScript.SetEndTile();
                             roomScript.ExitEntered += ExitLevel;
                         }
 
                         if (grid[x, y] == MAINPATH)
                         {
-                            roomScript.setMainTile();
+                            roomScript.SetMainTile();
                         }
 
                         roomScript.setRoom(); //Runs the Object removal function.
@@ -516,7 +526,7 @@ public partial class Generation : Node
                     roomScript.SetRandom(random); //Passes the random variable to spawn things.
                     roomScript.SpawnElements(); //Spawn things in the tile.
 
-                    AddChild(instance); //Adds the Room to the Scene.
+                    GetNode("Rooms").AddChild(instance); //Adds the Room to the Scene.
                     generated[x, y] = true; //The Tile has already been generated.
                 }
             }
@@ -528,6 +538,8 @@ public partial class Generation : Node
             //camera.setPosition(cameraStartPosition);
             firtsGeneration = false;
         }
+
+        roomManager.GetSignals(startX, startY);
 
     }
 
