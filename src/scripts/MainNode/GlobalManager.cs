@@ -5,19 +5,15 @@ public partial class GlobalManager : Node
 {
 	[Export] public PackedScene mainMenu;
 	[Export] public PackedScene geneartionTest;
+
 	public override void _Ready()
 	{
 		loadMainMenu();
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
 	public void loadMainMenu()
 	{
-		MainMenu menu = (MainMenu) mainMenu.Instantiate();
+		MainMenu menu = (MainMenu)mainMenu.Instantiate();
 		menu.PlayGame += PlayButtonPressed;
 		menu.ExitGame += ExitButtonPressed;
 		GetNode("World").AddChild(menu);
@@ -30,9 +26,14 @@ public partial class GlobalManager : Node
 
 	public void loadGenerationTest()
 	{
-		Generation generationTest = (Generation) geneartionTest.Instantiate();
+		Generation generationTest = (Generation)geneartionTest.Instantiate();
 		generationTest.UnloadLevel += levelEnds;
 		GetNode("World").AddChild(generationTest);
+	}
+
+	public void removeGenerationTest()
+	{
+		GetNode("World/GenerationTest").QueueFree();
 	}
 
 	public void levelEnds()
@@ -40,11 +41,6 @@ public partial class GlobalManager : Node
 		GD.Print("Unload!");
 		removeGenerationTest();
 		loadMainMenu();
-	}
-
-	public void removeGenerationTest()
-	{
-		GetNode("World/GenerationTest").QueueFree();
 	}
 
 	public void PlayButtonPressed()
