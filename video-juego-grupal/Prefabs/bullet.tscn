@@ -5,17 +5,18 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
 
-[node name="Bullet" type="Node3D" unique_id=1427582097]
-
-[node name="Bullet" type="CharacterBody3D" parent="." unique_id=1949793232]
+[node name="Bullet" type="CharacterBody3D" unique_id=1949793232 node_paths=PackedStringArray("area3D")]
 script = ExtResource("1_m4f65")
+area3D = NodePath("Area3D")
 
-[node name="Sprite3D" type="Sprite3D" parent="Bullet" unique_id=1989492055]
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1989492055]
 transform = Transform3D(-4, 3.496911e-07, 1.5285484e-14, 0, -1.7484555e-07, 4, 3.496911e-07, 4, 1.7484555e-07, 0, 0.2, 0)
 texture = ExtResource("1_62lvt")
 
-[node name="Area3D" type="Area3D" parent="Bullet" unique_id=1252100367]
+[node name="Area3D" type="Area3D" parent="." unique_id=1252100367]
 transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0.2, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bullet/Area3D" unique_id=1276335571]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1276335571]
 shape = SubResource("BoxShape3D_8erxc")
+
+[connection signal="body_entered" from="Area3D" to="." method="AreaEntered"]

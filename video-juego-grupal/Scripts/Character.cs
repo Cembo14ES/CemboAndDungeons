@@ -3,17 +3,16 @@ using System;
 
 public partial class Character : CharacterBody3D
 {
-    private const float Speed = 5.0f;
-    private readonly PackedScene _bulletScene = GD.Load<PackedScene>("res://Prefabs/bullet.tscn");
+    [Export] private float playerSpeed = 5.0f;
 
     // ==========================
     // Vida y Escudo
     // ==========================
-    private const int MaxVidas = 3;
-    private const int MaxEscudo = 3;
+    [Export] private int maxLives = 3;
+    [Export] private int maxShields = 3;
 
-    private int vidas = MaxVidas;
-    private int escudo = MaxEscudo;
+    private int currentLives;
+    private int currentShields;
 
     // ==========================
     // Temporizador del escudo
@@ -23,43 +22,61 @@ public partial class Character : CharacterBody3D
     // ==========================
     // Invulnerabilidad tras daño
     // ==========================
-    private bool puedeRecibirDanio = true;
+    [Export] private bool canBeDamaged = true;
     private Timer invulnerabilityTimer;
 
     // ==========================
     // Munición
     // ==========================
-    private const int MaxBalas = 10;
-    private int balas = MaxBalas;
+    [Export] private int maxAmmo = 10;
+    private int currentAmmo;
+
+    // ==========================
+    // Escenas
+    // ==========================
+
+    [Export] private PackedScene _bulletScene;
 
     public override void _Ready()
     {
         // ==========================
-        // Temporizador del escudo
+        // Variable initialization
         // ==========================
-        shieldTimer = new Timer();
-        shieldTimer.WaitTime = 16.0f;
-        shieldTimer.OneShot = true;
-        shieldTimer.Timeout += RegenerarEscudo;
+
+        currentAmmo = maxAmmo;
+        currentLives = maxLives;
+        currentShields = maxShields;
+
+        // ==========================
+        // Temporizador Escudo
+        // ==========================
+        shieldTimer = new Timer
+        {
+            WaitTime = 16.0f,
+            OneShot = true
+        };
+        shieldTimer.Timeout += RegenerateShield;
         AddChild(shieldTimer);
 
         // ==========================
-        // Temporizador de invulnerabilidad
+        // Temporizador Invulnerabilidad
         // ==========================
-        invulnerabilityTimer = new Timer();
-        invulnerabilityTimer.WaitTime = 0.8f;
-        invulnerabilityTimer.OneShot = true;
-        invulnerabilityTimer.Timeout += FinInvulnerabilidad;
+        invulnerabilityTimer = new Timer
+        {
+            WaitTime = 0.8f,
+            OneShot = true
+        };
+        invulnerabilityTimer.Timeout += EndInvulnerability;
         AddChild(invulnerabilityTimer);
 
         // ==========================
         // DEBUG
         // ==========================
         GD.Print("================================");
-        GD.Print("[DEBUG] Personaje creado.");
-        GD.Print($"[DEBUG] Vida: {vidas}/{MaxVidas}");
-        GD.Print($"[DEBUG] Escudo: {escudo}/{MaxEscudo}");
-        GD.Print($"[DEBUG] Balas: {balas}/{MaxBalas}");
+        GD.Print("[DEBUG] Character Created");
+        GD.Print($"[DEBUG] Lives: {currentLives}/{maxLives}");
+        GD.Print($"[DEBUG] Shield: {currentShields}/{maxShields}");
+        GD.Print($"[DEBUG] Ammo: {currentAmmo}/{maxAmmo}");
         GD.Print("================================");
     }
 
@@ -84,13 +101,13 @@ public partial class Character : CharacterBody3D
 
         if (direction != Vector3.Zero)
         {
-            velocity.X = direction.X * Speed;
-            velocity.Z = direction.Z * Speed;
+            velocity.X = direction.X * playerSpeed;
+            velocity.Z = direction.Z * playerSpeed;
         }
         else
         {
-            velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
-            velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
+            velocity.X = Mathf.MoveToward(Velocity.X, 0, playerSpeed);
+            velocity.Z = Mathf.MoveToward(Velocity.Z, 0, playerSpeed);
         }
 
         Velocity = velocity;
@@ -100,17 +117,19 @@ public partial class Character : CharacterBody3D
         // ==========================
         // Colisiones
         // ==========================
-        int colisiones = GetSlideCollisionCount();
+        int colisions = GetSlideCollisionCount();
 
-        for (int i = 0; i < colisiones; i++)
+        for (int i = 0; i < colisions; i++)
         {
             KinematicCollision3D col = GetSlideCollision(i);
 
-            Node objetoChocado = (Node)col.GetCollider();
+            Node collidedObject = (Node)col.GetCollider();
 
-            if (objetoChocado.Name.ToString().ToLower().Contains("enemy"))
+            if (collidedObject.Name.ToString().ToLower().Contains("enemy"))
             {
-                RecibirDanio();
+                Enemy enemy = (Enemy) collidedObject;
+                enemy.PlayerDied();
+                GetHurt();
                 break;
             }
         }
@@ -120,7 +139,7 @@ public partial class Character : CharacterBody3D
         // ==========================
         if (Input.IsActionJustPressed("atack"))
         {
-            Atacar();
+            Atack();
         }
 
         // ==========================
@@ -128,7 +147,7 @@ public partial class Character : CharacterBody3D
         // ==========================
         if (Input.IsActionJustPressed("reload"))
         {
-            Recargar();
+            Reload();
         }
     }
 
@@ -136,14 +155,14 @@ public partial class Character : CharacterBody3D
     // RECIBIR DAÑO
     // ==========================================================
 
-    private void RecibirDanio()
+    private void GetHurt()
     {
         // Si todavía está en invulnerabilidad, ignoramos el golpe
-        if (!puedeRecibirDanio)
+        if (!canBeDamaged)
             return;
 
         // Activar invulnerabilidad
-        puedeRecibirDanio = false;
+        canBeDamaged = false;
         invulnerabilityTimer.Start();
 
         // Reiniciar temporizador de regeneración del escudo
@@ -152,9 +171,9 @@ public partial class Character : CharacterBody3D
         // ==========================
         // Primero se consume el escudo
         // ==========================
-        if (escudo > 0)
+        if (currentShields > 0)
         {
-            escudo--;
+            currentShields--;
 
             GD.Print("--------------------------------");
             GD.Print("[DEBUG] ¡Golpe recibido!");
@@ -165,7 +184,7 @@ public partial class Character : CharacterBody3D
             // ==========================
             // Si no hay escudo, pierde vida
             // ==========================
-            vidas--;
+            currentLives--;
 
             GD.Print("--------------------------------");
             GD.Print("[DEBUG] ¡Golpe recibido!");
@@ -175,7 +194,7 @@ public partial class Character : CharacterBody3D
             // ==========================
             // Muerte
             // ==========================
-            if (vidas <= 0)
+            if (currentLives <= 0)
             {
                 GD.Print("--------------------------------");
                 GD.Print("[DEBUG] ¡El personaje ha muerto!");
@@ -192,8 +211,8 @@ public partial class Character : CharacterBody3D
         // ==========================
         // Mostrar estado
         // ==========================
-        GD.Print($"[DEBUG] Vida: {vidas}/{MaxVidas}");
-        GD.Print($"[DEBUG] Escudo: {escudo}/{MaxEscudo}");
+        GD.Print($"[DEBUG] Vida: {currentLives}/{maxLives}");
+        GD.Print($"[DEBUG] Escudo: {currentShields}/{maxShields}");
 
         // ==========================
         // Iniciar regeneración
@@ -209,10 +228,9 @@ public partial class Character : CharacterBody3D
     // FIN INVULNERABILIDAD
     // ==========================================================
 
-    private void FinInvulnerabilidad()
+    private void EndInvulnerability()
     {
-        puedeRecibirDanio = true;
-
+        canBeDamaged = true;
         GD.Print("[DEBUG] Fin de la invulnerabilidad.");
     }
 
@@ -220,14 +238,14 @@ public partial class Character : CharacterBody3D
     // REGENERAR ESCUDO
     // ==========================================================
 
-    private void RegenerarEscudo()
+    private void RegenerateShield()
     {
-        escudo = MaxEscudo;
+        currentShields = maxShields;
 
         GD.Print("================================");
         GD.Print("[DEBUG] ¡ESCUDO REGENERADO!");
-        GD.Print($"[DEBUG] Vida: {vidas}/{MaxVidas}");
-        GD.Print($"[DEBUG] Escudo: {escudo}/{MaxEscudo}");
+        GD.Print($"[DEBUG] Vida: {currentLives}/{maxLives}");
+        GD.Print($"[DEBUG] Escudo: {currentShields}/{maxShields}");
         GD.Print("================================");
     }
 
@@ -235,18 +253,18 @@ public partial class Character : CharacterBody3D
     // ATAQUE
     // ==========================================================
 
-    private void Atacar()
+    private void Atack()
     {
         // ==========================
         // Si no quedan balas
         // ==========================
-        if (balas <= 0)
+        if (currentAmmo <= 0)
         {
             GD.Print("--------------------------------");
             GD.Print("[DEBUG] ¡No quedan balas!");
             GD.Print("[DEBUG] ATACK utilizado como recarga.");
 
-            Recargar();
+            Reload();
 
             GD.Print("--------------------------------");
 
@@ -256,32 +274,30 @@ public partial class Character : CharacterBody3D
         // ==========================
         // Crear bala
         // ==========================
-        Node3D nuevoObjeto = _bulletScene.Instantiate<Node3D>();
+        Node3D bulletInstance = _bulletScene.Instantiate<Node3D>();
 
-        GetParent().AddChild(nuevoObjeto);
+        GetParent().AddChild(bulletInstance);
 
         // ==========================
         // Posición de aparición
         // ==========================
-        Vector3 offsetLocal = new Vector3(2.0f, 0.0f, 0.2f);
+        Vector3 localOffset = new Vector3(2.0f, 0.0f, 0.2f);
 
-        nuevoObjeto.GlobalPosition =
-            GlobalPosition +
-            (GlobalTransform.Basis * offsetLocal);
+        bulletInstance.GlobalPosition = GlobalPosition + (GlobalTransform.Basis * localOffset);
 
         // ==========================
         // Gastar bala
         // ==========================
-        balas--;
+        currentAmmo--;
 
         GD.Print("--------------------------------");
         GD.Print("[DEBUG] ¡Disparo!");
-        GD.Print($"[DEBUG] Balas restantes: {balas}/{MaxBalas}");
+        GD.Print($"[DEBUG] Balas restantes: {currentAmmo}/{maxAmmo}");
 
         // ==========================
         // Avisar si se queda vacío
         // ==========================
-        if (balas == 0)
+        if (currentAmmo == 0)
         {
             GD.Print("[DEBUG] ¡Cargador vacío!");
             GD.Print("[DEBUG] Pulsa ATACK para recargar.");
@@ -295,12 +311,12 @@ public partial class Character : CharacterBody3D
     // RECARGAR
     // ==========================================================
 
-    private void Recargar()
+    private void Reload()
     {
         // ==========================
         // Si ya está lleno
         // ==========================
-        if (balas >= MaxBalas)
+        if (currentAmmo >= maxAmmo)
         {
             GD.Print("[DEBUG] El cargador ya está lleno.");
 
@@ -310,11 +326,11 @@ public partial class Character : CharacterBody3D
         // ==========================
         // Recargar
         // ==========================
-        balas = MaxBalas;
+        currentAmmo = maxAmmo;
 
         GD.Print("================================");
         GD.Print("[DEBUG] ¡ARMA RECARGADA!");
-        GD.Print($"[DEBUG] Balas: {balas}/{MaxBalas}");
+        GD.Print($"[DEBUG] Balas: {currentAmmo}/{maxAmmo}");
         GD.Print("================================");
     }
 }

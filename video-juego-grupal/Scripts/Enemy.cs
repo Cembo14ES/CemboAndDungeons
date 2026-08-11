@@ -3,7 +3,14 @@ using System;
 
 public partial class Enemy : CharacterBody3D
 {
-    private const float Speed = 3.5f;
+    [Export] private float Speed = 3.5f;
+    [Export] public Node3D player;
+    private bool isPlayerAlive = true;
+
+    public override void _Ready()
+    {
+        player = GetTree().GetFirstNodeInGroup("player") as Node3D;
+    }
 
     public override void _PhysicsProcess(double delta)
     {
@@ -11,9 +18,7 @@ public partial class Enemy : CharacterBody3D
         // BUSCAR AL JUGADOR
         // ==========================================================
 
-        Node3D player = GetTree().GetFirstNodeInGroup("player") as Node3D;
-
-        if (player != null)
+        if (isPlayerAlive)
         {
             // Calculamos la dirección hacia el jugador
             Vector3 direction = player.GlobalPosition - GlobalPosition;
@@ -54,15 +59,14 @@ public partial class Enemy : CharacterBody3D
         {
             KinematicCollision3D colision = GetSlideCollision(i);
 
-            Node objetoChocado = colision.GetCollider() as Node;
+            Node collidedObject = colision.GetCollider() as Node;
 
-            if (objetoChocado != null &&
-                objetoChocado.IsInGroup("balas"))
+            if (collidedObject != null && collidedObject.IsInGroup("balas"))
             {
                 GD.Print("[DEBUG] ¡Bala detectada! Muriendo...");
 
                 // Eliminar la bala
-                objetoChocado.QueueFree();
+                collidedObject.QueueFree();
 
                 // Eliminar el enemigo
                 QueueFree();
@@ -70,5 +74,11 @@ public partial class Enemy : CharacterBody3D
                 return;
             }
         }
+    }
+
+    //este metodo es llamado por el jugador cuando muere por este enemigo.
+    public void PlayerDied()
+    {
+        isPlayerAlive = false;
     }
 }

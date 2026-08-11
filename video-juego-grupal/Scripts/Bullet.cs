@@ -3,25 +3,17 @@ using System;
 
 public partial class Bullet : CharacterBody3D
 {
-    private const float Velocidad = 6.0f;
-    private const float TiempoVida = 3.0f;
+    private const float Speed = 6.0f;
+    private const float AliveTime = 3.0f;
 
-    private Area3D area3D;
+    [Export] private Area3D area3D;
 
     public override void _Ready()
     {
         // ==========================
-        // Buscar el Area3D
-        // ==========================
-        area3D = GetNode<Area3D>("Area3D");
-
-        // Conectar la señal para detectar cuerpos
-        area3D.BodyEntered += AlEntrarEnArea;
-
-        // ==========================
         // Destruir bala después de 3 segundos
         // ==========================
-        SceneTreeTimer timer = GetTree().CreateTimer(TiempoVida);
+        SceneTreeTimer timer = GetTree().CreateTimer(AliveTime);
         timer.Timeout += () =>
         {
             if (IsInstanceValid(this))
@@ -37,32 +29,32 @@ public partial class Bullet : CharacterBody3D
         // Mover la bala hacia delante
         // Eje X local
         // ==========================
-        Velocity = GlobalTransform.Basis.X * Velocidad;
+        Velocity = GlobalTransform.Basis.X * Speed;
 
         MoveAndSlide();
 
         // ==========================
         // Detectar colisiones físicas
         // ==========================
-        int colisiones = GetSlideCollisionCount();
+        int colisions = GetSlideCollisionCount();
 
-        for (int i = 0; i < colisiones; i++)
+        for (int i = 0; i < colisions; i++)
         {
             KinematicCollision3D col = GetSlideCollision(i);
 
-            Node objetoChocado = col.GetCollider() as Node;
+            Node colidedObject = col.GetCollider() as Node;
 
-            if (objetoChocado == null)
+            if (colidedObject == null)
                 continue;
 
             // ==========================
             // Si toca un enemigo
             // ==========================
-            if (objetoChocado.Name.ToString().ToLower().Contains("enemy"))
+            if (colidedObject.Name.ToString().ToLower().Contains("enemy"))
             {
                 GD.Print("[BULLET] ¡Enemigo alcanzado!");
 
-                objetoChocado.QueueFree();
+                colidedObject.QueueFree();
                 QueueFree();
 
                 return;
@@ -80,7 +72,7 @@ public partial class Bullet : CharacterBody3D
     // CUANDO ALGO ENTRA EN EL AREA3D
     // ==========================================================
 
-    private void AlEntrarEnArea(Node3D body)
+    private void AreaEntered(Node3D body)
     {
         if (body == null)
             return;

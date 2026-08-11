@@ -5,15 +5,13 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
 
-[node name="Enemy" type="Node3D" unique_id=252092932]
-
-[node name="Enemy" type="CharacterBody3D" parent="." unique_id=85868313]
+[node name="Enemy" type="CharacterBody3D" unique_id=85868313]
 script = ExtResource("1_lgw76")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy" unique_id=54859921]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=54859921]
 transform = Transform3D(2.2, 0, 0, 0, 0.2, 0, 0, 0, 1.8, 0, 0, 0.2)
 shape = SubResource("BoxShape3D_8erxc")
 
-[node name="Sprite3D" type="Sprite3D" parent="Enemy" unique_id=2084545178]
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=2084545178]
 transform = Transform3D(-3, -2.6226832e-07, 1.1464113e-14, 0, -1.3113416e-07, -3, 2.6226832e-07, -3, 1.3113416e-07, 0, 0, 0)
 texture = ExtResource("2_t4g6b")
