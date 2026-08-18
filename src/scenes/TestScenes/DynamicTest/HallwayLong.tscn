@@ -1,0 +1,79 @@
+[gd_scene format=4 uid="uid://s5wwm5ykyjkd"]
+
+[ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://src/scenes/TestScenes/DynamicTest/DynamicRoom.cs" id="1_nr3pc"]
+[ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.tscn" id="2_y0qx8"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_nr3pc"]
+points = PackedVector3Array(-2.5, 0, -14.98712, 2.5, 0, -14.98712, -2.5, 0, 14.98712, -2.5, 10, -14.98712, 2.5, 10, -14.98712, 2.5, 0, 14.98712, -2.5, 10, 14.98712, 2.5, 10, 14.98712)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e70li"]
+resource_name = "Material"
+cull_mode = 2
+albedo_color = Color(0.9063318, 0.9063318, 0.9063318, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_xb73r"]
+_surfaces = [{
+"aabb": AABB(-2.5, 0, -14.98712, 5, 10, 29.97424),
+"format": 34896613377,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEAAgAEAAAAAgAFAAQABQAGAAQABQAHAAYA"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAP//AAAAAP//AAAAAAAAAAAAAAAAAAD/////AAD//wAA//8AAP//AAAAAAAA////////AAD/////AAAAAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_nr3pc"]
+resource_name = "HallwayLong_Cube"
+_surfaces = [{
+"aabb": AABB(-2.5, 0, -14.98712, 5, 10, 29.97424),
+"attribute_data": PackedByteArray("/1////+f/7//X/+//5////8f/3//X/8//x//P/9f/3//X/9//5//P/9f/z//n/9/"),
+"format": 34896613399,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkA"),
+"material": SubResource("StandardMaterial3D_e70li"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("AAAAAP//qioAAP//AACqKgAAAAAAAKoqAAD/////qioAAAAAAAD/P///AAD///8/AAAAAP///z///wAAAAD/P///AAAAAKoq////////qir//wAA//+qKv////8AAKoqqiqqKqoqqiqqKqoqqiqqKv///3////9/////f////39U1VTVVNVU1VTVVNVU1VTV")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_xb73r")
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_y0qx8"]
+data = PackedVector3Array(-2.5, 0, 14.9871, -2.5, 10, -14.9871, -2.5, 0, -14.9871, -2.5, 0, 14.9871, -2.5, 10, 14.9871, -2.5, 10, -14.9871, -2.5, 0, -14.9871, 2.5, 0, 14.9871, -2.5, 0, 14.9871, -2.5, 0, -14.9871, 2.5, 0, -14.9871, 2.5, 0, 14.9871, 2.5, 0, -14.9871, 2.5, 10, 14.9871, 2.5, 0, 14.9871, 2.5, 0, -14.9871, 2.5, 10, -14.9871, 2.5, 10, 14.9871)
+
+[node name="HallwayLong" type="Node3D" unique_id=1122323250 node_paths=PackedStringArray("HitboxNodes", "roomArea")]
+script = ExtResource("1_nr3pc")
+HitboxNodes = [NodePath("Meshes/RoomMesh")]
+roomArea = NodePath("PlayerArea")
+
+[node name="PlayerArea" type="Area3D" parent="." unique_id=1914605921]
+process_mode = 3
+
+[node name="RoomArea" type="CollisionShape3D" parent="PlayerArea" unique_id=1940439649]
+process_mode = 3
+shape = SubResource("ConvexPolygonShape3D_nr3pc")
+
+[node name="Meshes" type="StaticBody3D" parent="." unique_id=1858329771]
+
+[node name="RoomMesh" type="MeshInstance3D" parent="Meshes" unique_id=2076347327]
+mesh = SubResource("ArrayMesh_nr3pc")
+
+[node name="RoomCollision" type="CollisionShape3D" parent="Meshes" unique_id=183863774]
+shape = SubResource("ConcavePolygonShape3D_y0qx8")
+
+[node name="Doors" type="Node3D" parent="Meshes" unique_id=2142049909]
+
+[node name="DoorN" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("2_y0qx8")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 15)
+
+[node name="DoorS" parent="Meshes/Doors" unique_id=286058238 instance=ExtResource("2_y0qx8")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, -15)
+Direction = 1
+
+[connection signal="body_entered" from="PlayerArea" to="." method="On_PlayerEnter"]

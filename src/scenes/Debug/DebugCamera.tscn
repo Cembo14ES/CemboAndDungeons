@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dvldp56d05sde"]
+
+[ext_resource type="Script" uid="uid://dd5rdglc7ghg3" path="res://src/scripts/Debug/DebugCamera.cs" id="1_ldj2q"]
+
+[node name="DebugCamera" type="Camera3D" unique_id=1527534313]
+script = ExtResource("1_ldj2q")

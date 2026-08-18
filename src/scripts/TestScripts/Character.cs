@@ -4,14 +4,25 @@ using System;
 public partial class Character : CharacterBody3D
 {
     [Signal] public delegate void UpdateCounterEventHandler();
-    private const float Speed = 7.0f;
+    
     [Export] private PackedScene bulletScene;
 
+    [Export] public float Speed = 20.0f;
 
+    private bool controlsEnabled = true;
+
+    public override void _Ready()
+    {
+        DebugMaster.Instance.SignalDebug_debugCameraToogle += ToogleControls;
+    }
     public override void _PhysicsProcess(double delta)
     {
+        Vector2 inputDir = new Vector2();
         // 1. Movimiento (AWSD)
-        Vector2 inputDir = Input.GetVector("Left", "Right", "Up", "Down");
+        if (controlsEnabled){
+            inputDir = Input.GetVector("Left", "Right", "Up", "Down");
+        }
+        
         Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
         
         Vector3 velocity = Velocity;
@@ -55,7 +66,7 @@ public partial class Character : CharacterBody3D
         }
 
         // 3. Ataque
-        if (Input.IsActionJustPressed("atack"))
+        if (Input.IsActionJustPressed("atack") && controlsEnabled)
         {
             Atacar();
         }
@@ -76,13 +87,11 @@ public partial class Character : CharacterBody3D
         EmitSignal(SignalName.UpdateCounter);
     }
 
-    private void _OnBodyEntered(Node3D body)
+    public void ToogleControls()
     {
-        GD.Print("Body entered");
-        if (body.IsInGroup("item"))
-        {
-            GD.Print("item entered");
-            body.QueueFree();
-        }
+        if (DebugMaster.Instance.debugCameraEnabled)
+            controlsEnabled = false;
+        else
+            controlsEnabled = true;
     }
 }

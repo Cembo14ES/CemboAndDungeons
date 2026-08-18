@@ -1,23 +1,22 @@
 using Godot;
 using System;
 
-public partial class Room : StaticBody3D
+public partial class Room : Node3D
 {
+	// SIGNALS
 	[Signal] public delegate void ExitEnteredEventHandler();
 	[Signal] public delegate void PlayerEnteredEventHandler(int x, int y);
-	//If one of the booleans get sets to True, the Bridge/Wall will be deleted.
-	[Export] public bool removeBridgeNorth = false;
-	[Export] public bool removeBridgeEast = false;
-	[Export] public bool removeBridgeSouth = false;
-	[Export] public bool removeBridgeWest = false;
-	[Export] public bool removeAllBridges = false;
 
-	[Export] public bool removeWallNorth = false;
-	[Export] public bool removeWallEast = false;
-	[Export] public bool removeWallSouth = false;
-	[Export] public bool removeWallWest = false;
-	[Export] public bool removeAllWalls = false;
+	//OPENINGS MANAGEMENT BOOLEANS
+	[ExportGroup("Opening Booleans")]
+	[Export] public bool makePathNorth = false;
+	[Export] public bool makePathEast = false;
+	[Export] public bool makePathSouth = false;
+	[Export] public bool makePathWest = false;
+	[Export] public bool allPaths = false;
 
+	//OPENINGS NODES
+	[ExportGroup("Opening Nodes")]
 	[Export] public Node BridgeNorth;
 	[Export] public Node BridgeEast;
 	[Export] public Node BridgeSouth;
@@ -28,22 +27,26 @@ public partial class Room : StaticBody3D
 	[Export] public Node WallSouth;
 	[Export] public Node WallWest;
 
+	//TILE TYPE VISUALS
+	[ExportGroup("Tile Type Nodes")]
 	[Export] public Sprite3D StartSprite;
-	[Export] public Sprite3D EndSprite;
+	[Export] private PackedScene end;
 	[Export] public Sprite3D MainSprite;
 
-	[Export] public Node3D SpawnPoint1;
-	[Export] public Node3D SpawnPoint2;
-	[Export] public Node3D SpawnPoint3;
-	[Export] public Node3D SpawnPoint4;
+	//ITEM SHENANIGANS
+	[ExportGroup("Items")]
+	[Export] private PackedScene item;
+	[Export] public Godot.Collections.Array<Node3D> ItemSpawnPoints = new Godot.Collections.Array<Node3D>(); //The coordinates of the End Tiles.
+
+	[Export] public Node3D northBridgeTip;
+	[Export] public Node3D westBridgeTip;
+	[Export] public Node3D southBridgeTip;
+	[Export] public Node3D eastBridgeTip;
+	//LOCAL VARIABLES
 
 	private Random random;
-
-	public int roomX;
-	public int roomY;
-
-	[Export] private PackedScene item;
-	[Export] private PackedScene end;
+	public Vector2I roomGridPos;
+	public Godot.Collections.Array<Vector2I> roomGridNeighbours;
 
 	public void SpawnElements()
 	{
@@ -52,31 +55,62 @@ public partial class Room : StaticBody3D
 		//RandomizeSpawnPoint(SpawnPoint3);
 		//RandomizeSpawnPoint(SpawnPoint4);
 
-		if (random.Next(0, 100) >= 50)
+		foreach (Node3D spawnPoint in ItemSpawnPoints)
 		{
-			Node3D itemInstance = (Node3D)item.Instantiate();
-			itemInstance.Position = SpawnPoint1.Position;
-			AddChild(itemInstance);
+			if (random.Next(0, 100) >= 50)
+			{
+				Node3D itemInstance = (Node3D)item.Instantiate();
+				itemInstance.Position = spawnPoint.Position;
+				AddChild(itemInstance);
+			}
 		}
-		if (random.Next(0, 100) >= 50)
+	}
+
+	public void setRoom()
+	{
+		if (allPaths)
 		{
-			Node3D itemInstance = (Node3D)item.Instantiate();
-			itemInstance.Position = SpawnPoint2.Position;
-			AddChild(itemInstance);
-		}
-		if (random.Next(0, 100) >= 50)
-		{
-			Node3D itemInstance = (Node3D)item.Instantiate();
-			itemInstance.Position = SpawnPoint3.Position;
-			AddChild(itemInstance);
-		}
-		if (random.Next(0, 100) >= 50)
-		{
-			Node3D itemInstance = (Node3D)item.Instantiate();
-			itemInstance.Position = SpawnPoint4.Position;
-			AddChild(itemInstance);
+			WallNorth.QueueFree();
+			WallEast.QueueFree();
+			WallSouth.QueueFree();
+			WallWest.QueueFree();
 		}
 
+		if (makePathNorth)
+		{
+			WallNorth.QueueFree();
+		}
+		else
+		{
+			BridgeNorth.QueueFree();
+		}
+
+		if (makePathEast)
+		{
+			WallEast.QueueFree();
+		}
+		else
+		{
+			BridgeEast.QueueFree();
+		}
+
+		if (makePathSouth)
+		{
+			WallSouth.QueueFree();
+		}
+		else
+		{
+			BridgeSouth.QueueFree();
+		}
+
+		if (makePathWest)
+		{
+			WallWest.QueueFree();
+		}
+		else
+		{
+			BridgeWest.QueueFree();
+		}
 	}
 
 	private void RandomizeSpawnPoint(Node3D SpawnPoint)
@@ -125,7 +159,7 @@ public partial class Room : StaticBody3D
 	public void SetDisabled()
 	{
 		Visible = false;
-		SetDeferred(Node.PropertyName.ProcessMode, (int) ProcessModeEnum.Disabled);
+		SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Disabled);
 	}
 
 	public void On_End()
@@ -137,64 +171,13 @@ public partial class Room : StaticBody3D
 	{
 		if (body.Name == "Character")
 		{
-			EmitSignal(SignalName.PlayerEntered, roomX, roomY);
+			EmitSignal(SignalName.PlayerEntered, roomGridPos.X, roomGridPos.Y);
 		}
-		
 	}
 
 
 	/// <summary>
 	/// Checks the boolean variables of the Class, and deletes all the Brides and Walls acordingly.
 	/// </summary>
-	public void setRoom()
-	{
-		if (removeAllBridges)
-		{
-			BridgeNorth.QueueFree();
-			BridgeEast.QueueFree();
-			BridgeSouth.QueueFree();
-			BridgeWest.QueueFree();
-		}
 
-		if (removeAllWalls)
-		{
-			WallNorth.QueueFree();
-			WallEast.QueueFree();
-			WallSouth.QueueFree();
-			WallWest.QueueFree();
-		}
-
-		if (removeBridgeNorth)
-		{
-			BridgeNorth.QueueFree();
-		}
-		if (removeBridgeEast)
-		{
-			BridgeEast.QueueFree();
-		}
-		if (removeBridgeSouth)
-		{
-			BridgeSouth.QueueFree();
-		}
-		if (removeBridgeWest)
-		{
-			BridgeWest.QueueFree();
-		}
-		if (removeWallNorth)
-		{
-			WallNorth.QueueFree();
-		}
-		if (removeWallEast)
-		{
-			WallEast.QueueFree();
-		}
-		if (removeWallSouth)
-		{
-			WallSouth.QueueFree();
-		}
-		if (removeWallWest)
-		{
-			WallWest.QueueFree();
-		}
-	}
 }

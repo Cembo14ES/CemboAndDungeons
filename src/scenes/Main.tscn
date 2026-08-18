@@ -1,18 +1,9 @@
 [gd_scene format=3 uid="uid://bxrthnxuundfb"]
 
-[ext_resource type="Script" uid="uid://dalg4k5wlb3ft" path="res://src/scripts/MainNode/GlobalManager.cs" id="1_x4os5"]
-[ext_resource type="PackedScene" uid="uid://dimfn47e65r3o" path="res://src/scenes/MainMenu.tscn" id="2_8oy5r"]
-[ext_resource type="PackedScene" uid="uid://bghvj6lka60bp" path="res://src/scenes/UI/TransitionLayer.tscn" id="2_akft7"]
-[ext_resource type="PackedScene" uid="uid://dohtqgur2utev" path="res://src/scenes/UI/DebugLayer.tscn" id="3_1hqvy"]
-[ext_resource type="PackedScene" uid="uid://mgp02mkor0at" path="res://src/scenes/TestScenes/Scene_GenerationTest.tscn" id="3_akft7"]
-
 [node name="Main" type="Node" unique_id=561419243]
-script = ExtResource("1_x4os5")
-mainMenu = ExtResource("2_8oy5r")
-geneartionTest = ExtResource("3_akft7")
+
+[node name="Systems" type="Node" parent="." unique_id=120965175]
+
+[node name="Debug" type="Node" parent="Systems" unique_id=125678667]
 
 [node name="World" type="Node3D" parent="." unique_id=264984720]
-
-[node name="TransitionLayer" parent="." unique_id=316302176 instance=ExtResource("2_akft7")]
-
-[node name="DebugLayer" parent="." unique_id=1828160595 instance=ExtResource("3_1hqvy")]

@@ -1,0 +1,76 @@
+[gd_scene format=3 uid="uid://rr3salxmv75o"]
+
+[ext_resource type="Script" uid="uid://53p8y45g4okb" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.cs" id="1_5sia3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t2nj1"]
+resource_name = "Material"
+cull_mode = 2
+albedo_color = Color(0.9063318, 0.9063318, 0.9063318, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_5vcer"]
+_surfaces = [{
+"aabb": AABB(0, 0, -2.5, 1e-05, 10, 5),
+"format": 34896613377,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_vsp75"]
+resource_name = "RoomDoor_Cube"
+_surfaces = [{
+"aabb": AABB(0, 0, -2.5, 1e-05, 10, 5),
+"attribute_data": PackedByteArray(255, 95, 152, 217, 255, 159, 204, 204, 255, 159, 152, 217, 255, 95, 204, 204),
+"format": 34896613399,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"material": SubResource("StandardMaterial3D_t2nj1"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 255, 255, 84, 213, 0, 0, 255, 255, 0, 0, 84, 213, 0, 0, 255, 255, 255, 255, 84, 213, 0, 0, 0, 0, 0, 0, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213)
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_5vcer")
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_iaqk5"]
+data = PackedVector3Array(0, 0, 2.5, 0, 10, -2.5, 0, 10, 2.5, 0, 0, 2.5, 0, 0, -2.5, 0, 10, -2.5)
+backface_collision = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r6a4o"]
+size = Vector3(3.3047485, 5.9259033, 10.174927)
+
+[node name="Door" type="StaticBody3D" unique_id=140992456 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint")]
+script = ExtResource("1_5sia3")
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="DoorMesh" type="MeshInstance3D" parent="." unique_id=1320624138]
+mesh = SubResource("ArrayMesh_vsp75")
+
+[node name="DoorCollision" type="CollisionShape3D" parent="." unique_id=1358157929]
+shape = SubResource("ConcavePolygonShape3D_iaqk5")
+
+[node name="Teleport" type="Area3D" parent="." unique_id=531056864]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8703737, 0, 0)
+
+[node name="TeleportColl" type="CollisionShape3D" parent="Teleport" unique_id=626436564]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.051849365, 2.4629517, -0.11224365)
+shape = SubResource("BoxShape3D_r6a4o")
+
+[node name="TeleportPoint" type="Node3D" parent="Teleport" unique_id=967134820]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.977707, 0, 0)
+
+[connection signal="body_entered" from="Teleport" to="." method="On_teleportEntered"]

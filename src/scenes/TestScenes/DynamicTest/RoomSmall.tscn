@@ -1,0 +1,102 @@
+[gd_scene format=4 uid="uid://dfu2a7m80kgmc"]
+
+[ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.tscn" id="1_5vovb"]
+[ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://src/scenes/TestScenes/DynamicTest/DynamicRoom.cs" id="1_nadui"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ou8lm"]
+data = PackedVector3Array(-12.5, 0, -12.5, 12.5, 0, 12.5, -12.5, 0, 12.5, -12.5, 0, -12.5, 12.5, 0, -12.5, 12.5, 0, 12.5, -7.5, 0, 12.5, -12.5, 10, 12.5, -12.5, 0, 12.5, -7.5, 0, 12.5, -7.5, 10, 12.5, -12.5, 10, 12.5, -12.5, 0, -7.5, -12.5, 10, -12.5, -12.5, 0, -12.5, -12.5, 0, -7.5, -12.5, 10, -7.5, -12.5, 10, -12.5, 12.5, 0, 7.5, 12.5, 10, 12.5, 12.5, 0, 12.5, 12.5, 0, 7.5, 12.5, 10, 7.5, 12.5, 10, 12.5, 7.5, 0, -12.5, 12.5, 10, -12.5, 12.5, 0, -12.5, 7.5, 0, -12.5, 7.5, 10, -12.5, 12.5, 10, -12.5, 12.5, 0, 12.5, 7.5, 10, 12.5, 7.5, 0, 12.5, 12.5, 0, 12.5, 12.5, 10, 12.5, 7.5, 10, 12.5, 2.5, 0, 12.5, -2.5, 10, 12.5, -2.5, 0, 12.5, 2.5, 0, 12.5, 2.5, 10, 12.5, -2.5, 10, 12.5, 12.5, 0, -12.5, 12.5, 10, -7.5, 12.5, 0, -7.5, 12.5, 0, -12.5, 12.5, 10, -12.5, 12.5, 10, -7.5, 12.5, 0, -2.5, 12.5, 10, 2.5, 12.5, 0, 2.5, 12.5, 0, -2.5, 12.5, 10, -2.5, 12.5, 10, 2.5, -12.5, 0, -12.5, -7.5, 10, -12.5, -7.5, 0, -12.5, -12.5, 0, -12.5, -12.5, 10, -12.5, -7.5, 10, -12.5, -2.5, 0, -12.5, 2.5, 10, -12.5, 2.5, 0, -12.5, -2.5, 0, -12.5, -2.5, 10, -12.5, 2.5, 10, -12.5, -12.5, 0, 12.5, -12.5, 10, 7.5, -12.5, 0, 7.5, -12.5, 0, 12.5, -12.5, 10, 12.5, -12.5, 10, 7.5, -12.5, 0, 2.5, -12.5, 10, -2.5, -12.5, 0, -2.5, -12.5, 0, 2.5, -12.5, 10, 2.5, -12.5, 10, -2.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ybge8"]
+resource_name = "Material"
+cull_mode = 2
+albedo_color = Color(0.9063318, 0.9063318, 0.9063318, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_5067u"]
+_surfaces = [{
+"aabb": AABB(-12.5, 0, -12.5, 25, 10, 25),
+"format": 34896613377,
+"index_count": 78,
+"index_data": PackedByteArray("AAABAAIAAgADAAQAAgAFAAMABgAFAAIABgAHAAUAAQAIAAkAAQAKAAgACwAKAAEACwAMAAoAAAANAAEADQAOAA8ADQAQAA4AEQAQAA0AEQASABAAAAATABQAAAAVABMAFgAVAAAAFgAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUA"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 40,
+"vertex_data": PackedByteArray("AAAAAAAAAAD//wAA//8AAAAAAAD//wAAAAD//8zMAAAAAAAAzMwAAAAA/////wAAMzMAAP//AAAzM/////8AAMzM/////wAAzMwAAP//AAD///////8AAP//AADMzAAA/////8zMAAD//wAAAAAAAP////8zMwAA//8AADMzAAD/////AAAAAMzMAAAAAAAAzMz//wAAAAAzM///AAAAADMzAAAAAAAAAAD//wAAAAAAAAAAMzMAAAAA//8zMwAAmZkAAP//AABmZv////8AAGZmAAD//wAAmZn/////AAD//wAAZmYAAP////+ZmQAA//8AAJmZAAD/////ZmYAAGZmAAAAAAAAmZn//wAAAACZmQAAAAAAAGZm//8AAAAAAAAAAJmZAAAAAP//ZmYAAAAAAABmZgAAAAD//5mZAAA=")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_nuujk"]
+resource_name = "RoomSmall_Cube"
+_surfaces = [{
+"aabb": AABB(-12.5, 0, -12.5, 25, 10, 25),
+"attribute_data": PackedByteArray("/x//f/9f/z//H/8//1//f/9fzAz/nwAA/18AAP+fzAz/X8zM/5//v/9f/7//n8zM/1/MTP+f/z//X/8//5/MTP9fzIz/n/9//1//f/+fzIz/X/8//58yM/9fMzP/n/8//19mJv+fmRn/X5kZ/59mJv9f/3//nzJz/18yc/+f/3//X2Vm/5+ZWf9fmVn/n2Vm/1//v/+fMrP/XzKz/5//v/9fZab/n5mZ/1+Zmf+fZab/X////58y8/9fMvP/n////19l5v+fmNn/X5jZ/59l5g=="),
+"format": 34896613399,
+"index_count": 78,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUAKAApACoAKAArACkALAAtAC4ALAAvAC0AMAAxADIAMAAzADEA"),
+"material": SubResource("StandardMaterial3D_ybge8"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 52,
+"vertex_data": PackedByteArray("AAAAAAAA/z///wAA////PwAAAAD///8///8AAAAA/z8zMwAA//8AAAAA/////wAAAAAAAP//AAAzM/////8AAAAAAAAzM6oqAAD//wAAqioAAAAAAACqKgAA//8zM6oq//8AAMzMqir///////+qKv//AAD//6oq/////8zMqirMzAAAAAD/P/////8AAP8///8AAAAA/z/MzP//AAD/P///AAD//wAAzMz/////AADMzAAA//8AAP///////wAAmZkAAP//AABmZv////8AAGZmAAD//wAAmZn/////AAD//wAAAACqKv////8zM6oq//8AADMzqir/////AACqKv//AABmZqoq/////5mZqir//wAAmZmqKv////9mZqoqAAAAAAAA/z8zM///AAD/PzMzAAAAAP8/AAD//wAA/z9mZgAAAAD/P5mZ//8AAP8/mZkAAAAA/z9mZv//AAD/PwAAAAD//6oqAAD//8zMqioAAAAAzMyqKgAA/////6oqAAAAAJmZqioAAP//ZmaqKgAAAABmZqoqAAD//5mZqir///9/////f////3////9//7//v/+//7//v/+//7//v6oqqiqqKqoqqiqqKqoqqipU1VTVVNVU1VTVVNVU1VTV//////////////////////+//7//v/+//7//v/+//7//v/+//7//v/+//7//v/+/VNVU1VTVVNVU1VTVVNVU1VTVVNVU1VTVVNVU1VTVVNX//////////////////////////////////////////6oqqiqqKqoqqiqqKqoqqiqqKqoqqiqqKqoqqiqqKqoq")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_5067u")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ou8lm"]
+points = PackedVector3Array(-12.5, 0, -12.5, -12.5, 0, 12.5, -12.5, 10, -12.5, 12.5, 0, -12.5, -12.5, 10, 12.5, 12.5, 0, 12.5, 12.5, 10, -12.5, 12.5, 10, 12.5)
+
+[node name="RoomSmall" type="Node3D" unique_id=1667765445 node_paths=PackedStringArray("HitboxNodes", "roomArea")]
+script = ExtResource("1_nadui")
+HitboxNodes = [NodePath("Meshes/RoomMesh")]
+roomArea = NodePath("PlayerArea")
+
+[node name="Meshes" type="StaticBody3D" parent="." unique_id=991842710]
+
+[node name="RoomCollision" type="CollisionShape3D" parent="Meshes" unique_id=971416184]
+shape = SubResource("ConcavePolygonShape3D_ou8lm")
+
+[node name="RoomMesh" type="MeshInstance3D" parent="Meshes" unique_id=1977835825]
+mesh = SubResource("ArrayMesh_nuujk")
+
+[node name="Doors" type="Node3D" parent="Meshes" unique_id=274116437]
+
+[node name="DoorE1" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("1_5vovb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, 5)
+Direction = 2
+
+[node name="DoorE2" parent="Meshes/Doors" unique_id=242832454 instance=ExtResource("1_5vovb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, -5)
+Direction = 2
+
+[node name="DoorW1" parent="Meshes/Doors" unique_id=2125637151 instance=ExtResource("1_5vovb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 5)
+Direction = 3
+
+[node name="DoorW2" parent="Meshes/Doors" unique_id=1026199088 instance=ExtResource("1_5vovb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, -5)
+Direction = 3
+
+[node name="DoorN1" parent="Meshes/Doors" unique_id=62295445 instance=ExtResource("1_5vovb")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, 12.5)
+
+[node name="DoorN2" parent="Meshes/Doors" unique_id=1548246688 instance=ExtResource("1_5vovb")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, 12.5)
+
+[node name="DoorS1" parent="Meshes/Doors" unique_id=1996726749 instance=ExtResource("1_5vovb")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, -12.5)
+Direction = 1
+
+[node name="DoorS2" parent="Meshes/Doors" unique_id=2031572912 instance=ExtResource("1_5vovb")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, -12.5)
+Direction = 1
+
+[node name="PlayerArea" type="Area3D" parent="." unique_id=1144867846]
+process_mode = 3
+
+[node name="RoomArea" type="CollisionShape3D" parent="PlayerArea" unique_id=213370158]
+process_mode = 3
+shape = SubResource("ConvexPolygonShape3D_ou8lm")
+
+[connection signal="body_entered" from="PlayerArea" to="." method="On_PlayerEnter"]

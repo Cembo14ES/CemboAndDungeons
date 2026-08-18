@@ -5,9 +5,6 @@ using System.Text;
 
 public partial class Generation : Node
 {
-    // --- SIGNALS ---
-    [Signal] public delegate void UnloadLevelEventHandler();
-
     // --- GRID SIZE ---
     [ExportGroup("Grid Size")]
     [Export] public int Width; //The Width of the dungeon grid.
@@ -55,18 +52,15 @@ public partial class Generation : Node
     [ExportGroup("Room Tiles")]
     [Export] public PackedScene room; //This Scene contains the Room wich will be used to generate the Dungeon
 
-    // --- OTHER ---
-    [ExportGroup("Other")]
-    [Export] public Node3D character;
-    [Export] public RoomManager roomManager;
-
     // --- PRIVATE VARIABLES ---
-    private int[,] grid; //The Main Grid: It contains the info of the type of Tiles. It starts filled with EMPTY Tiles.
-    private Random random; //The Random Variable.
+    public int[,] grid; //The Main Grid: It contains the info of the type of Tiles. It starts filled with EMPTY Tiles.
+    public Random random; //The Random Variable.
     private bool firtsGeneration = true;
     private bool setStart;
     private bool[] setEnds;
     private bool areMinMaxMainValuesValid = true;
+    [Export] public MapSpawner mapSpawner;
+
 
     // --- TILE TYPE CONSTANTS ---
     const int ILLEGAL = -1; //Illegal Tiles cannot be replaced by any other type of tile.
@@ -75,21 +69,6 @@ public partial class Generation : Node
     const int STARTTILE = 2; //The Tile where the Dungeon Main Path starts generating.
     const int ENDTILE = 3; //The Tile where the Dungeon Main Path ends generating.
     const int MAINPATH = 4; //This is a regular Tile that forms the Main Path of the Dungeon. 
-
-    public override void _Ready()
-    {
-        GenerateDungeon();
-    }
-
-    public override void _Input(InputEvent @event)
-    {
-        if (@event.IsActionPressed("ReloadMap"))
-        {
-            deleteMap();
-            GenerateDungeon();
-        }
-    }
-
 
     /// <summary>
     /// The _Ready function goes thru the steps of generating the Dungeon:
@@ -129,7 +108,7 @@ public partial class Generation : Node
         PrintDungeon();
 
         GD.PrintRich("\n[color=green]GENERATING DUNGEON IN 3D SPACE\n");
-        STEP6_SpawnMap();
+        mapSpawner.STEP6_SpawnMap(grid);
 
         GD.PrintRich("\n[color=green]FINISHED\n");
     }
@@ -440,107 +419,6 @@ public partial class Generation : Node
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// This function is responsable of Spawning Rooms in 3D Space that the Character can traverse.
-    /// It goes thru the grid checking if the Tile is a Room, and spawns a Room mesh at the apropiate coordinates.
-    /// Then, it checks the surrouding Tiles and places Bridges and Doors acordingly.
-    /// </summary>
-    private void STEP6_SpawnMap()
-    {
-        float roomSeparation = (float)15.5; //The space between 2 Rooms.
-        bool[,] generated = new bool[Width, Height]; //Keeps track of already generated Tiles.
-
-        int startX = -1;
-        int startY = -1;
-
-        //It goes thru the whole grid.
-        for (int y = 0; y < Height; y++)
-        {
-            for (int x = 0; x < Width; x++)
-            {
-
-                if (CheckTileIsRoom(x, y)) //If the Tile is a Room, it will go thru the whole Room Spawning ordeal.
-                {
-                    Node3D instance = (Node3D)room.Instantiate(); //Instantiates the Room.
-                    instance.Name = "Room " + x.ToString() + "," + y.ToString();
-
-                    instance.Position = new Vector3(roomSeparation * x, 2, roomSeparation * y); //Moves the Room to the apropiate location. 
-
-                    Room roomScript = (Room) instance; //Gets the script for the Room Bridge and Wall management.
-
-                    // If it finds the scrip, it will check each neighboring Tile and check if it is another Room
-                    // and if it has been Generated already, and remove Bridges/Walls acordingly.
-                    if (roomScript != null)
-                    {
-                        roomScript.roomX = x;
-                        roomScript.roomY = y;
-
-                        // North (-Z in 3D space)
-                        bool northIsRoom = CheckTileIsRoom(x, y - 1);
-                        roomScript.removeWallNorth = northIsRoom;
-                        roomScript.removeBridgeNorth = !northIsRoom || generated[x, y - 1];
-
-                        // South (+Z in 3D space)
-                        bool southIsRoom = CheckTileIsRoom(x, y + 1);
-                        roomScript.removeWallSouth = southIsRoom;
-                        roomScript.removeBridgeSouth = !southIsRoom || generated[x, y + 1];
-
-                        // East (+X in 3D space)
-                        bool eastIsRoom = CheckTileIsRoom(x + 1, y);
-                        roomScript.removeWallEast = eastIsRoom;
-                        roomScript.removeBridgeEast = !eastIsRoom || generated[x + 1, y];
-
-                        // West (-X in 3D space)
-                        bool westIsRoom = CheckTileIsRoom(x - 1, y);
-                        roomScript.removeWallWest = westIsRoom;
-                        roomScript.removeBridgeWest = !westIsRoom || generated[x - 1, y];
-
-                        if (grid[x, y] == STARTTILE)
-                        {
-                            roomScript.SetStartTile();
-                            character.Position = new Vector3(roomSeparation * x, (float)4, roomSeparation * y);
-                            startX = x;
-                            startY = y;
-                        }
-
-                        if (grid[x, y] == ENDTILE)
-                        {
-                            roomScript.SetEndTile();
-                            roomScript.ExitEntered += ExitLevel;
-                        }
-
-                        if (grid[x, y] == MAINPATH)
-                        {
-                            roomScript.SetMainTile();
-                        }
-
-                        roomScript.setRoom(); //Runs the Object removal function.
-                    }
-                    else
-                    {
-                        GD.PrintErr($"ERROR: ROOM SCRIPT NOT FOUND FOR X={x}, Y={y}");
-                    }
-
-                    roomScript.SetRandom(random); //Passes the random variable to spawn things.
-                    roomScript.SpawnElements(); //Spawn things in the tile.
-
-                    GetNode("Rooms").AddChild(instance); //Adds the Room to the Scene.
-                    generated[x, y] = true; //The Tile has already been generated.
-                }
-            }
-        }
-
-        if (firtsGeneration)
-        {
-            //CameraController camera = GetNode<CameraController>("../Camera3D");
-            //camera.setPosition(cameraStartPosition);
-            firtsGeneration = false;
-        }
-
-        roomManager.GetSignals(startX, startY);
-
     }
 
     // =====================================================
@@ -1068,23 +946,7 @@ public partial class Generation : Node
         return count;
     }
 
-    /// <summary>
-    /// This function checks if the set of coordinates contains a Room Tile, independent of its actual Type
-    /// </summary>
-    /// <returns>True if its a Room, False if its Empty or Illegal</returns>
-    private bool CheckTileIsRoom(int x, int y)
-    {
-        if (x < 0 || x >= Width || y < 0 || y >= Height)
-        {
-            return false;
-        }
-
-        if (grid[x, y] == MAINPATH || grid[x, y] == TILE || grid[x, y] == STARTTILE || grid[x, y] == ENDTILE)
-        {
-            return true;
-        }
-        return false;
-    }
+    
 
     /// <summary>
     /// Checks the provided Tile's type, and returns it.
@@ -1125,24 +987,14 @@ public partial class Generation : Node
         return ILLEGAL; //If there is no mach, reurns ILLEGAL as a failsave
     }
 
-    private void deleteMap()
+    public void resetMap()
     {
-        foreach (Node n in GetChildren())
-        {
-            RemoveChild(n);
-            n.QueueFree();
-        }
         startTile = new Vector2I(-1, -1);
-
         endTiles.Clear();
-
         random = null;
     }
 
-    private void ExitLevel()
-    {
-        EmitSignal(SignalName.UnloadLevel);
-    }
+    
 
 
     /// <summary>

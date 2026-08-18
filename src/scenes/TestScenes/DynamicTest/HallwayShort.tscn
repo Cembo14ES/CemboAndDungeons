@@ -1,0 +1,79 @@
+[gd_scene format=4 uid="uid://cjplu0ylekea7"]
+
+[ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.tscn" id="1_62dxu"]
+[ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://src/scenes/TestScenes/DynamicTest/DynamicRoom.cs" id="1_jmrms"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_48l6p"]
+resource_name = "Material"
+cull_mode = 2
+albedo_color = Color(0.9063318, 0.9063318, 0.9063318, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_cwapx"]
+_surfaces = [{
+"aabb": AABB(-2.5, 0, -7.5, 5, 10, 15),
+"format": 34896613377,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEAAgAEAAAAAgAFAAQABQAGAAQABQAHAAYA"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAP//AAAAAP//AAAAAAAAAAAAAAAAAAD/////AAD//wAA//8AAP//AAAAAAAA////////AAD/////AAAAAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_mcn52"]
+resource_name = "HallwayShort_Cube"
+_surfaces = [{
+"aabb": AABB(-2.5, 0, -7.5, 5, 10, 15),
+"attribute_data": PackedByteArray("/1////+f/7//X/+//5////8f/3//X/8//x//P/9f/3//X/9//5//P/9f/z//n/9/"),
+"format": 34896613399,
+"index_count": 18,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkA"),
+"material": SubResource("StandardMaterial3D_48l6p"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("AAAAAP//qioAAP//AACqKgAAAAAAAKoqAAD/////qioAAAAAAAD/P///AAD///8/AAAAAP///z///wAAAAD/P///AAAAAKoq////////qir//wAA//+qKv////8AAKoqqiqqKqoqqiqqKqoqqiqqKv///3////9/////f////39U1VTVVNVU1VTVVNVU1VTV")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_cwapx")
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_3jlvl"]
+data = PackedVector3Array(-2.5, 0, 7.5, -2.5, 10, -7.5, -2.5, 0, -7.5, -2.5, 0, 7.5, -2.5, 10, 7.5, -2.5, 10, -7.5, -2.5, 0, -7.5, 2.5, 0, 7.5, -2.5, 0, 7.5, -2.5, 0, -7.5, 2.5, 0, -7.5, 2.5, 0, 7.5, 2.5, 0, -7.5, 2.5, 10, 7.5, 2.5, 0, 7.5, 2.5, 0, -7.5, 2.5, 10, -7.5, 2.5, 10, 7.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mcn52"]
+points = PackedVector3Array(-2.5, 0, -7.5, 2.5, 0, -7.5, -2.5, 0, 7.499999, -2.5, 10, -7.5, 2.5, 10, -7.5, 2.5, 0, 7.499999, -2.5, 10, 7.499999, 2.5, 10, 7.499999)
+
+[node name="HallwayShort" type="Node3D" unique_id=1599346292 node_paths=PackedStringArray("HitboxNodes", "roomArea")]
+script = ExtResource("1_jmrms")
+HitboxNodes = [NodePath("Meshes/RoomMesh")]
+roomArea = NodePath("PlayerArea")
+
+[node name="Meshes" type="StaticBody3D" parent="." unique_id=1549644665]
+
+[node name="RoomMesh" type="MeshInstance3D" parent="Meshes" unique_id=369883634]
+mesh = SubResource("ArrayMesh_mcn52")
+
+[node name="RoomCollision" type="CollisionShape3D" parent="Meshes" unique_id=409655631]
+shape = SubResource("ConcavePolygonShape3D_3jlvl")
+
+[node name="Doors" type="Node3D" parent="Meshes" unique_id=1841529905]
+
+[node name="Door" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("1_62dxu")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, -7.5)
+Direction = 1
+
+[node name="Door2" parent="Meshes/Doors" unique_id=1833591825 instance=ExtResource("1_62dxu")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 7.5)
+
+[node name="PlayerArea" type="Area3D" parent="." unique_id=107520504]
+process_mode = 3
+
+[node name="RoomArea" type="CollisionShape3D" parent="PlayerArea" unique_id=1061274710]
+process_mode = 3
+shape = SubResource("ConvexPolygonShape3D_mcn52")
+
+[connection signal="body_entered" from="PlayerArea" to="." method="On_PlayerEnter"]

@@ -1,0 +1,110 @@
+[gd_scene format=3 uid="uid://dohtqgur2utev"]
+
+[ext_resource type="Script" uid="uid://br0xkvq7v6tuk" path="res://src/scripts/Debug/DebugUI/DebugUI.cs" id="1_o2aic"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_oahvp"]
+font_size = 25
+
+[node name="GloablDebugUI" type="Control" unique_id=1457925348 node_paths=PackedStringArray("performance", "levelUIToogle", "levelUI", "roomInfo")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_o2aic")
+performance = NodePath("Performance")
+levelUIToogle = NodePath("ToogleLevelUI")
+levelUI = NodePath("LevelDebug")
+roomInfo = NodePath("LevelDebug/Panel/RoomInfo")
+
+[node name="ToogleLevelUI" type="CheckButton" parent="." unique_id=2106581671]
+visible = false
+z_index = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.69500005
+anchor_top = 0.026
+anchor_right = 0.809
+anchor_bottom = 0.089
+offset_left = -19.600098
+offset_top = 0.27999878
+offset_right = -0.52001953
+offset_bottom = -0.08000183
+grow_horizontal = 0
+button_pressed = true
+text = "Toogle Level UI"
+
+[node name="Performance" type="Label" parent="." unique_id=1514827524]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.827
+anchor_top = 0.022000002
+anchor_right = 0.97900003
+anchor_bottom = 0.16700001
+offset_left = 0.4399414
+offset_top = 0.1599989
+offset_right = -0.11999512
+offset_bottom = -0.2400055
+grow_horizontal = 0
+text = "performance
+
+pingas
+"
+horizontal_alignment = 2
+
+[node name="LevelDebug" type="Control" parent="." unique_id=1484999829]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LevelDebug" unique_id=800151081]
+layout_mode = 0
+offset_right = 166.0
+offset_bottom = 51.0
+
+[node name="Freecam" type="Label" parent="LevelDebug/VBoxContainer" unique_id=1436020810]
+layout_mode = 2
+text = "FreeCam (Ctrl+F)"
+
+[node name="RenderRooms" type="CheckButton" parent="LevelDebug/VBoxContainer" unique_id=963955159]
+layout_mode = 2
+text = "Render All Rooms"
+
+[node name="Panel" type="Panel" parent="LevelDebug" unique_id=1654812699]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_right = 0.25
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = -10.0
+offset_right = 6.0
+offset_bottom = -5.0
+
+[node name="RoomInfo" type="Label" parent="LevelDebug/Panel" unique_id=498721596]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 35.0
+grow_horizontal = 2
+size_flags_horizontal = 2
+size_flags_vertical = 6
+text = "Tile Info:"
+label_settings = SubResource("LabelSettings_oahvp")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LevelDebug/Panel" unique_id=1515741680]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="toggled" from="ToogleLevelUI" to="." method="SetLevelUI"]
+[connection signal="toggled" from="LevelDebug/VBoxContainer/RenderRooms" to="." method="On_RoomRenderToogle"]

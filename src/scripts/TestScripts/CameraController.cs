@@ -9,11 +9,16 @@ public partial class CameraController : Camera3D
 
     [Export] public Node3D character;
 
-    private float _currentZoom = 20.0f;
+    private float _currentZoom = 50.0f;
+
+    public override void _Ready()
+	{
+		DebugMaster.Instance.SignalDebug_debugCameraToogle += ToogleCamera;
+	}
 
     public override void _Process(double delta)
     {
-        Position = new Vector3(character.Position.X, 25, character.Position.Z + 5);
+        Position = new Vector3(character.Position.X, _currentZoom, character.Position.Z);
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -41,5 +46,14 @@ public partial class CameraController : Camera3D
     {
         position = new Vector3(position.X, _currentZoom ,position.Z);
         Position = position;
+    }
+
+    public void ToogleCamera()
+    {
+        if (DebugMaster.Instance.debugCameraEnabled)     
+            this.Current = false;     
+        else      
+            this.Current = true;      
+        
     }
 }

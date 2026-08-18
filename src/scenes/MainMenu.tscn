@@ -34,6 +34,16 @@ horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("2_oll1y")
 
+[node name="Version" type="Label" parent="." unique_id=26537676]
+anchors_preset = -1
+anchor_top = 0.96800005
+anchor_right = 0.149
+anchor_bottom = 1.0
+offset_top = 0.039978027
+offset_right = 8.279999
+grow_vertical = 0
+text = "Build_DynamicMapTest01"
+
 [node name="TiltlePanel" type="Panel" parent="." unique_id=882730324]
 anchors_preset = -1
 anchor_left = 0.15
