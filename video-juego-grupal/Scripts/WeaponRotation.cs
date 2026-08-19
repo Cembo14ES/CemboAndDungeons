@@ -3,16 +3,10 @@ using System;
 
 public partial class WeaponRotation : Sprite3D
 {
-    private Camera3D camera;
-    private Node3D player;
+    [Export] private Camera3D camera;
+    [Export] private Node3D player;
 
     public bool IsLookingLeft { get; private set; }
-
-    public override void _Ready()
-    {
-        player = GetParent().GetParent<Node3D>();
-        camera = player.GetNode<Camera3D>("Camera3D");
-    }
 
     public override void _Process(double delta)
     {

@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="VideoJuegoGrupal"
+config/name="Workspace-Iñigp"
 run/main_scene="uid://dixrc5fgovu18"
 config/features=PackedStringArray("4.7", "C#", "Mobile")
 config/icon="res://icon.svg"

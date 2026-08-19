@@ -34,36 +34,29 @@ public partial class Character : CharacterBody3D
     // ==========================
     // BALA
     // ==========================
-    private PackedScene _bulletScene;
+    [Export] private PackedScene _bulletScene;
 
     // ==========================
     // ARMA
     // ==========================
-    private Node3D gun;
-    private WeaponRotation weaponRotation;
-    private AudioStreamPlayer gunShotSound;
-    private AudioStreamPlayer reloadSound;
+    [Export] private Node3D gun;
+    [Export] private WeaponRotation weaponRotation;
+    [Export] private AudioStreamPlayer gunShotSound;
+    [Export] private AudioStreamPlayer reloadSound;
 
     public override void _Ready()
     {
-        // ==========================
-        // Cargar Bullet.tscn
-        // ==========================
-        _bulletScene =
-            GD.Load<PackedScene>(
-                "res://Prefabs//bullet.tscn"
-            );
-
-        if (_bulletScene == null)
-        {
-            GD.PrintErr(
-                "[ERROR] No se ha encontrado Bullet.tscn"
-            );
-
-            GD.PrintErr(
-                "[ERROR] Comprueba la ruta: res://Prefabs//bullet.tscn"
-            );
-        }
+        //Con poner [Export] en _bulletScene te ahorras tener que buscar a mano la ruta (y que de error si esta mal)
+        //if (_bulletScene == null)
+        //{
+        //    GD.PrintErr(
+        //        "[ERROR] No se ha encontrado Bullet.tscn"
+        //    );
+        //
+        //    GD.PrintErr(
+        //        "[ERROR] Comprueba la ruta: res://Prefabs//bullet.tscn"
+        //    );
+        //}
 
         // ==========================
         // Valores iniciales
@@ -72,18 +65,11 @@ public partial class Character : CharacterBody3D
         currentLives = maxLives;
         currentShields = maxShields;
 
-        // ==========================
-        // Gun
-        // ==========================
-        gun = GetNode<Node3D>("Gun");
+        //Lo mismo que con _bulletScene
+        //gun = GetNode<Node3D>("Gun");
 
-        // ==========================
-        // Sprite3D del arma
-        // ==========================
-        weaponRotation =
-            GetNode<WeaponRotation>(
-                "Gun/Sprite3D"
-            );
+        //Lo mismo que con _bulletScene
+        //weaponRotation = GetNode<WeaponRotation>("Gun/Sprite3D");
 
         // ==========================
         // Temporizador escudo
@@ -125,8 +111,10 @@ public partial class Character : CharacterBody3D
             $"[DEBUG] Bullet Scene cargada: {_bulletScene != null}"
         );
         GD.Print("================================");
-        gunShotSound = GetNode<AudioStreamPlayer>("Shot");
-        reloadSound = GetNode<AudioStreamPlayer>("Reload");
+
+        //Lo mismo que con _bulletScene
+        //gunShotSound = GetNode<AudioStreamPlayer>("Shot");
+        //reloadSound = GetNode<AudioStreamPlayer>("Reload");
     }
 
     public override void _PhysicsProcess(double delta)
@@ -134,6 +122,7 @@ public partial class Character : CharacterBody3D
         // ==========================
         // MOVIMIENTO
         // ==========================
+        
         Vector2 inputDir = Input.GetVector(
             "move_left",
             "move_right",
@@ -185,19 +174,15 @@ public partial class Character : CharacterBody3D
         // ==========================
         // COLISIONES
         // ==========================
-        int colisions =
-            GetSlideCollisionCount();
-
-        for (int i = 0; i < colisions; i++)
+        
+        for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
-            KinematicCollision3D col =
-                GetSlideCollision(i);
-
             Node collidedObject =
-                (Node)col.GetCollider();
+                (Node) GetSlideCollision(i)
+                .GetCollider();
 
-            if (
-                collidedObject != null &&
+            if
+            (
                 collidedObject.Name
                     .ToString()
                     .ToLower()
@@ -205,15 +190,14 @@ public partial class Character : CharacterBody3D
             )
             {
                 Enemy enemy =
-                    (Enemy)collidedObject;
+                    (Enemy) collidedObject;
 
                 GetHurt();
-                if(currentLives == 0)
+                
+                if (currentLives == 0)
                 {
                     enemy.PlayerDied();
                 }
-
-                break;
             }
         }
 
@@ -271,7 +255,6 @@ public partial class Character : CharacterBody3D
                 GD.Print("--------------------------------");
                 GD.Print("[DEBUG] ¡El personaje ha muerto!");
                 GD.Print("--------------------------------");
-                
 
                 QueueFree();
 
@@ -367,30 +350,6 @@ public partial class Character : CharacterBody3D
             Reload();
 
             GD.Print("--------------------------------");
-
-            return;
-        }
-
-        // ==========================
-        // COMPROBAR BULLET
-        // ==========================
-        if (_bulletScene == null)
-        {
-            GD.PrintErr(
-                "[ERROR] Bullet.tscn no está cargado."
-            );
-
-            return;
-        }
-
-        // ==========================
-        // COMPROBAR ARMA
-        // ==========================
-        if (weaponRotation == null)
-        {
-            GD.PrintErr(
-                "[ERROR] No se encuentra WeaponRotation."
-            );
 
             return;
         }
