@@ -41,6 +41,8 @@ public partial class Character : CharacterBody3D
     // ==========================
     private Node3D gun;
     private WeaponRotation weaponRotation;
+    private AudioStreamPlayer gunShotSound;
+    private AudioStreamPlayer reloadSound;
 
     public override void _Ready()
     {
@@ -123,6 +125,8 @@ public partial class Character : CharacterBody3D
             $"[DEBUG] Bullet Scene cargada: {_bulletScene != null}"
         );
         GD.Print("================================");
+        gunShotSound = GetNode<AudioStreamPlayer>("Shot");
+        reloadSound = GetNode<AudioStreamPlayer>("Reload");
     }
 
     public override void _PhysicsProcess(double delta)
@@ -340,10 +344,20 @@ public partial class Character : CharacterBody3D
     private void Atack()
     {
         // ==========================
+        // COMPROBAR SI ESTÁ RECARGANDO
+        // ==========================
+        if (reloadSound.Playing)
+        {
+            return;
+        }
+
+        // ==========================
         // SIN MUNICIÓN
         // ==========================
         if (currentAmmo <= 0)
         {
+            reloadSound.Play();
+
             GD.Print("--------------------------------");
             GD.Print("[DEBUG] ¡No quedan balas!");
             GD.Print(
@@ -406,24 +420,6 @@ public partial class Character : CharacterBody3D
                 localOffset
             );
 
-        // ======================================================
-        // DIRECCIÓN DE LA BALA
-        // ======================================================
-        //
-        // NO calculamos el ratón.
-        //
-        // Usamos directamente el Rotation.Y
-        // del arma.
-        //
-        // El arma apunta con su eje X.
-        //
-        // Y = 0°   → +X
-        // Y = 90°  → -Z
-        // Y = 180° → -X
-        // Y = -90° → +Z
-        //
-        // ======================================================
-
         float weaponAngle =
             weaponRotation.GlobalRotation.Y;
 
@@ -464,6 +460,8 @@ public partial class Character : CharacterBody3D
             $"[DEBUG] Balas restantes: {currentAmmo}/{maxAmmo}"
         );
 
+        gunShotSound.Play();
+
         // ==========================
         // CARGADOR VACÍO
         // ==========================
@@ -480,10 +478,6 @@ public partial class Character : CharacterBody3D
 
         GD.Print("--------------------------------");
     }
-
-    // ==========================================================
-    // RECARGAR
-    // ==========================================================
 
     private void Reload()
     {
@@ -504,5 +498,6 @@ public partial class Character : CharacterBody3D
             $"[DEBUG] Balas: {currentAmmo}/{maxAmmo}"
         );
         GD.Print("================================");
+        reloadSound.Play();
     }
 }

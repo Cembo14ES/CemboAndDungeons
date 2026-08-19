@@ -15,7 +15,7 @@ public partial class Enemy : CharacterBody3D
         player = GetTree().GetFirstNodeInGroup("player") as Node3D;
 
         // Cargar el objeto que puede soltar
-        slimeBall = GD.Load<PackedScene>("res://Prefabs/slimeBall.tscn");
+        slimeBall = GD.Load<PackedScene>("res://Prefabs/slimeball.tscn");
     }
 
     public override void _PhysicsProcess(double delta)

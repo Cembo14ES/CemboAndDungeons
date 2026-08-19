@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://dixrc5fgovu18"]
 
 [ext_resource type="PackedScene" uid="uid://c5u288uceu7ld" path="res://Prefabs/enemy.tscn" id="1_p2fkc"]
+[ext_resource type="AudioStream" uid="uid://c4stu8g1e7t0d" path="res://Sounds/Theme.mp3" id="3_22kpl"]
+[ext_resource type="Script" uid="uid://c2h7r8s0ongio" path="res://Scripts/Music.cs" id="4_lmcws"]
 [ext_resource type="PackedScene" uid="uid://dvyi816eq6wyn" path="res://Prefabs/character.tscn" id="7_5h7dh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
@@ -22,3 +24,8 @@ shape = SubResource("BoxShape3D_8erxc")
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2132650086]
 transform = Transform3D(1, 0, 0, 0, 1.1924881e-08, 1, 0, -1, 1.1924881e-08, 0, 20, 0)
 current = true
+
+[node name="Theme" type="AudioStreamPlayer" parent="." unique_id=1584692591]
+stream = ExtResource("3_22kpl")
+parameters/looping = true
+script = ExtResource("4_lmcws")
