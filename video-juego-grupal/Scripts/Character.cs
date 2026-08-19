@@ -203,9 +203,11 @@ public partial class Character : CharacterBody3D
                 Enemy enemy =
                     (Enemy)collidedObject;
 
-                enemy.PlayerDied();
-
                 GetHurt();
+                if(currentLives == 0)
+                {
+                    enemy.PlayerDied();
+                }
 
                 break;
             }
@@ -265,6 +267,7 @@ public partial class Character : CharacterBody3D
                 GD.Print("--------------------------------");
                 GD.Print("[DEBUG] ¡El personaje ha muerto!");
                 GD.Print("--------------------------------");
+                
 
                 QueueFree();
 

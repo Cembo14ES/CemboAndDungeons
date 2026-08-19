@@ -13,10 +13,11 @@ area3D = NodePath("Area3D")
 transform = Transform3D(-4, 3.496911e-07, 1.5285484e-14, 0, -1.7484555e-07, 4, 3.496911e-07, 4, 1.7484555e-07, 0, 0.2, 0)
 texture = ExtResource("1_62lvt")
 
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1276335571]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0.2, 0)
+shape = SubResource("BoxShape3D_8erxc")
+
 [node name="Area3D" type="Area3D" parent="." unique_id=1252100367]
 transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0.2, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1276335571]
-shape = SubResource("BoxShape3D_8erxc")
 
 [connection signal="body_entered" from="Area3D" to="." method="AreaEntered"]

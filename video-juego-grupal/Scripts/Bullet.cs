@@ -54,7 +54,7 @@ public partial class Bullet : CharacterBody3D
             {
                 GD.Print("[BULLET] ¡Enemigo alcanzado!");
 
-                colidedObject.QueueFree();
+                //colidedObject.QueueFree();
                 QueueFree();
 
                 return;
@@ -65,31 +65,6 @@ public partial class Bullet : CharacterBody3D
             // ==========================
             QueueFree();
             return;
-        }
-    }
-
-    // ==========================================================
-    // CUANDO ALGO ENTRA EN EL AREA3D
-    // ==========================================================
-
-    private void AreaEntered(Node3D body)
-    {
-        if (body == null)
-            return;
-
-        // ==========================
-        // Comprobar si es enemigo
-        // ==========================
-
-        if (body.Name.ToString().ToLower().Contains("enemy"))
-        {
-            GD.Print("[BULLET] ¡Area3D ha detectado un enemigo!");
-
-            // Eliminar enemigo
-            body.QueueFree();
-
-            // Eliminar bala
-            QueueFree();
         }
     }
 }

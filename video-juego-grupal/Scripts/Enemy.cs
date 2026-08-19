@@ -5,11 +5,17 @@ public partial class Enemy : CharacterBody3D
 {
     [Export] private float Speed = 3.5f;
     [Export] public Node3D player;
+
     private bool isPlayerAlive = true;
+    private PackedScene slimeBall;
 
     public override void _Ready()
     {
+        // Buscar al jugador
         player = GetTree().GetFirstNodeInGroup("player") as Node3D;
+
+        // Cargar el objeto que puede soltar
+        slimeBall = GD.Load<PackedScene>("res://Prefabs/slimeBall.tscn");
     }
 
     public override void _PhysicsProcess(double delta)
@@ -18,15 +24,15 @@ public partial class Enemy : CharacterBody3D
         // BUSCAR AL JUGADOR
         // ==========================================================
 
-        if (isPlayerAlive)
+        if (isPlayerAlive && player != null)
         {
-            // Calculamos la dirección hacia el jugador
+            // Dirección hacia el jugador
             Vector3 direction = player.GlobalPosition - GlobalPosition;
 
-            // Mantener al enemigo en el suelo
+            // Mantener el enemigo en el suelo
             direction.Y = 0;
 
-            // Comprobar que existe una distancia suficiente
+            // Comprobar que hay distancia suficiente
             if (direction.Length() > 0.1f)
             {
                 direction = direction.Normalized();
@@ -41,34 +47,55 @@ public partial class Enemy : CharacterBody3D
         }
         else
         {
-            // Si no encuentra al jugador, se queda quieto
+            // Si el jugador está muerto o no existe, quedarse quieto
             Velocity = Vector3.Zero;
         }
 
         // ==========================================================
-        // MOVIMIENTO
+        // MOVIMIENTO Y COLISIONES
         // ==========================================================
 
         MoveAndSlide();
 
         // ==========================================================
-        // DETECCIÓN DE IMPACTO DE BALAS
+        // COMPROBAR SI HEMOS CHOCADO CON UNA BALA
         // ==========================================================
 
         for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
-            KinematicCollision3D colision = GetSlideCollision(i);
+            KinematicCollision3D collision = GetSlideCollision(i);
 
-            Node collidedObject = colision.GetCollider() as Node;
+            Node3D body = collision.GetCollider() as Node3D;
 
-            if (collidedObject != null && collidedObject.IsInGroup("balas"))
+            if (body == null)
+                continue;
+
+            // Comprobar si el objeto que ha chocado es una Bullet
+            if (body.Name.ToString().ToLower().Contains("bullet"))
             {
-                GD.Print("[DEBUG] ¡Bala detectada! Muriendo...");
+                GD.Print("[ENEMY] ¡Bala detectada!");
 
-                // Eliminar la bala
-                collidedObject.QueueFree();
+                // ==================================================
+                // PROBABILIDAD DE SOLTAR SLIME BALL
+                // ==================================================
 
-                // Eliminar el enemigo
+                int number = GD.RandRange(1, 10);
+
+                if (number <= 10)
+                {
+                    GD.Print("[DEBUG] ¡Suerte! Soltando item...");
+
+                    if (slimeBall != null)
+                    {
+                        Node3D item = slimeBall.Instantiate<Node3D>();
+
+                        GetParent().AddChild(item);
+
+                        item.GlobalPosition = GlobalPosition;
+                    }
+                }
+
+                // Eliminar enemigo
                 QueueFree();
 
                 return;
@@ -76,7 +103,10 @@ public partial class Enemy : CharacterBody3D
         }
     }
 
-    //este metodo es llamado por el jugador cuando muere por este enemigo.
+    // ==============================================================
+    // LLAMADO CUANDO EL JUGADOR MUERE POR ESTE ENEMIGO
+    // ==============================================================
+
     public void PlayerDied()
     {
         isPlayerAlive = false;
