@@ -11,9 +11,10 @@
 
 [node name="Character" parent="." unique_id=9168581 instance=ExtResource("7_5h7dh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+_bulletScene = null
 
 [node name="Enemy" parent="." unique_id=252092932 instance=ExtResource("1_p2fkc")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.175, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, 0)
 
 [node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=457530503]
 
@@ -27,5 +28,6 @@ current = true
 
 [node name="Theme" type="AudioStreamPlayer" parent="." unique_id=1584692591]
 stream = ExtResource("3_22kpl")
+volume_db = -20.0
 parameters/looping = true
 script = ExtResource("4_lmcws")
