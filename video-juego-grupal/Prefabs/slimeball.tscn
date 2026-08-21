@@ -1,18 +1,17 @@
 [gd_scene format=3 uid="uid://2thwwfc42o26"]
 
 [ext_resource type="Texture2D" uid="uid://cv8gfuxcp1nh3" path="res://Sprites/SlimeBall.png" id="1_pvp0m"]
+[ext_resource type="Script" uid="uid://e0liu80krmn1" path="res://Scripts/SlimeballAmmo.cs" id="1_rvacm"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_kq5qk"]
 
-[node name="SlimeBall" type="CharacterBody3D" unique_id=20263602]
-transform = Transform3D(12, 0, 0, 0, 12, 0, 0, 0, 12, 0, 0, 0)
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1915680944]
+script = ExtResource("1_rvacm")
 
-[node name="Sprite3D" type="Sprite3D" parent="." unique_id=184231640]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=2057526989]
+transform = Transform3D(8, 0, 0, 0, -3.496911e-07, -8, 0, 8, -3.496911e-07, 0, 0, 0)
 texture = ExtResource("1_pvp0m")
 
-[node name="Area3D" type="Area3D" parent="." unique_id=252308060]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=359564625]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
-shape = SubResource("BoxShape3D_8erxc")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1331827225]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
+shape = SubResource("BoxShape3D_kq5qk")

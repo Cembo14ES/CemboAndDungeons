@@ -43,6 +43,7 @@ public partial class Character : CharacterBody3D
     [Export] private WeaponRotation weaponRotation;
     [Export] private AudioStreamPlayer gunShotSound;
     [Export] private AudioStreamPlayer reloadSound;
+    private double positionTimer = 0.0;
 
     public override void _Ready()
     {
@@ -122,6 +123,19 @@ public partial class Character : CharacterBody3D
         // ==========================
         // MOVIMIENTO
         // ==========================
+        positionTimer += delta;
+
+        if (positionTimer >= 1.0)
+        {
+            GD.Print(
+                "POSICIÓN DEL JUGADOR → X: " +
+                GlobalPosition.X +
+                " | Z: " +
+                GlobalPosition.Z
+            );
+
+            positionTimer = 0.0;
+        }
         
         Vector2 inputDir = Input.GetVector(
             "move_left",

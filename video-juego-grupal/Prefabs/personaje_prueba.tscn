@@ -14,6 +14,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Enemy" parent="." unique_id=252092932 instance=ExtResource("1_p2fkc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, 0)
+Speed = 1.0
 
 [node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=457530503]
 
