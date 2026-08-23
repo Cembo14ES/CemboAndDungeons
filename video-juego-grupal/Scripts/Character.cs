@@ -48,16 +48,7 @@ public partial class Character : CharacterBody3D
     public override void _Ready()
     {
         //Con poner [Export] en _bulletScene te ahorras tener que buscar a mano la ruta (y que de error si esta mal)
-        //if (_bulletScene == null)
-        //{
-        //    GD.PrintErr(
-        //        "[ERROR] No se ha encontrado Bullet.tscn"
-        //    );
-        //
-        //    GD.PrintErr(
-        //        "[ERROR] Comprueba la ruta: res://Prefabs//bullet.tscn"
-        //    );
-        //}
+
 
         // ==========================
         // Valores iniciales
@@ -130,6 +121,8 @@ public partial class Character : CharacterBody3D
             GD.Print(
                 "POSICIÓN DEL JUGADOR → X: " +
                 GlobalPosition.X +
+                " | Y: " +
+                GlobalPosition.Y +
                 " | Z: " +
                 GlobalPosition.Z
             );
@@ -185,63 +178,58 @@ public partial class Character : CharacterBody3D
 
         MoveAndSlide();
 
-        // ==========================
-        // COLISIONES
-        // ==========================
-        
+        // COLISIONES        
         for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
-            Node collidedObject =
-                (Node) GetSlideCollision(i)
-                .GetCollider();
+            Node collidedObject = (Node)GetSlideCollision(i).GetCollider();
 
-            if
-            (
-                collidedObject.Name
-                    .ToString()
-                    .ToLower()
-                    .Contains("enemy")
-            )
+            // Colisión con Enemy
+            if (collidedObject is Enemy enemy)
             {
-                Enemy enemy =
-                    (Enemy) collidedObject;
+                GD.Print("[DEBUG] Colisión con Enemy detectada.");
 
                 GetHurt();
-                
+
                 if (currentLives == 0)
                 {
                     enemy.PlayerDied();
                 }
             }
+
+            // Colisión con SlimeballAmmo
+            else if (collidedObject is SlimeballAmmo slimeball)
+            {
+                GD.Print("[DEBUG] Colisión con SlimeballAmmo detectada.");
+
+                GetHurt();
+
+                // Destruir la slimeball al golpear al jugador
+                slimeball.QueueFree();
+            }
         }
 
-        // ==========================
         // ATAQUE
-        // ==========================
         if (Input.IsActionJustPressed("atack"))
         {
             Atack();
         }
 
-        // ==========================
         // RECARGAR
-        // ==========================
         if (Input.IsActionJustPressed("reload"))
         {
             Reload();
         }
     }
 
-    // ==========================================================
     // RECIBIR DAÑO
-    // ==========================================================
-
     private void GetHurt()
     {
         if (!canBeDamaged)
             return;
 
         canBeDamaged = false;
+
+        GD.Print("aaaaa  " + currentShields + " " + currentLives);
 
         invulnerabilityTimer.Start();
 
@@ -250,26 +238,14 @@ public partial class Character : CharacterBody3D
         if (currentShields > 0)
         {
             currentShields--;
-
-            GD.Print("--------------------------------");
-            GD.Print("[DEBUG] ¡Golpe recibido!");
-            GD.Print("[DEBUG] Se pierde 1 punto de ESCUDO.");
         }
+        
         else
         {
             currentLives--;
 
-            GD.Print("--------------------------------");
-            GD.Print("[DEBUG] ¡Golpe recibido!");
-            GD.Print("[DEBUG] No queda escudo.");
-            GD.Print("[DEBUG] Se pierde 1 punto de VIDA.");
-
             if (currentLives <= 0)
             {
-                GD.Print("--------------------------------");
-                GD.Print("[DEBUG] ¡El personaje ha muerto!");
-                GD.Print("--------------------------------");
-
                 QueueFree();
 
                 SetPhysicsProcess(false);
@@ -287,22 +263,9 @@ public partial class Character : CharacterBody3D
         );
 
         shieldTimer.Start();
-
-        GD.Print(
-            "[DEBUG] El escudo se regenerará en 16 segundos si no recibes más daño."
-        );
-
-        GD.Print(
-            "[DEBUG] Invulnerable durante 0.8 segundos."
-        );
-
-        GD.Print("--------------------------------");
     }
 
-    // ==========================================================
     // FIN INVULNERABILIDAD
-    // ==========================================================
-
     private void EndInvulnerability()
     {
         canBeDamaged = true;
@@ -312,73 +275,42 @@ public partial class Character : CharacterBody3D
         );
     }
 
-    // ==========================================================
     // REGENERAR ESCUDO
-    // ==========================================================
-
     private void RegenerateShield()
     {
         currentShields = maxShields;
 
-        GD.Print("================================");
         GD.Print("[DEBUG] ¡ESCUDO REGENERADO!");
-
-        GD.Print(
-            $"[DEBUG] Vida: {currentLives}/{maxLives}"
-        );
-
-        GD.Print(
-            $"[DEBUG] Escudo: {currentShields}/{maxShields}"
-        );
-
-        GD.Print("================================");
     }
 
-    // ==========================================================
     // ATAQUE
-    // ==========================================================
-
     private void Atack()
     {
-        // ==========================
         // COMPROBAR SI ESTÁ RECARGANDO
-        // ==========================
         if (reloadSound.Playing)
         {
             return;
         }
 
-        // ==========================
         // SIN MUNICIÓN
-        // ==========================
         if (currentAmmo <= 0)
         {
             reloadSound.Play();
 
-            GD.Print("--------------------------------");
             GD.Print("[DEBUG] ¡No quedan balas!");
-            GD.Print(
-                "[DEBUG] ATACK utilizado como recarga."
-            );
 
             Reload();
-
-            GD.Print("--------------------------------");
 
             return;
         }
 
-        // ==========================
         // CREAR BALA
-        // ==========================
         Node3D bulletInstance =
             _bulletScene.Instantiate<Node3D>();
 
         GetParent().AddChild(bulletInstance);
 
-        // ==========================
         // POSICIÓN DE SALIDA
-        // ==========================
         Vector3 localOffset =
             new Vector3(
                 2.4f,
@@ -406,9 +338,7 @@ public partial class Character : CharacterBody3D
         bulletDirection =
             bulletDirection.Normalized();
 
-        // ==========================
         // ROTAR LA BALA
-        // ==========================
         float bulletAngle =
             Mathf.Atan2(
                 bulletDirection.Z,
@@ -422,55 +352,32 @@ public partial class Character : CharacterBody3D
                 0
             );
 
-        // ==========================
         // GASTAR BALA
-        // ==========================
         currentAmmo--;
 
-        GD.Print("--------------------------------");
-        GD.Print("[DEBUG] ¡Disparo!");
         GD.Print(
             $"[DEBUG] Balas restantes: {currentAmmo}/{maxAmmo}"
         );
 
         gunShotSound.Play();
 
-        // ==========================
         // CARGADOR VACÍO
-        // ==========================
         if (currentAmmo == 0)
         {
             GD.Print("[DEBUG] ¡Cargador vacío!");
-            GD.Print(
-                "[DEBUG] Pulsa ATACK para recargar."
-            );
-            GD.Print(
-                "[DEBUG] También puedes usar RELOAD."
-            );
         }
-
-        GD.Print("--------------------------------");
     }
 
     private void Reload()
     {
         if (currentAmmo >= maxAmmo)
         {
-            GD.Print(
-                "[DEBUG] El cargador ya está lleno."
-            );
-
             return;
         }
 
         currentAmmo = maxAmmo;
 
-        GD.Print("================================");
         GD.Print("[DEBUG] ¡ARMA RECARGADA!");
-        GD.Print(
-            $"[DEBUG] Balas: {currentAmmo}/{maxAmmo}"
-        );
-        GD.Print("================================");
         reloadSound.Play();
     }
 }

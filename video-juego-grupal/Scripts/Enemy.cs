@@ -37,7 +37,6 @@ public partial class Enemy : CharacterBody3D
 
             if (secondsLeft != lastPrintedSecond && secondsLeft > 0)
             {
-                GD.Print("[ENEMY] Ataque en " + secondsLeft + " segundos.");
                 lastPrintedSecond = secondsLeft;
             }
 
@@ -79,12 +78,10 @@ public partial class Enemy : CharacterBody3D
 
             if (body.Name.ToString().ToLower().Contains("bullet"))
             {
-                GD.Print("[ENEMY] ¡Bala detectada!");
 
                 int number = GD.RandRange(1, 10);
                 if (number <= 10)
                 {
-                    GD.Print("[DEBUG] ¡Suerte! Soltando item...");
                     SpawnSlimeBall();
                 }
 
@@ -98,8 +95,6 @@ public partial class Enemy : CharacterBody3D
     {
         isAtacking = true;
         Velocity = Vector3.Zero;
-
-        GD.Print("[ENEMY] ¡Atacando!");
 
         await ToSignal(GetTree().CreateTimer(0.5f), SceneTreeTimer.SignalName.Timeout);
 
@@ -116,13 +111,11 @@ public partial class Enemy : CharacterBody3D
 
     private void SpawnSlimeBall()
     {
-        if (slimeBall == null)
-        {
-            GD.PrintErr("[ENEMY] ERROR: slimeBall no está cargado.");
-            return;
-        }
-
-        GD.Print("[ENEMY] Generando SlimeBall...");
+        //if (slimeBall == null)
+        //{
+        //    GD.PrintErr("[ENEMY] ERROR: slimeBall no está cargado.");
+        //    return;
+        //}
 
         Node3D item = slimeBall.Instantiate<Node3D>();
         GetParent().AddChild(item);
@@ -131,13 +124,11 @@ public partial class Enemy : CharacterBody3D
 
     private void SpawnSlimeBallAmmo()
     {
-        if (slimeBallAmmo == null)
-        {
-            GD.PrintErr("[ENEMY] ERROR: slimeBallAmmo no está cargado.");
-            return;
-        }
-
-        GD.Print("[ENEMY] Generando SlimeBallAmmo...");
+        //if (slimeBallAmmo == null)
+        //{
+        //    GD.PrintErr("[ENEMY] ERROR: slimeBallAmmo no está cargado.");
+        //    return;
+        //}
 
         SlimeballAmmo item = slimeBallAmmo.Instantiate<SlimeballAmmo>();
 
@@ -151,7 +142,7 @@ public partial class Enemy : CharacterBody3D
         item.IgnoreEnemy(this);
         if (player is CharacterBody3D playerBody)
         {
-            item.IgnorePlayerPhysically(playerBody);
+            //item.IgnorePlayerPhysically(playerBody);
         }
 
         // Calcular dirección y guardar referencia al jugador para detección por distancia
@@ -159,8 +150,6 @@ public partial class Enemy : CharacterBody3D
 
         // Desplazarla fuera del cuerpo del enemigo en la dirección de disparo
         item.GlobalPosition += item.GetDirection() * 1.0f;
-
-        GD.Print("[ENEMY] Posición de spawn: " + item.GlobalPosition);
     }
 
     public void PlayerDied()

@@ -9,7 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://df0fgv5baqtyw" path="res://Sounds/reload.mp3" id="6_l4jbs"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vobto"]
-size = Vector3(1.5, 1, 1.5)
+size = Vector3(1.3400879, 1, 1.5)
 
 [node name="Character" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("gun", "weaponRotation", "gunShotSound", "reloadSound") groups=["player"]]
 script = ExtResource("1_7iube")
@@ -24,7 +24,7 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0
 texture = ExtResource("2_ulf0j")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1431325890]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.247, 0, 0.081)
+transform = Transform3D(2, 0, 0, 0, 0.2, 0, 0, 0, 2, 0.4, 0, 0.081)
 shape = SubResource("BoxShape3D_vobto")
 
 [node name="Gun" type="CharacterBody3D" parent="." unique_id=1487162124]
