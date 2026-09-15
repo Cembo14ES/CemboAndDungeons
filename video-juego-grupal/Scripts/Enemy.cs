@@ -20,7 +20,7 @@ public partial class Enemy : CharacterBody3D
     {
         player = GetTree().GetFirstNodeInGroup("player") as Node3D;
 
-        slimeBall = GD.Load<PackedScene>("res://Prefabs/slimeball.tscn");
+        slimeBall = GD.Load<PackedScene>("res://Prefabs/slimeballitem.tscn");
         slimeBallAmmo = GD.Load<PackedScene>("res://Prefabs/slimeballammo.tscn");
 
         attackTimer = GD.RandRange(1.0f, 1.0f);
@@ -75,17 +75,29 @@ public partial class Enemy : CharacterBody3D
 
             if (body == null)
                 continue;
+            
+            GD.Print(body.Name.ToString().ToLower() + " BBB");
 
-            if (body.Name.ToString().ToLower().Contains("bullet"))
+            string bodyName = body.Name.ToString().ToLower();
+
+            GD.Print("[ENEMY] Collider detectado: " + bodyName);
+
+            if (body is Bullet bullet)
             {
+                GD.Print("[ENEMY] ¡HE ENCONTRADO UNA BULLET!");
 
                 int number = GD.RandRange(1, 10);
+                QueueFree();
                 if (number <= 10)
                 {
+                    GD.Print("[ENEMY] ¡Slimeball soltada!");
                     SpawnSlimeBall();
                 }
+                else
+                {
+                    GD.Print("[ENEMY] No se soltó Slimeball.");
+                }
 
-                QueueFree();
                 return;
             }
         }
@@ -117,7 +129,7 @@ public partial class Enemy : CharacterBody3D
         //    return;
         //}
 
-        Node3D item = slimeBall.Instantiate<Node3D>();
+        SlimeBallItem item = slimeBall.Instantiate<SlimeBallItem>();
         GetParent().AddChild(item);
         item.GlobalPosition = GlobalPosition;
     }

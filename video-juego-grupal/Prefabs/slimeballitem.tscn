@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://d26427c76gy4e"]
+
+[ext_resource type="Script" uid="uid://dp24ab73ojrvl" path="res://Scripts/SlimeBallItem.cs" id="1_bpox2"]
+[ext_resource type="Texture2D" uid="uid://cv8gfuxcp1nh3" path="res://Sprites/SlimeBall.png" id="1_fftd5"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
+
+[node name="SlimeBallItem" type="Area3D" unique_id=1353278836]
+script = ExtResource("1_bpox2")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=2141275529]
+transform = Transform3D(4, 0, 0, 0, -1.7484555e-07, 4, 0, -4, -1.7484555e-07, 0, 0, 0)
+texture = ExtResource("1_fftd5")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1958361525]
+transform = Transform3D(0.4, 0, 0, 0, 40, 0, 0, 0, 0.4, 0, 0, 0)
+shape = SubResource("BoxShape3D_8erxc")

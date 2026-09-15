@@ -11,6 +11,8 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_vobto"]
 size = Vector3(1.3400879, 1, 1.5)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
+
 [node name="Character" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("gun", "weaponRotation", "gunShotSound", "reloadSound") groups=["player"]]
 script = ExtResource("1_7iube")
 _bulletScene = ExtResource("2_l4jbs")
@@ -44,3 +46,9 @@ stream = ExtResource("5_4k5dx")
 
 [node name="Reload" type="AudioStreamPlayer" parent="." unique_id=1743554551]
 stream = ExtResource("6_l4jbs")
+
+[node name="ItemDetector" type="Area3D" parent="." unique_id=972607150]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ItemDetector" unique_id=2088637223]
+transform = Transform3D(2.8, 0, 0, 0, 0.2, 0, 0, 0, 3.5, 0.4, 0, 0)
+shape = SubResource("BoxShape3D_8erxc")

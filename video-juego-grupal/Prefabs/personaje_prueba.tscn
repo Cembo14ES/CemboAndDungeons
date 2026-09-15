@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://c5u288uceu7ld" path="res://Prefabs/enemy.tscn" id="1_p2fkc"]
 [ext_resource type="AudioStream" uid="uid://c4stu8g1e7t0d" path="res://Sounds/Theme.mp3" id="3_22kpl"]
 [ext_resource type="Script" uid="uid://c2h7r8s0ongio" path="res://Scripts/Music.cs" id="4_lmcws"]
+[ext_resource type="Script" uid="uid://c4xvi355h8sac" path="res://Scripts/SaveManager.cs" id="5_wvnb4"]
 [ext_resource type="PackedScene" uid="uid://dvyi816eq6wyn" path="res://Prefabs/character.tscn" id="7_5h7dh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
@@ -31,3 +32,6 @@ stream = ExtResource("3_22kpl")
 volume_db = -20.0
 parameters/looping = true
 script = ExtResource("4_lmcws")
+
+[node name="SaveManager" type="Node3D" parent="." unique_id=173441068]
+script = ExtResource("5_wvnb4")

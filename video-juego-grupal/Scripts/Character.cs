@@ -44,6 +44,8 @@ public partial class Character : CharacterBody3D
     [Export] private AudioStreamPlayer gunShotSound;
     [Export] private AudioStreamPlayer reloadSound;
     private double positionTimer = 0.0;
+    private SaveManager saveManager;
+    private Area3D itemDetector;
 
     public override void _Ready()
     {
@@ -56,6 +58,9 @@ public partial class Character : CharacterBody3D
         currentAmmo = maxAmmo;
         currentLives = maxLives;
         currentShields = maxShields;
+        saveManager = GetTree().CurrentScene.GetNode<SaveManager>("SaveManager");
+        itemDetector = GetNode<Area3D>("ItemDetector");
+        itemDetector.AreaEntered += OnItemEntered;
 
         //Lo mismo que con _bulletScene
         //gun = GetNode<Node3D>("Gun");
@@ -182,7 +187,7 @@ public partial class Character : CharacterBody3D
         for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
             Node collidedObject = (Node)GetSlideCollision(i).GetCollider();
-
+            GD.Print("[DEBUG] Colisión detectada con: " + collidedObject.Name.ToString());
             // Colisión con Enemy
             if (collidedObject is Enemy enemy)
             {
@@ -228,8 +233,6 @@ public partial class Character : CharacterBody3D
             return;
 
         canBeDamaged = false;
-
-        GD.Print("aaaaa  " + currentShields + " " + currentLives);
 
         invulnerabilityTimer.Start();
 
@@ -379,5 +382,25 @@ public partial class Character : CharacterBody3D
 
         GD.Print("[DEBUG] ¡ARMA RECARGADA!");
         reloadSound.Play();
+    }
+    private void OnItemEntered(Area3D area)
+    {
+        GD.Print("[DEBUG] Área detectada: " + area.Name);
+
+        if (area is SlimeBallItem slimeballItem)
+        {
+            GD.Print("[DEBUG] ¡SlimeBallItem detectada!");
+
+            string nombreItem = slimeballItem.Name.ToString();
+
+            saveManager.AñadirItem(nombreItem, 1);
+
+            GD.Print(
+                "[ITEM] Recogido: " +
+                nombreItem
+            );
+
+            slimeballItem.QueueFree();
+        }
     }
 }
