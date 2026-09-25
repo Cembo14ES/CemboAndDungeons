@@ -19,6 +19,7 @@ config/features=PackedStringArray("4.7", "C#", "Mobile")
 DebugMaster="*uid://dhkaqo8s3w2iw"
 GlobalManager="*uid://dalg4k5wlb3ft"
 DebugLayer="*uid://dohtqgur2utev"
+Stats="*uid://bvib6uv5blxs7"
 
 [display]
 
@@ -84,5 +85,6 @@ Debug_Freecam={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=3
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"

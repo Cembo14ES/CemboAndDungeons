@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://m8x0vv40llq8"
-path="res://.godot/imported/Pasillo_Dungeon.blend-d62d71731310cec848ab01bf23ca06ac.scn"
+uid="uid://ccg41gwv18i66"
+path="res://.godot/imported/RoomL.blend-6bf9a414dafb1890e364daaa023a288a.scn"
 
 [deps]
 
-source_file="res://assets/sprites/room_assets/Pasillo_Dungeon.blend"
-dest_files=["res://.godot/imported/Pasillo_Dungeon.blend-d62d71731310cec848ab01bf23ca06ac.scn"]
+source_file="res://assets/mesh/RoomL.blend"
+dest_files=["res://.godot/imported/RoomL.blend-6bf9a414dafb1890e364daaa023a288a.scn"]
 
 [params]
 

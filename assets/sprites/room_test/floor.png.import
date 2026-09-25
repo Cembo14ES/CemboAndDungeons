@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cdpilcdk3rrkj"
-path.s3tc="res://.godot/imported/Slime_Icon.png-b329e9e0fe54e773e6eae2dc6d07cfcf.s3tc.ctex"
+uid="uid://b6tfjr1u4jnt6"
+path.s3tc="res://.godot/imported/floor.png-8e03f8393159b85e22479bd37906b117.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/sprites/Slime_Icon.png"
-dest_files=["res://.godot/imported/Slime_Icon.png-b329e9e0fe54e773e6eae2dc6d07cfcf.s3tc.ctex"]
+source_file="res://assets/sprites/room_test/floor.png"
+dest_files=["res://.godot/imported/floor.png-8e03f8393159b85e22479bd37906b117.s3tc.ctex"]
 
 [params]
 

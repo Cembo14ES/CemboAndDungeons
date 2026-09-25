@@ -6,34 +6,50 @@ using Godot;
 /// </summary>
 public partial class RoomDoor : StaticBody3D
 {
-    //Esta señal es emitida para transportar al jugador de habitacion a habitacion.
-    [Signal] public delegate void Signal_TeleportPlayerEventHandler(Vector3 teleportPoint);
+    // -------
+    // SIGNALS
+    // -------
+    [Signal] public delegate void Signal_TeleportPlayerEventHandler(Vector3 teleportPoint); //Esta señal es emitida para transportar al jugador de habitacion a habitacion.
 
-    //Enum para la posicion cardinal en la que la puerta esta colocada.
-    public enum DoorDirection { North, South, East, West }
+    // ------------------
+    // EXPORTED VARIABLES
+    // ------------------
 
-    [Export] public DoorDirection Direction = DoorDirection.North; //La posicion en la que la puerta esta colocada.
+    [Export] public DoorDirection cardinalDirection = DoorDirection.North; //La posicion en la que la puerta esta colocada.
     [Export] public MeshInstance3D wallMesh; //El Modelo 3D de la puerta
     [Export] public CollisionShape3D wallCollision; //La colision de la puerta
     [Export] public Area3D teleportArea; //El Area para iniciar el TP del jugador
     [Export] public Node3D teleportPoint; //El punto en el que el jugador es TPado
 
-    public bool isConnected { get; set; } = false; //Si la puerta esta en posicion donde hay una conexion de habitaciones.
+
+    // ---------------
+    // OTHER VARIABLES
+    // ---------------
+    public enum DoorDirection { North, South, East, West }  //Enum para la posicion cardinal en la que la puerta esta colocada.
     public RoomDoor ConnectedTo { get; set; } //La puerta a la que esta conectada. (Si hay una conexion de habitaciones)
     public DynamicRoom ParentRoom { get; set; } //La habitacion en la que esta posicionada.
+
+    public bool isConnected { get; set; } = false; //Si la puerta esta conectada a otra puerta/habitacion
+    public bool isValidForConnection { get; set;} = true;
+
+    public void SetConnected(bool state)
+    {
+        isConnected = state;
+        isValidForConnection = !state;
+    }
 
     /// <summary>
     /// Rota la puerta acorde a la direccion cardinal asignada.
     /// </summary>
     public void RotateDoorToDirection()
     {
-        if (Direction == DoorDirection.North)
+        if (cardinalDirection == DoorDirection.North)
             Rotation = new Vector3(0, Mathf.DegToRad(-90), 0);
-        else if (Direction == DoorDirection.South)
+        else if (cardinalDirection == DoorDirection.South)
             Rotation = new Vector3(0, Mathf.DegToRad(90), 0);
-        else if (Direction == DoorDirection.East)
+        else if (cardinalDirection == DoorDirection.East)
             Rotation = new Vector3(0, Mathf.DegToRad(180), 0);
-        else if (Direction == DoorDirection.West)
+        else if (cardinalDirection == DoorDirection.West)
             Rotation = new Vector3(0, 0, 0);
     }
 
@@ -45,12 +61,12 @@ public partial class RoomDoor : StaticBody3D
     /// <returns>Si la puerta se puede conectar o no</returns>
     public bool CanConnectTo(RoomDoor otherDoor)
     {
-        return Direction switch
+        return cardinalDirection switch
         {
-            DoorDirection.North => otherDoor.Direction == DoorDirection.South,
-            DoorDirection.South => otherDoor.Direction == DoorDirection.North,
-            DoorDirection.East => otherDoor.Direction == DoorDirection.West,
-            DoorDirection.West => otherDoor.Direction == DoorDirection.East,
+            DoorDirection.North => otherDoor.cardinalDirection == DoorDirection.South,
+            DoorDirection.South => otherDoor.cardinalDirection == DoorDirection.North,
+            DoorDirection.East => otherDoor.cardinalDirection == DoorDirection.West,
+            DoorDirection.West => otherDoor.cardinalDirection == DoorDirection.East,
             _ => false
         };
     }

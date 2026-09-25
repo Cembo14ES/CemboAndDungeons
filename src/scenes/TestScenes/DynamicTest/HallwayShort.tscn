@@ -2,6 +2,10 @@
 
 [ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.tscn" id="1_62dxu"]
 [ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://src/scenes/TestScenes/DynamicTest/DynamicRoom.cs" id="1_jmrms"]
+[ext_resource type="Texture2D" uid="uid://bah5dmrtnakmc" path="res://assets/sprites/room_assets/main.png" id="3_mtg0r"]
+[ext_resource type="Texture2D" uid="uid://86xrn2one1y3" path="res://assets/sprites/room_assets/start.png" id="4_pp530"]
+[ext_resource type="Texture2D" uid="uid://cx2bamsodhh87" path="res://assets/sprites/room_assets/end.png" id="5_tgq3s"]
+[ext_resource type="Texture2D" uid="uid://b85hhn2y6f537" path="res://assets/sprites/room_assets/loop.png" id="6_pp530"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_48l6p"]
 resource_name = "Material"
@@ -47,10 +51,18 @@ data = PackedVector3Array(-2.5, 0, 7.5, -2.5, 10, -7.5, -2.5, 0, -7.5, -2.5, 0, 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mcn52"]
 points = PackedVector3Array(-2.5, 0, -7.5, 2.5, 0, -7.5, -2.5, 0, 7.499999, -2.5, 10, -7.5, 2.5, 10, -7.5, 2.5, 0, 7.499999, -2.5, 10, 7.499999, 2.5, 10, 7.499999)
 
-[node name="HallwayShort" type="Node3D" unique_id=1599346292 node_paths=PackedStringArray("HitboxNodes", "roomArea")]
+[node name="HallwayShort" type="Node3D" unique_id=1599346292 node_paths=PackedStringArray("roomArea", "doorFolder", "endSprite", "startSprite", "mainSprite", "loopSprite")]
 script = ExtResource("1_jmrms")
-HitboxNodes = [NodePath("Meshes/RoomMesh")]
 roomArea = NodePath("PlayerArea")
+doorFolder = NodePath("Meshes/Doors")
+endSprite = NodePath("End")
+startSprite = NodePath("Start")
+mainSprite = NodePath("Main")
+loopSprite = NodePath("loop")
+gridWidth = 1
+gridHeight = 3
+gridStateData = Array[int]([2, 1, 2])
+localOccupiedTiles = Array[Vector3i]([Vector3i(0, 0, -1), Vector3i(0, 0, 0), Vector3i(0, 0, 1)])
 
 [node name="Meshes" type="StaticBody3D" parent="." unique_id=1549644665]
 
@@ -62,11 +74,11 @@ shape = SubResource("ConcavePolygonShape3D_3jlvl")
 
 [node name="Doors" type="Node3D" parent="Meshes" unique_id=1841529905]
 
-[node name="Door" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("1_62dxu")]
+[node name="DoorS" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("1_62dxu")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, -7.5)
-Direction = 1
+cardinalDirection = 1
 
-[node name="Door2" parent="Meshes/Doors" unique_id=1833591825 instance=ExtResource("1_62dxu")]
+[node name="DoorN" parent="Meshes/Doors" unique_id=1833591825 instance=ExtResource("1_62dxu")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 7.5)
 
 [node name="PlayerArea" type="Area3D" parent="." unique_id=107520504]
@@ -75,5 +87,25 @@ process_mode = 3
 [node name="RoomArea" type="CollisionShape3D" parent="PlayerArea" unique_id=1061274710]
 process_mode = 3
 shape = SubResource("ConvexPolygonShape3D_mcn52")
+
+[node name="Main" type="Sprite3D" parent="." unique_id=1106795600]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.15995216, 1.7754135, -5.088752)
+visible = false
+texture = ExtResource("3_mtg0r")
+
+[node name="Start" type="Sprite3D" parent="." unique_id=1247160430]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 1.578928, 0.28265)
+visible = false
+texture = ExtResource("4_pp530")
+
+[node name="End" type="Sprite3D" parent="." unique_id=370391872]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.49007463, 0.53909874, 5.2606277)
+visible = false
+texture = ExtResource("5_tgq3s")
+
+[node name="loop" type="Sprite3D" parent="." unique_id=917456050]
+transform = Transform3D(1, 0, 0, 0, 0.044027593, -0.9990303, 0, 0.9990303, 0.044027593, 0, 2.949421, 0)
+visible = false
+texture = ExtResource("6_pp530")
 
 [connection signal="body_entered" from="PlayerArea" to="." method="On_PlayerEnter"]

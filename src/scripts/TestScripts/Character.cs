@@ -4,9 +4,7 @@ using System;
 public partial class Character : CharacterBody3D
 {
     [Signal] public delegate void UpdateCounterEventHandler();
-    
     [Export] private PackedScene bulletScene;
-
     [Export] public float Speed = 20.0f;
 
     private bool controlsEnabled = true;

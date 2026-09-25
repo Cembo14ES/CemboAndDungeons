@@ -2,6 +2,10 @@
 
 [ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.tscn" id="1_lcm7m"]
 [ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://src/scenes/TestScenes/DynamicTest/DynamicRoom.cs" id="1_sgbj3"]
+[ext_resource type="Texture2D" uid="uid://bah5dmrtnakmc" path="res://assets/sprites/room_assets/main.png" id="3_5lg4d"]
+[ext_resource type="Texture2D" uid="uid://86xrn2one1y3" path="res://assets/sprites/room_assets/start.png" id="4_42eur"]
+[ext_resource type="Texture2D" uid="uid://cx2bamsodhh87" path="res://assets/sprites/room_assets/end.png" id="5_r16mh"]
+[ext_resource type="Texture2D" uid="uid://b85hhn2y6f537" path="res://assets/sprites/room_assets/loop.png" id="6_42eur"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fowar"]
 resource_name = "Material"
@@ -47,10 +51,17 @@ data = PackedVector3Array(-12.5, 0, -17.5, 12.5, 0, 17.5, -12.5, 0, 17.5, -12.5,
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ttkgc"]
 points = PackedVector3Array(12.5, 10, 17.5, -12.5, 10, 17.5, 12.5, -2.3841858e-07, 17.5, 12.5, 10, -17.5, -12.5, -2.3841858e-07, 17.5, -12.5, 10, -17.5, 12.5, -2.3841858e-07, -17.5, -12.5, -2.3841858e-07, -17.5)
 
-[node name="RoomRectangle" type="Node3D" unique_id=1740335897 node_paths=PackedStringArray("HitboxNodes", "roomArea")]
+[node name="RoomRectangle" type="Node3D" unique_id=1740335897 node_paths=PackedStringArray("roomArea", "doorFolder", "endSprite", "startSprite", "mainSprite", "loopSprite")]
 script = ExtResource("1_sgbj3")
-HitboxNodes = [NodePath("Meshes/RoomMesh")]
 roomArea = NodePath("PlayerArea")
+doorFolder = NodePath("Meshes/Doors")
+endSprite = NodePath("End")
+startSprite = NodePath("Start")
+mainSprite = NodePath("Main")
+loopSprite = NodePath("loop")
+gridHeight = 7
+gridStateData = Array[int]([1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1])
+localOccupiedTiles = Array[Vector3i]([Vector3i(-2, 0, -3), Vector3i(-1, 0, -3), Vector3i(0, 0, -3), Vector3i(1, 0, -3), Vector3i(2, 0, -3), Vector3i(-2, 0, -2), Vector3i(-1, 0, -2), Vector3i(0, 0, -2), Vector3i(1, 0, -2), Vector3i(2, 0, -2), Vector3i(-2, 0, -1), Vector3i(-1, 0, -1), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(2, 0, -1), Vector3i(-2, 0, 0), Vector3i(-1, 0, 0), Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(-2, 0, 1), Vector3i(-1, 0, 1), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(2, 0, 1), Vector3i(-2, 0, 2), Vector3i(-1, 0, 2), Vector3i(0, 0, 2), Vector3i(1, 0, 2), Vector3i(2, 0, 2), Vector3i(-2, 0, 3), Vector3i(-1, 0, 3), Vector3i(0, 0, 3), Vector3i(1, 0, 3), Vector3i(2, 0, 3)])
 
 [node name="Meshes" type="StaticBody3D" parent="." unique_id=228434307]
 
@@ -58,27 +69,27 @@ roomArea = NodePath("PlayerArea")
 
 [node name="DoorW1" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, -10)
-Direction = 3
+cardinalDirection = 3
 
 [node name="DoorW2" parent="Meshes/Doors" unique_id=1282693300 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 0)
-Direction = 3
+cardinalDirection = 3
 
 [node name="DoorW3" parent="Meshes/Doors" unique_id=2108099714 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 10)
-Direction = 3
+cardinalDirection = 3
 
 [node name="DoorE1" parent="Meshes/Doors" unique_id=1419161874 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, -10)
-Direction = 2
+cardinalDirection = 2
 
 [node name="DoorE2" parent="Meshes/Doors" unique_id=1778864581 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, 0)
-Direction = 2
+cardinalDirection = 2
 
 [node name="DoorE3" parent="Meshes/Doors" unique_id=646411918 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, 10)
-Direction = 2
+cardinalDirection = 2
 
 [node name="DoorN1" parent="Meshes/Doors" unique_id=850874986 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, 17.5)
@@ -88,11 +99,11 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 
 
 [node name="DoorS1" parent="Meshes/Doors" unique_id=395935690 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, -17.5)
-Direction = 1
+cardinalDirection = 1
 
 [node name="DoorS2" parent="Meshes/Doors" unique_id=1698258645 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, -17.5)
-Direction = 1
+cardinalDirection = 1
 
 [node name="RoomMesh" type="MeshInstance3D" parent="Meshes" unique_id=2029193781]
 mesh = SubResource("ArrayMesh_ttkgc")
@@ -106,5 +117,25 @@ process_mode = 3
 [node name="RoomArea" type="CollisionShape3D" parent="PlayerArea" unique_id=1457416941]
 process_mode = 3
 shape = SubResource("ConvexPolygonShape3D_ttkgc")
+
+[node name="Main" type="Sprite3D" parent="." unique_id=194158651]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -9.479377, 1.7754135, 0)
+visible = false
+texture = ExtResource("3_5lg4d")
+
+[node name="Start" type="Sprite3D" parent="." unique_id=1910172716]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 1.578928, 9.334227)
+visible = false
+texture = ExtResource("4_42eur")
+
+[node name="End" type="Sprite3D" parent="." unique_id=1323014286]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -7.3695745, 0.53909874, 13.100981)
+visible = false
+texture = ExtResource("5_r16mh")
+
+[node name="loop" type="Sprite3D" parent="." unique_id=1391193712]
+transform = Transform3D(1, 0, 0, 0, -0.110906065, -0.9938309, 0, 0.9938309, -0.110906065, 0, 2.0883532, 0)
+visible = false
+texture = ExtResource("6_42eur")
 
 [connection signal="body_entered" from="PlayerArea" to="." method="On_PlayerEnter"]

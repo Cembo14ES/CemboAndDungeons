@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dv1hduxv5tl2i"
-path="res://.godot/imported/Salas.blend-1aa6645a641e4af523103aba07172257.scn"
+uid="uid://hjrkorka3ab1"
+path="res://.godot/imported/RoomL-B.blend-b6c312202ad5418e91d5a9214457e971.scn"
 
 [deps]
 
-source_file="res://assets/sprites/room_assets/Salas.blend"
-dest_files=["res://.godot/imported/Salas.blend-1aa6645a641e4af523103aba07172257.scn"]
+source_file="res://assets/mesh/RoomL-B.blend"
+dest_files=["res://.godot/imported/RoomL-B.blend-b6c312202ad5418e91d5a9214457e971.scn"]
 
 [params]
 

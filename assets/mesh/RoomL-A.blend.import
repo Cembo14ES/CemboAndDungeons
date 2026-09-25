@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://c77veney1in4y"
-path="res://.godot/imported/Muro_Salas.blend-d8d82f2127c4790b819d90a600824295.scn"
+uid="uid://drtqscut0j3ic"
+path="res://.godot/imported/RoomL-A.blend-e32740ded86e44a2285856323f99185d.scn"
 
 [deps]
 
-source_file="res://assets/sprites/room_assets/Muro_Salas.blend"
-dest_files=["res://.godot/imported/Muro_Salas.blend-d8d82f2127c4790b819d90a600824295.scn"]
+source_file="res://assets/mesh/RoomL-A.blend"
+dest_files=["res://.godot/imported/RoomL-A.blend-e32740ded86e44a2285856323f99185d.scn"]
 
 [params]
 

@@ -11,20 +11,34 @@ public partial class DynamicTest : Node3D
 	private DebugUI Debug_debugUI;
 
 	private bool Debug_renderAllRooms = false;
-	public override void _Ready()
+
+	public async override void _Ready()
 	{
 		Debug_debugUI = (DebugUI) GetNode("/root/DebugLayer");
 		DebugMaster.Instance.SignalDebug_RoomRenderToogle += UpdateAllRoomsStates;
-		genAlg.GenerateLevel();
 
+		// 1. Wait here until the generator finishes its background work
+		bool success = await genAlg.GenerateLevel();
+
+		if (!success)
+		{
+			GD.PrintErr("Level generation failed to complete.");
+			return;
+		}
+
+		// 2. Safe to fetch info now that generation is 100% finished
 		rooms = genAlg.placedRooms;
 		getSignals();
+
+		// 3. Safe to clean up the algorithm node
+		genAlg.QueueFree();
 	}
+
 	public override void _Process(double delta)
 	{
-		if (DebugMaster.Instance.levelDebugUIEnabled)
+		if (DebugMaster.Instance.levelDebugUIEnabled && playerCurrentRoom != null)
 		{
-			UpdateRoomInfo();
+			Debug_UpdateRoomInfo();
 		}
 	}
 
@@ -47,24 +61,23 @@ public partial class DynamicTest : Node3D
 
 	private void UpdateAllRoomsStates(DynamicRoom activeRoom)
 	{
-
 		playerCurrentRoom = activeRoom;
 		foreach (DynamicRoom room in rooms)
 		{
 			if (room == activeRoom)
-				room.SetActiveRoom();
+				room.SetRoomState(DynamicRoom.RoomStateEnum.Active);
 
 			else if (activeRoom.ConnectedRooms.Contains(room))
-				room.SetInactiveRoom();
+				room.SetRoomState(DynamicRoom.RoomStateEnum.Inactive);
 
 			else
-				room.SetDisabledRoom();
+				room.SetRoomState(DynamicRoom.RoomStateEnum.Disabled);
 		}
+		
 		if (Debug_renderAllRooms)
 		{
 			UpdateAllRoomsStates(Debug_renderAllRooms);
 		}
-
 	}
 
 	private void UpdateAllRoomsStates(bool state)
@@ -75,16 +88,19 @@ public partial class DynamicTest : Node3D
 			foreach (DynamicRoom room in rooms)
 				room.Visible = Debug_renderAllRooms;
 		}
-		else
+		else if (playerCurrentRoom != null)
+		{
 			UpdateAllRoomsStates(playerCurrentRoom);
+		}
 	}
 
-	private void UpdateRoomInfo()
+	private void Debug_UpdateRoomInfo()
 	{
 		string title = "Room Info";
 		string name = "Name: " + playerCurrentRoom.Name;
 		string position = "Pos: " + playerCurrentRoom.Position.ToString();
-		string entities = "Entities: 0";
-		Debug_debugUI.UpdateRoomInfo(title + "\n\n" + name + "\n" + position + "\n" + entities);
+		string roomtype = "Room type: " + playerCurrentRoom.roomType;
+		
+		Debug_debugUI.UpdateRoomInfo(title + "\n\n" + name + "\n" + position + "\n" + roomtype);
 	}
 }

@@ -7,39 +7,36 @@
 [ext_resource type="PackedScene" uid="uid://u8hblfhhvubc" path="res://src/scenes/TestScenes/DynamicTest/RoomRectangle.tscn" id="4_4ri28"]
 [ext_resource type="PackedScene" uid="uid://dfu2a7m80kgmc" path="res://src/scenes/TestScenes/DynamicTest/RoomSmall.tscn" id="4_s1lne"]
 [ext_resource type="PackedScene" uid="uid://cjplu0ylekea7" path="res://src/scenes/TestScenes/DynamicTest/HallwayShort.tscn" id="5_hg8o7"]
+[ext_resource type="PackedScene" uid="uid://8hhugn2gnryv" path="res://src/scenes/TestScenes/DynamicTest/RoomL.tscn" id="6_q3ief"]
 [ext_resource type="PackedScene" uid="uid://s5wwm5ykyjkd" path="res://src/scenes/TestScenes/DynamicTest/HallwayLong.tscn" id="6_xf05x"]
-[ext_resource type="PackedScene" uid="uid://oea2uyph2jxn" path="res://src/scenes/TestScenes/Entities/character.tscn" id="7_nex5e"]
 [ext_resource type="Script" uid="uid://dnp4r0ulyj82w" path="res://src/scripts/TestScripts/CameraController.cs" id="9_xf05x"]
+[ext_resource type="PackedScene" uid="uid://ua5hfrhr7hba" path="res://src/scenes/TestScenes/Entities/simpleCharacter.tscn" id="10_u2gym"]
 
-[node name="SceneDynamicTest" type="Node3D" unique_id=1965484598 node_paths=PackedStringArray("genAlg", "character")]
+[node name="DynamicTest" type="Node3D" unique_id=1965484598 node_paths=PackedStringArray("genAlg", "character")]
 script = ExtResource("1_u2gym")
 genAlg = NodePath("GenAlgorith")
 character = NodePath("Character")
 
-[node name="RoomManager" type="Node3D" parent="." unique_id=981809718]
-
-[node name="GenAlgorith" type="Node3D" parent="." unique_id=943615371]
-script = ExtResource("1_x53nq")
-StartRoomScene = ExtResource("4_4ri28")
-EndRoomScene = ExtResource("4_4ri28")
-StandardRoomScenes = Array[PackedScene]([ExtResource("4_4ri28"), ExtResource("2_x53nq"), ExtResource("4_s1lne")])
-HallwayScenes = Array[PackedScene]([ExtResource("5_hg8o7"), ExtResource("6_xf05x")])
-HallwayChance = 0.5
-BranchChance = 1.0
-RoomSpacing = 40.0
-MinLoopDistance = 5
-
-[node name="DebugCamera" type="Camera3D" parent="." unique_id=208148669]
-transform = Transform3D(1, 0, 0, 0, 0.06712448, 0.9977446, 0, -0.9977446, 0.06712448, 0, 19.803192, 5.9218445)
-script = ExtResource("3_ovaaa")
-MoveSpeed = 70.0
-LookSensitivity = 0.007
+[node name="Rooms" type="Node3D" parent="." unique_id=981809718]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1333555428]
-transform = Transform3D(0.94656336, -0.20430237, 0.24955635, 0, 0.77377504, 0.63346046, -0.32251796, -0.59961045, 0.7324271, 0, 10.912521, 0)
+transform = Transform3D(0.99305534, -0.07451704, 0.09104195, 0, 0.7738403, 0.63338095, -0.117649466, -0.62898225, 0.7684661, 0, 10.912521, 0)
 
-[node name="Character" parent="." unique_id=1780338015 instance=ExtResource("7_nex5e")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.158351, 0)
+[node name="GenAlgorith" type="Node3D" parent="." unique_id=943615371 node_paths=PackedStringArray("roomFolder")]
+script = ExtResource("1_x53nq")
+roomFolder = NodePath("../Rooms")
+startRoomScene = ExtResource("4_s1lne")
+endRoomScene = ExtResource("4_s1lne")
+standardRoomScenes = Array[PackedScene]([ExtResource("4_s1lne"), ExtResource("6_q3ief"), ExtResource("2_x53nq"), ExtResource("4_4ri28")])
+hallwayScenes = Array[PackedScene]([ExtResource("6_xf05x"), ExtResource("5_hg8o7")])
+mainPathLength = 10
+hallwayChance = 0.5
+roomSpacing = 50.0
+branchChance = 0.5
+maxBranchRooms = 5
+loopBranchChance = 0.0
+maxChanceLoopDistance = 100
+maxBranchFails = 30
 
 [node name="MainCamera" type="Camera3D" parent="." unique_id=351000332 node_paths=PackedStringArray("character")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
@@ -47,6 +44,21 @@ doppler_tracking = 2
 current = true
 fov = 42.2
 script = ExtResource("9_xf05x")
-MoveSpeed = 30.0
-MaxZoom = 500.0
 character = NodePath("../Character")
+horizontalDistance = 35.0
+verticalDistance = 20.0
+
+[node name="DebugCamera" type="Camera3D" parent="." unique_id=208148669]
+transform = Transform3D(1, 0, 0, 0, 0.06712448, 0.9977446, 0, -0.9977446, 0.06712448, 0, 19.803192, 5.9218445)
+script = ExtResource("3_ovaaa")
+MoveSpeed = 70.0
+LookSensitivity = 0.007
+
+[node name="Character" parent="." unique_id=1508010029 instance=ExtResource("10_u2gym")]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1106047965]
+visible = false
+light_energy = 11.182
+shadow_enabled = true
+omni_range = 1985.136
+omni_attenuation = 10.0

@@ -3,71 +3,62 @@ using Godot;
 public partial class GlobalManager : Node
 {
 	public static GlobalManager Instance; //Instancia de la clase para poder referenciarla en otros scripts.
-	public PackedScene mainMenu;
-	public PackedScene dynamicTest;
+	public LevelList levelList; //Contiene una lista con todos los niveles del juego.
+	public Node WorldNode;
 
-	private bool isMainScene;
+	private bool mainExecution;
 
 	public override void _Ready()
 	{
 		if (GetTree().CurrentScene.Name == "Main")
 		{
-			isMainScene = true;
+			mainExecution = true;
 
 			Instance = this; //La isntancia se instancia.
 
-			mainMenu = GD.Load<PackedScene>("res://src/scenes/MainMenu.tscn");
-			dynamicTest = GD.Load<PackedScene>("res://src/scenes/TestScenes/DynamicTest/DynamicTest.tscn");
+			levelList = (LevelList) GetNode("/root/Main");
+			WorldNode = GetNode("/root/Main/World");
 
-			LoadMainMenu();
+			LoadWorld(LevelList.levelListEnum.MainMenu);
 		}
 		else
-			isMainScene = false;
+			mainExecution = false;
 	}
 
-	public void LoadMainMenu()
+	public void LoadWorld(LevelList.levelListEnum level)
 	{
-		MainMenu menu = (MainMenu)mainMenu.Instantiate();
-		menu.PlayGame += PlayButtonPressed;
-		menu.ExitGame += ExitButtonPressed;
-		GetNode("../Main/World").AddChild(menu);
+		UnloadWorld();
+
+		if (level == LevelList.levelListEnum.MainMenu)
+		{
+			MainMenu menu = (MainMenu) levelList.MainMenu.Instantiate();
+			WorldNode.AddChild(menu);
+		}
+
+		if (level == LevelList.levelListEnum.DynamicTest)
+		{
+			DebugMaster.Instance.SetLevelDebug(true);
+			DynamicTest instance = (DynamicTest) levelList.DynamicTest.Instantiate();
+			WorldNode.AddChild(instance);
+		}
+
+		if(level == LevelList.levelListEnum.level1)
+		{
+			DebugMaster.Instance.SetLevelDebug(true);
+			DynamicTest instance = (DynamicTest) levelList.DynamicTest.Instantiate();
+			WorldNode.AddChild(instance);
+		}
 	}
 
-	public void RemoveMainMenu()
+	public void UnloadWorld()
 	{
-		GetNode("../Main/World/MainMenu").QueueFree();
+		foreach (Node node in WorldNode.GetChildren())
+		{
+			node.QueueFree();
+		}
 	}
 
-	public void LoadDynamicTest()
-	{
-		DebugMaster.Instance.SetLevelDebug(true);
-
-		DynamicTest level = (DynamicTest) dynamicTest.Instantiate();
-
-		GetNode("../Main/World").AddChild(level);
-	}
-
-	public void RemoveDynamicTest()
-	{
-		DebugMaster.Instance.SetLevelDebug(false);
-		GetNode("../Main/World/DynamicTest").QueueFree();
-	}
-
-	public void LevelEnds()
-	{
-		GD.Print("Unload!");
-		RemoveDynamicTest();
-		LoadMainMenu();
-	}
-
-	public void PlayButtonPressed()
-	{
-		GD.Print("Play!");
-		RemoveMainMenu();
-		LoadDynamicTest();
-	}
-
-	public void ExitButtonPressed()
+	public void ExitGame()
 	{
 		GetTree().Quit();
 	}

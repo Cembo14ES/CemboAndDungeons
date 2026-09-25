@@ -2,58 +2,62 @@ using Godot;
 
 public partial class CameraController : Camera3D
 {
-    [Export] public float MoveSpeed = 15.0f;
-    [Export] public float ZoomSpeed = 2.0f;
-    [Export] public float MinZoom = 5.0f;
-    [Export] public float MaxZoom = 50.0f;
+    [Export] public SimpleCharacter character;
+    [Export] public float horizontalDistance;
+    [Export] public float verticalDistance;
+    [Export] public float rotationSpeed = 2.0f; // Speed of rotation in radians per second
 
-    [Export] public Node3D character;
-
-    private float _currentZoom = 50.0f;
+    private float rotation = 0.0f; // Rotation angle in radians
+    private float XDistance;
+    private float ZDistance;
 
     public override void _Ready()
-	{
-		DebugMaster.Instance.SignalDebug_debugCameraToogle += ToogleCamera;
-	}
+    {
+        DebugMaster.Instance.SignalDebug_debugCameraToogle += ToogleCamera;
+        UpdateCameraOffsets();
+    }
 
     public override void _Process(double delta)
     {
-        Position = new Vector3(character.Position.X, _currentZoom, character.Position.Z);
-    }
+        if (character == null) return;
 
-    public override void _UnhandledInput(InputEvent @event)
-    {
-        // 2. Handle Mouse Wheel Zoom
-        if (@event is InputEventMouseButton mouseEvent)
+        // Smoothly adjust rotation based on key holds
+        if (Input.IsKeyPressed(Key.E))
         {
-            if (mouseEvent.ButtonIndex == MouseButton.WheelUp)
-                _currentZoom -= ZoomSpeed;
-            if (mouseEvent.ButtonIndex == MouseButton.WheelDown)
-                _currentZoom += ZoomSpeed;
-
-            // Clamp the zoom so it doesn't go too close or too far
-            _currentZoom = Mathf.Clamp(_currentZoom, MinZoom, MaxZoom);
-
-            // Update the Camera's Y position based on the zoom
-            // (Assuming Camera is rotated -90 degrees on X to look down)
-            Vector3 pos = GlobalPosition;
-            pos.Y = _currentZoom;
-            GlobalPosition = pos;
+            rotation -= rotationSpeed * (float)delta;
         }
+        if (Input.IsKeyPressed(Key.Q))
+        {
+            rotation += rotationSpeed * (float)delta;
+        }
+
+        // Keep rotation bounded within 0 to 2*PI radians
+        rotation = Mathf.PosMod(rotation, Mathf.Tau);
+
+        UpdateCameraOffsets();
+
+        // Position camera around the player
+        Position = new Vector3(
+            character.Position.X + XDistance,
+            character.Position.Y + verticalDistance,
+            character.Position.Z + ZDistance
+        );
+
+        // Look directly at player position
+        LookAt(character.GlobalPosition);
     }
 
-    public void setPosition(Vector3 position)
+    private void UpdateCameraOffsets()
     {
-        position = new Vector3(position.X, _currentZoom ,position.Z);
-        Position = position;
+        XDistance = Mathf.Sin(rotation) * horizontalDistance;
+        ZDistance = Mathf.Cos(rotation) * horizontalDistance;
     }
 
     public void ToogleCamera()
     {
         if (DebugMaster.Instance.debugCameraEnabled)     
-            this.Current = false;     
+            Current = false;     
         else      
-            this.Current = true;      
-        
+            Current = true;      
     }
 }

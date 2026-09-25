@@ -34,7 +34,7 @@ public partial class SceneGenerationTest : Node3D
 
 	private void ExitLevel()
     {
-        GlobalManager.Instance.LevelEnds();
+        GlobalManager.Instance.ExitGame();
     }
 
 	public void emptyRoomManager()

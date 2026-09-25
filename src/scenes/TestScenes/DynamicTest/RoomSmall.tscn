@@ -2,6 +2,10 @@
 
 [ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.tscn" id="1_5vovb"]
 [ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://src/scenes/TestScenes/DynamicTest/DynamicRoom.cs" id="1_nadui"]
+[ext_resource type="Texture2D" uid="uid://bah5dmrtnakmc" path="res://assets/sprites/room_assets/main.png" id="3_5phpm"]
+[ext_resource type="Texture2D" uid="uid://86xrn2one1y3" path="res://assets/sprites/room_assets/start.png" id="4_k5llp"]
+[ext_resource type="Texture2D" uid="uid://cx2bamsodhh87" path="res://assets/sprites/room_assets/end.png" id="5_r2f5b"]
+[ext_resource type="Texture2D" uid="uid://b85hhn2y6f537" path="res://assets/sprites/room_assets/loop.png" id="6_k5llp"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ou8lm"]
 data = PackedVector3Array(-12.5, 0, -12.5, 12.5, 0, 12.5, -12.5, 0, 12.5, -12.5, 0, -12.5, 12.5, 0, -12.5, 12.5, 0, 12.5, -7.5, 0, 12.5, -12.5, 10, 12.5, -12.5, 0, 12.5, -7.5, 0, 12.5, -7.5, 10, 12.5, -12.5, 10, 12.5, -12.5, 0, -7.5, -12.5, 10, -12.5, -12.5, 0, -12.5, -12.5, 0, -7.5, -12.5, 10, -7.5, -12.5, 10, -12.5, 12.5, 0, 7.5, 12.5, 10, 12.5, 12.5, 0, 12.5, 12.5, 0, 7.5, 12.5, 10, 7.5, 12.5, 10, 12.5, 7.5, 0, -12.5, 12.5, 10, -12.5, 12.5, 0, -12.5, 7.5, 0, -12.5, 7.5, 10, -12.5, 12.5, 10, -12.5, 12.5, 0, 12.5, 7.5, 10, 12.5, 7.5, 0, 12.5, 12.5, 0, 12.5, 12.5, 10, 12.5, 7.5, 10, 12.5, 2.5, 0, 12.5, -2.5, 10, 12.5, -2.5, 0, 12.5, 2.5, 0, 12.5, 2.5, 10, 12.5, -2.5, 10, 12.5, 12.5, 0, -12.5, 12.5, 10, -7.5, 12.5, 0, -7.5, 12.5, 0, -12.5, 12.5, 10, -12.5, 12.5, 10, -7.5, 12.5, 0, -2.5, 12.5, 10, 2.5, 12.5, 0, 2.5, 12.5, 0, -2.5, 12.5, 10, -2.5, 12.5, 10, 2.5, -12.5, 0, -12.5, -7.5, 10, -12.5, -7.5, 0, -12.5, -12.5, 0, -12.5, -12.5, 10, -12.5, -7.5, 10, -12.5, -2.5, 0, -12.5, 2.5, 10, -12.5, 2.5, 0, -12.5, -2.5, 0, -12.5, -2.5, 10, -12.5, 2.5, 10, -12.5, -12.5, 0, 12.5, -12.5, 10, 7.5, -12.5, 0, 7.5, -12.5, 0, 12.5, -12.5, 10, 12.5, -12.5, 10, 7.5, -12.5, 0, 2.5, -12.5, 10, -2.5, -12.5, 0, -2.5, -12.5, 0, 2.5, -12.5, 10, 2.5, -12.5, 10, -2.5)
@@ -47,10 +51,17 @@ shadow_mesh = SubResource("ArrayMesh_5067u")
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ou8lm"]
 points = PackedVector3Array(-12.5, 0, -12.5, -12.5, 0, 12.5, -12.5, 10, -12.5, 12.5, 0, -12.5, -12.5, 10, 12.5, 12.5, 0, 12.5, 12.5, 10, -12.5, 12.5, 10, 12.5)
 
-[node name="RoomSmall" type="Node3D" unique_id=1667765445 node_paths=PackedStringArray("HitboxNodes", "roomArea")]
+[node name="RoomSmall" type="Node3D" unique_id=1667765445 node_paths=PackedStringArray("roomArea", "doorFolder", "endSprite", "startSprite", "mainSprite", "loopSprite")]
 script = ExtResource("1_nadui")
-HitboxNodes = [NodePath("Meshes/RoomMesh")]
 roomArea = NodePath("PlayerArea")
+doorFolder = NodePath("Meshes/Doors")
+endSprite = NodePath("End")
+startSprite = NodePath("Start")
+mainSprite = NodePath("Main")
+loopSprite = NodePath("loop")
+tileSize = 5.0
+gridStateData = Array[int]([1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 1])
+localOccupiedTiles = Array[Vector3i]([Vector3i(-2, 0, -2), Vector3i(-1, 0, -2), Vector3i(0, 0, -2), Vector3i(1, 0, -2), Vector3i(2, 0, -2), Vector3i(-2, 0, -1), Vector3i(-1, 0, -1), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(2, 0, -1), Vector3i(-2, 0, 0), Vector3i(-1, 0, 0), Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(-2, 0, 1), Vector3i(-1, 0, 1), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(2, 0, 1), Vector3i(-2, 0, 2), Vector3i(-1, 0, 2), Vector3i(0, 0, 2), Vector3i(1, 0, 2), Vector3i(2, 0, 2)])
 
 [node name="Meshes" type="StaticBody3D" parent="." unique_id=991842710]
 
@@ -64,19 +75,19 @@ mesh = SubResource("ArrayMesh_nuujk")
 
 [node name="DoorE1" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("1_5vovb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, 5)
-Direction = 2
+cardinalDirection = 2
 
 [node name="DoorE2" parent="Meshes/Doors" unique_id=242832454 instance=ExtResource("1_5vovb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, -5)
-Direction = 2
+cardinalDirection = 2
 
 [node name="DoorW1" parent="Meshes/Doors" unique_id=2125637151 instance=ExtResource("1_5vovb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 5)
-Direction = 3
+cardinalDirection = 3
 
 [node name="DoorW2" parent="Meshes/Doors" unique_id=1026199088 instance=ExtResource("1_5vovb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, -5)
-Direction = 3
+cardinalDirection = 3
 
 [node name="DoorN1" parent="Meshes/Doors" unique_id=62295445 instance=ExtResource("1_5vovb")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, 12.5)
@@ -86,11 +97,11 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 
 
 [node name="DoorS1" parent="Meshes/Doors" unique_id=1996726749 instance=ExtResource("1_5vovb")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, -12.5)
-Direction = 1
+cardinalDirection = 1
 
 [node name="DoorS2" parent="Meshes/Doors" unique_id=2031572912 instance=ExtResource("1_5vovb")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, -12.5)
-Direction = 1
+cardinalDirection = 1
 
 [node name="PlayerArea" type="Area3D" parent="." unique_id=1144867846]
 process_mode = 3
@@ -98,5 +109,25 @@ process_mode = 3
 [node name="RoomArea" type="CollisionShape3D" parent="PlayerArea" unique_id=213370158]
 process_mode = 3
 shape = SubResource("ConvexPolygonShape3D_ou8lm")
+
+[node name="Main" type="Sprite3D" parent="." unique_id=863357399]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -9.479377, 1.7754135, -5.8326836)
+visible = false
+texture = ExtResource("3_5phpm")
+
+[node name="Start" type="Sprite3D" parent="." unique_id=208835661]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 1.578928, 3.501543)
+visible = false
+texture = ExtResource("4_k5llp")
+
+[node name="End" type="Sprite3D" parent="." unique_id=1468068548]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -7.3695745, 0.53909874, 7.268297)
+visible = false
+texture = ExtResource("5_r2f5b")
+
+[node name="loop" type="Sprite3D" parent="." unique_id=961617493]
+transform = Transform3D(1, 0, 0, 0, 0.12070792, -0.99268806, 0, 0.99268806, 0.12070792, 0, 1.6266966, 0)
+visible = false
+texture = ExtResource("6_k5llp")
 
 [connection signal="body_entered" from="PlayerArea" to="." method="On_PlayerEnter"]

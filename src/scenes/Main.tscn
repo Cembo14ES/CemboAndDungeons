@@ -1,9 +1,14 @@
 [gd_scene format=3 uid="uid://bxrthnxuundfb"]
 
+[ext_resource type="Script" uid="uid://c7kwelq0gr2jl" path="res://src/scripts/MainNode/LevelList.cs" id="1_akft7"]
+[ext_resource type="PackedScene" uid="uid://dimfn47e65r3o" path="res://src/scenes/MainMenu.tscn" id="2_1hqvy"]
+[ext_resource type="PackedScene" uid="uid://bpj8lgxfu52rt" path="res://src/scenes/TestScenes/DynamicTest/DynamicTest.tscn" id="3_w8f5i"]
+
 [node name="Main" type="Node" unique_id=561419243]
+script = ExtResource("1_akft7")
+MainMenu = ExtResource("2_1hqvy")
+DynamicTest = ExtResource("3_w8f5i")
 
 [node name="Systems" type="Node" parent="." unique_id=120965175]
-
-[node name="Debug" type="Node" parent="Systems" unique_id=125678667]
 
 [node name="World" type="Node3D" parent="." unique_id=264984720]

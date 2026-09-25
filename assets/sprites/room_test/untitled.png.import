@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dgjcrk0gy3yg4"
-path.s3tc="res://.godot/imported/Pistola.png-3080114d4e82dcdc961fb28855b31d55.s3tc.ctex"
+uid="uid://7r5wy0qlk6u"
+path.s3tc="res://.godot/imported/untitled.png-d6c572f91e74a003f61a6099e511c139.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/sprites/Pistola.png"
-dest_files=["res://.godot/imported/Pistola.png-3080114d4e82dcdc961fb28855b31d55.s3tc.ctex"]
+source_file="res://assets/sprites/room_test/untitled.png"
+dest_files=["res://.godot/imported/untitled.png-d6c572f91e74a003f61a6099e511c139.s3tc.ctex"]
 
 [params]
 

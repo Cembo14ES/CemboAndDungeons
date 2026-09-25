@@ -3,36 +3,22 @@ using System;
 
 public partial class MainMenu : CanvasLayer
 {
-	[Signal] public delegate void PlayGameEventHandler();
-    [Signal] public delegate void OpenSettingsEventHandler();
-    [Signal] public delegate void ExitGameEventHandler();
 	[Export] public AudioStreamPlayer2D setting;
 	private bool exiting = false;
-	public override void _Ready()
-	{
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
 
 	public void On_PlayPressed()
 	{
-		GD.Print("Play");
 		playButtonSound();
-		EmitSignal(SignalName.PlayGame);
+		GlobalManager.Instance.LoadWorld(LevelList.levelListEnum.DynamicTest);
 	}
 
 	public void On_SettingsPressed()
 	{
-		GD.Print("setting");
 		playButtonSound();
 	}
 
 	public void On_ExitPressed()
 	{
-		GD.Print("exit");
 		playButtonSound();
 		exiting = true;
 	}
@@ -49,7 +35,7 @@ public partial class MainMenu : CanvasLayer
 	{
 		if (exiting)
 		{
-			EmitSignal(SignalName.ExitGame);
+			GlobalManager.Instance.ExitGame();
 		}
 	}
 }
