@@ -2,59 +2,82 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// Este Script va a una habitacion. Es usado principalmente para la generacion del nivel, y tambien 
-/// alternar estados de visibilidad y actividad.
-/// </summary>
+[Tool]
 public partial class DynamicRoom : Node3D
 {
-    // -------
-    // SIGNALS
-    // -------
-    [Signal] public delegate void Signal_SetRoomStatesEventHandler(DynamicRoom room); //This signal is emited to notify the Player entering this room's area.
+    [Signal] public delegate void Signal_SetRoomStatesEventHandler(DynamicRoom room);
 
-    // ------------------
-    // EXPORTED VARIABLES
-    // ------------------
-    [Export] public Area3D roomArea; //The Area3D containing the Collisions of the rooms bounding boxes.
-    [Export] public Node3D doorFolder; //This Node3D contains all the Doors of the room.
+    public enum TileType { Empty = 0, Room = 1, DoorNorth = 2, DoorEast = 3, DoorSouth = 4, DoorWest = 5 }
+    public enum RoomRotationEnum { None = 0, OneQuarter = 1, Half = 2, ThreeQuarters = 3 } 
+    public enum RoomStateEnum { Active, Inactive, Disabled } 
+    public enum RoomTypeEnum { Regular, Start, End, Main, Loop } 
+
+    [Export] public Area3D roomArea; 
+    [Export] public Node3D doorFolder; 
 
     [Export] public Sprite3D endSprite;
     [Export] public Sprite3D startSprite;
     [Export] public Sprite3D mainSprite;
     [Export] public Sprite3D loopSprite;
 
-    // -----
-    // ENUMS
-    // -----
-    public enum RoomRotationEnum {None = 0, OneQuarter = 1, Half = 2, ThreeQuarters = 3 } //This Enum Contains the rotation Posibilities
-    public enum RoomStateEnum {Active, Inactive, Disabled } //The posible state of the room
-    public enum RoomTypeEnum {Regular, Start, End, Main, Loop} //The Type of room.
+    [Export] public int gridWidth = 5;
+    [Export] public int gridHeight = 5;
 
-    // ---------------
-    // ROOM CONECTIONS
-    // ---------------
-    public List<RoomDoor> Doors { get; private set; } = new List<RoomDoor>(); //This List contains all the Doors of the room.
-    public List<DynamicRoom> ConnectedRooms { get; private set; } = new List<DynamicRoom>(); //This List contains all the Rooms conected to this room.
+    public Dictionary<Vector2I, int> roomGrid = new Dictionary<Vector2I, int>();
+    [Export] public Godot.Collections.Array<int> gridMapData = new Godot.Collections.Array<int>();
 
-    // -----------------
-    // PRIVATE VARIABLES
-    // -----------------
-    private RoomRotationEnum roomRotation = RoomRotationEnum.None; //The room's current rotation.
-    private RoomStateEnum roomState = RoomStateEnum.Disabled; //The room's current rotation.
-    public RoomTypeEnum roomType = RoomTypeEnum.Regular; //The room's current Type.
+    public List<RoomDoor> Doors { get; private set; } = new List<RoomDoor>(); 
+    public List<DynamicRoom> ConnectedRooms { get; private set; } = new List<DynamicRoom>(); 
+
+    private RoomRotationEnum roomRotation = RoomRotationEnum.None; 
+    private RoomStateEnum roomState = RoomStateEnum.Disabled; 
+    public RoomTypeEnum roomType = RoomTypeEnum.Regular; 
     private List<CollisionShape3D> roomAreaShapes = new List<CollisionShape3D>();
     private bool isInitialized = false;
 
+    public RoomRotationEnum GetCurrentRotation() => roomRotation;
 
+    public static int RotateTileValue(int tileVal, RoomRotationEnum rotation)
+    {
+        if (tileVal < 2 || tileVal > 5) return tileVal;
+        int shift = (int)rotation; // 0=None, 1=90CW, 2=180, 3=270CW
+        int baseDir = tileVal - 2; // 0=N, 1=E, 2=S, 3=W
+        int newDir = (baseDir + shift) % 4;
+        return newDir + 2;
+    }
 
-    //Inicializa la habitacion.
+    public Dictionary<Vector2I, int> GetRotatedRoomGrid(RoomRotationEnum rotation)
+    {
+        Dictionary<Vector2I, int> rotatedGrid = new Dictionary<Vector2I, int>();
+        int w = gridWidth;
+        int h = gridHeight;
+
+        foreach (var kvp in roomGrid)
+        {
+            Vector2I pos = kvp.Key;
+            int val = kvp.Value;
+            int x = pos.X;
+            int y = pos.Y;
+
+            Vector2I newPos = rotation switch
+            {
+                RoomRotationEnum.None => new Vector2I(x, y),
+                RoomRotationEnum.OneQuarter => new Vector2I(h - 1 - y, x),
+                RoomRotationEnum.Half => new Vector2I(w - 1 - x, h - 1 - y),
+                RoomRotationEnum.ThreeQuarters => new Vector2I(y, w - 1 - x),
+                _ => new Vector2I(x, y)
+            };
+            
+            rotatedGrid[newPos] = RotateTileValue(val, rotation);
+        }
+        return rotatedGrid;
+    }
+
     public void InitializeRoom(RoomTypeEnum type)
     {
         if (isInitialized) return;
         isInitialized = true;
 
-        //Obtiene todas las puertas y las guarda
         foreach (Node child in doorFolder.GetChildren())
         {
             if (child is RoomDoor door)
@@ -65,19 +88,29 @@ public partial class DynamicRoom : Node3D
             }
         }
 
-        //Obtiene las collisiones del Area de la habitacion
         foreach (Node child in roomArea.GetChildren())
         {
             if (child is CollisionShape3D colShape) roomAreaShapes.Add(colShape);
         }
         
+        if (roomGrid.Count == 0 && gridMapData.Count == gridWidth * gridHeight)
+        {
+            for (int y = 0; y < gridHeight; y++)
+            {
+                for (int x = 0; x < gridWidth; x++)
+                {
+                    int idx = (y * gridWidth) + x;
+                    if (gridMapData[idx] > 0)
+                    {
+                        roomGrid[new Vector2I(x, y)] = gridMapData[idx];
+                    }
+                }
+            }
+        }
+
         setRoomType(type);
     }
 
-    /// <summary>
-    /// Gira la habitacion y las puertas de esta sobre el eje Y.
-    /// </summary>
-    /// <param name="newRotation">La nueva rotacion</param>
     public void SetRotation(RoomRotationEnum newRotation)
     {
         int steps = ((int)newRotation - (int)roomRotation + 4) % 4;
@@ -91,24 +124,15 @@ public partial class DynamicRoom : Node3D
         RotationDegrees = new Vector3(0, (int)newRotation * 90, 0);
     }
 
-    /// <summary>
-    /// El metodo se encarga de recoger todos los AABBs del Area3D de la habitacion. Un AABB es
-    /// una representacion de una dimension en 3D usado para hacer calculos rapidos.
-    /// </summary>
-    /// <returns>Una lista con todas las AABBs</returns>
     private List<Aabb> GetRoomAABBs()
     {
         List<Aabb> roomAABBs = new List<Aabb>();
-
-        //Itera por cada collisionShape en el Area3D
         foreach (CollisionShape3D colShape in roomAreaShapes)
         {
             Transform3D nodeWorldTransform = Transform * GetRelativeTransform(colShape);
-
             Aabb globalAABB = new Aabb();
             bool hasValidShape = true;
 
-            // Realiza diferentes calculos, dependiendo el tipo de forma que tiene el CollisionShape3D
             if (colShape.Shape is ConvexPolygonShape3D convex)
             {
                 Vector3[] points = convex.Points;
@@ -136,53 +160,31 @@ public partial class DynamicRoom : Node3D
             }
             else
             {
-                GD.PrintErr($"Unsupported shape type in {this.Name}: {colShape.Name}");
                 hasValidShape = false;
             }
 
-            if (hasValidShape)
-            {
-                roomAABBs.Add(globalAABB);
-            }
+            if (hasValidShape) roomAABBs.Add(globalAABB);
         }
         return roomAABBs;
     }
 
-    /// <summary>
-    /// El Metodo comprueba si dos habitaciones se sobreponen, iterando a traves de sus AABBs.
-    /// </summary>
-    /// <param name="otherRoom">La otra habitacion.</param>
-    /// <param name="roomSpacing">El espacio de separacion que hay entre habitaciones.</param>
-    /// <returns>Si las habitaciones se sobreponen o no.</returns>
     public bool IntersectsWith(DynamicRoom otherRoom, float roomSpacing)
     {
-        //Obtiene los AABBs de las habitaciones.
         List<Aabb> thisRoomAABBs = GetRoomAABBs();
         List<Aabb> otherRoomAABBs = otherRoom.GetRoomAABBs();
 
-        //Itera por todas las AABBs.
         foreach (Aabb myAABB in thisRoomAABBs)
         {
-            Aabb shrunkMine = myAABB.Grow(roomSpacing); //Agranda el tamaño de la habitacion acorde a la separacion
-
+            Aabb shrunkMine = myAABB.Grow(roomSpacing); 
             foreach (Aabb otherAABB in otherRoomAABBs)
             {
-                Aabb shrunkOther = otherAABB.Grow(roomSpacing); //Agranda el tamaño de la habitacion acorde a la separacion
-
-                if (shrunkMine.Intersects(shrunkOther)) //Comprueba si las habitaciones se sobreponen.
-                    return true; 
+                Aabb shrunkOther = otherAABB.Grow(roomSpacing); 
+                if (shrunkMine.Intersects(shrunkOther)) return true; 
             }
         }
-
-        return false; //Si no se ha detectado ninguna sobreposicion, se retorna False
+        return false; 
     }
 
-    /// <summary>
-    /// Este metodo realiza calculos para obtener el GlobalTransform de un Nodo, ya que al no estar
-    /// inizializado, no se puede usar GlobalTransform.
-    /// </summary>
-    /// <param name="childNode">El Nodo a obtener el Transform</param>
-    /// <returns>El Transform Global del Nodo</returns>
     public Transform3D GetRelativeTransform(Node3D childNode)
     {
         Transform3D localTrans = childNode.Transform;
@@ -190,47 +192,33 @@ public partial class DynamicRoom : Node3D
 
         while (parent != null && parent != this && parent is Node3D parent3D)
         {
-            localTrans = parent3D.Transform * localTrans; //Calculo del Global Tranform
+            localTrans = parent3D.Transform * localTrans; 
             parent = parent.GetParent();
         }
         return localTrans;
     }
 
-    /// <summary>
-    /// Actualiza el estado de la habitacion. Un a habitacion puede tener 3 estados:
-    /// -Activo: La habitacion se renderiza y sus elementos son procesados.
-    /// -Inactivo: La habitacion se renderiza, pero sus elementos no son procesados (Congelado).
-    /// -Desactivado: La habitacion no se renderiza y sus elementos no son procesados.
-    /// 
-    /// El Area3D de la habitacion se procesa independientemente del estado de la habitacion.
-    /// </summary>
-    /// <param name="state">El nuevo estado de la habitacion.</param>
     public void SetRoomState(RoomStateEnum state)
     {
         roomState = state;
-
         switch (state)
         {
             case RoomStateEnum.Active:
                 Visible = true;
                 SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Always);
                 break;
-
             case RoomStateEnum.Inactive:
                 Visible = true;
                 SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Disabled);
                 break;
-
             case RoomStateEnum.Disabled:
                 Visible = false;
                 SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Disabled);
                 break;
         }
+        EmitSignal(SignalName.Signal_SetRoomStates, this);
     }
     
-    /// <summary>
-    /// Devuelve todas las puertas que no estan conectadas a otra habitacion.
-    /// </summary>
     public List<RoomDoor> GetAvailableDoors()
     {
         return Doors.Where(d => !d.isConnected).ToList();
@@ -239,7 +227,6 @@ public partial class DynamicRoom : Node3D
     public void setRoomType(RoomTypeEnum type)
     {
         roomType = type;
-
         if (type == RoomTypeEnum.Regular)
         {
             endSprite.Visible = false;
@@ -247,34 +234,9 @@ public partial class DynamicRoom : Node3D
             mainSprite.Visible = false;
             loopSprite.Visible = false;
         }
-        
-        if (type == RoomTypeEnum.End)
-        {
-            endSprite.Visible = true;
-        }
-        if (type == RoomTypeEnum.Start)
-        {
-            startSprite.Visible = true;
-        }
-        if (type == RoomTypeEnum.Main)
-        {
-            mainSprite.Visible = true;
-        }
-        if (type == RoomTypeEnum.Loop)
-        {
-            loopSprite.Visible = true;
-        }  
-    }
-
-    /// <summary>
-    /// Lisitener para cuando el personaje entra en el Area3D de la habitacion.
-    /// </summary>
-    /// <param name="body"></param>
-    private void On_PlayerEnter(Node3D body)
-    {
-        if (body.Name == "Character")
-        {
-            EmitSignal(SignalName.Signal_SetRoomStates, this); //Emite una señal para actualizar el estado de la habitacion.
-        }
+        if (type == RoomTypeEnum.End) endSprite.Visible = true;
+        if (type == RoomTypeEnum.Start) startSprite.Visible = true;
+        if (type == RoomTypeEnum.Main) mainSprite.Visible = true;
+        if (type == RoomTypeEnum.Loop) loopSprite.Visible = true;
     }
 }

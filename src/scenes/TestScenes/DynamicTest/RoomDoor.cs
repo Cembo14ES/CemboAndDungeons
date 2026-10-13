@@ -29,6 +29,13 @@ public partial class RoomDoor : StaticBody3D
     public RoomDoor ConnectedTo { get; set; } //La puerta a la que esta conectada. (Si hay una conexion de habitaciones)
     public DynamicRoom ParentRoom { get; set; } //La habitacion en la que esta posicionada.
 
+    // NEW: Computed local grid position for the shadow grid map export
+    public Vector2I localGridPosition => new Vector2I(
+        Mathf.RoundToInt(Position.X / 2.0f),
+        
+        Mathf.RoundToInt(Position.Z / 2.0f)
+    );
+
     public bool isConnected { get; set; } = false; //Si la puerta esta conectada a otra puerta/habitacion
     public bool isValidForConnection { get; set;} = true;
 

@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://dfu2a7m80kgmc"]
 
-[ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.tscn" id="1_5vovb"]
+[ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/Rooms/RoomDoor.tscn" id="1_5vovb"]
 [ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://src/scenes/TestScenes/DynamicTest/DynamicRoom.cs" id="1_nadui"]
 [ext_resource type="Texture2D" uid="uid://bah5dmrtnakmc" path="res://assets/sprites/room_assets/main.png" id="3_5phpm"]
 [ext_resource type="Texture2D" uid="uid://86xrn2one1y3" path="res://assets/sprites/room_assets/start.png" id="4_k5llp"]
@@ -59,9 +59,7 @@ endSprite = NodePath("End")
 startSprite = NodePath("Start")
 mainSprite = NodePath("Main")
 loopSprite = NodePath("loop")
-tileSize = 5.0
-gridStateData = Array[int]([1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 1])
-localOccupiedTiles = Array[Vector3i]([Vector3i(-2, 0, -2), Vector3i(-1, 0, -2), Vector3i(0, 0, -2), Vector3i(1, 0, -2), Vector3i(2, 0, -2), Vector3i(-2, 0, -1), Vector3i(-1, 0, -1), Vector3i(0, 0, -1), Vector3i(1, 0, -1), Vector3i(2, 0, -1), Vector3i(-2, 0, 0), Vector3i(-1, 0, 0), Vector3i(0, 0, 0), Vector3i(1, 0, 0), Vector3i(2, 0, 0), Vector3i(-2, 0, 1), Vector3i(-1, 0, 1), Vector3i(0, 0, 1), Vector3i(1, 0, 1), Vector3i(2, 0, 1), Vector3i(-2, 0, 2), Vector3i(-1, 0, 2), Vector3i(0, 0, 2), Vector3i(1, 0, 2), Vector3i(2, 0, 2)])
+gridMapData = [1, 2, 1, 2, 1, 3, 1, 1, 1, 5, 1, 1, 1, 1, 1, 3, 1, 1, 1, 5, 1, 4, 1, 4, 1]
 
 [node name="Meshes" type="StaticBody3D" parent="." unique_id=991842710]
 

@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" uid="uid://cwn0e5xtx6m6u" path="res://src/scenes/TestScenes/DynamicTest/DynamicTest.cs" id="1_u2gym"]
 [ext_resource type="Script" uid="uid://di7a61cuokf0d" path="res://src/scenes/TestScenes/DynamicTest/DynamicGenTest.cs" id="1_x53nq"]
-[ext_resource type="PackedScene" uid="uid://j8dhxjg465ie" path="res://src/scenes/TestScenes/DynamicTest/RoomBig.tscn" id="2_x53nq"]
+[ext_resource type="PackedScene" uid="uid://j8dhxjg465ie" path="res://src/scenes/TestScenes/DynamicTest/Rooms/RoomBig.tscn" id="2_x53nq"]
 [ext_resource type="Script" uid="uid://dd5rdglc7ghg3" path="res://src/scripts/Debug/DebugCamera.cs" id="3_ovaaa"]
-[ext_resource type="PackedScene" uid="uid://u8hblfhhvubc" path="res://src/scenes/TestScenes/DynamicTest/RoomRectangle.tscn" id="4_4ri28"]
-[ext_resource type="PackedScene" uid="uid://dfu2a7m80kgmc" path="res://src/scenes/TestScenes/DynamicTest/RoomSmall.tscn" id="4_s1lne"]
-[ext_resource type="PackedScene" uid="uid://cjplu0ylekea7" path="res://src/scenes/TestScenes/DynamicTest/HallwayShort.tscn" id="5_hg8o7"]
-[ext_resource type="PackedScene" uid="uid://8hhugn2gnryv" path="res://src/scenes/TestScenes/DynamicTest/RoomL.tscn" id="6_q3ief"]
-[ext_resource type="PackedScene" uid="uid://s5wwm5ykyjkd" path="res://src/scenes/TestScenes/DynamicTest/HallwayLong.tscn" id="6_xf05x"]
+[ext_resource type="PackedScene" uid="uid://u8hblfhhvubc" path="res://src/scenes/TestScenes/DynamicTest/Rooms/RoomRectangle.tscn" id="4_4ri28"]
+[ext_resource type="PackedScene" uid="uid://dfu2a7m80kgmc" path="res://src/scenes/TestScenes/DynamicTest/Rooms/RoomSmall.tscn" id="4_s1lne"]
+[ext_resource type="PackedScene" uid="uid://cjplu0ylekea7" path="res://src/scenes/TestScenes/DynamicTest/Rooms/HallwayShort.tscn" id="5_hg8o7"]
+[ext_resource type="PackedScene" uid="uid://8hhugn2gnryv" path="res://src/scenes/TestScenes/DynamicTest/Rooms/RoomL.tscn" id="6_q3ief"]
+[ext_resource type="PackedScene" uid="uid://s5wwm5ykyjkd" path="res://src/scenes/TestScenes/DynamicTest/Rooms/HallwayLong.tscn" id="6_xf05x"]
 [ext_resource type="Script" uid="uid://dnp4r0ulyj82w" path="res://src/scripts/TestScripts/CameraController.cs" id="9_xf05x"]
 [ext_resource type="PackedScene" uid="uid://ua5hfrhr7hba" path="res://src/scenes/TestScenes/Entities/simpleCharacter.tscn" id="10_u2gym"]
 
@@ -31,12 +31,6 @@ standardRoomScenes = Array[PackedScene]([ExtResource("4_s1lne"), ExtResource("6_
 hallwayScenes = Array[PackedScene]([ExtResource("6_xf05x"), ExtResource("5_hg8o7")])
 mainPathLength = 10
 hallwayChance = 0.5
-roomSpacing = 50.0
-branchChance = 0.5
-maxBranchRooms = 5
-loopBranchChance = 0.0
-maxChanceLoopDistance = 100
-maxBranchFails = 30
 
 [node name="MainCamera" type="Camera3D" parent="." unique_id=351000332 node_paths=PackedStringArray("character")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)

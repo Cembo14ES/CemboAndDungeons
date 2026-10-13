@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public partial class DynamicTest : Node3D
 {
+	[Signal] public delegate void Signal_SetRoomStatesEventHandler(DynamicRoom room);
 	[Export] public DynamicGenTest genAlg;
 	[Export] public CharacterBody3D character;
 	private List<DynamicRoom> rooms;

@@ -32,6 +32,10 @@ window/stretch/aspect="expand"
 
 project/assembly_name="Main"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/room_grid_editor/plugin.cfg")
+
 [input]
 
 ReloadMap={

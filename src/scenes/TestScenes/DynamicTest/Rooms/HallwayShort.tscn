@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://cjplu0ylekea7"]
 
-[ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/RoomDoor.tscn" id="1_62dxu"]
+[ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://src/scenes/TestScenes/DynamicTest/Rooms/RoomDoor.tscn" id="1_62dxu"]
 [ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://src/scenes/TestScenes/DynamicTest/DynamicRoom.cs" id="1_jmrms"]
 [ext_resource type="Texture2D" uid="uid://bah5dmrtnakmc" path="res://assets/sprites/room_assets/main.png" id="3_mtg0r"]
 [ext_resource type="Texture2D" uid="uid://86xrn2one1y3" path="res://assets/sprites/room_assets/start.png" id="4_pp530"]
@@ -61,8 +61,7 @@ mainSprite = NodePath("Main")
 loopSprite = NodePath("loop")
 gridWidth = 1
 gridHeight = 3
-gridStateData = Array[int]([2, 1, 2])
-localOccupiedTiles = Array[Vector3i]([Vector3i(0, 0, -1), Vector3i(0, 0, 0), Vector3i(0, 0, 1)])
+gridMapData = [2, 1, 4]
 
 [node name="Meshes" type="StaticBody3D" parent="." unique_id=1549644665]
 

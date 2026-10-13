@@ -19,22 +19,20 @@ public partial class DynamicGenTest : Node3D
     [Export] public int mainPathLength = 6; 
     [Export] public float hallwayChance = 0.3f; 
     [Export] public float roomSpacing = 0.0f; 
-    
-    [ExportGroup("Branch Settings")]
-    [Export] public float branchChance = 0.4f; 
-    [Export] public int minBranchRooms = 1; 
-    [Export] public int maxBranchRooms = 4; 
-
-    [Export] public float loopBranchChance = 0.35f; 
-    [Export] public int minLoopBranchRooms = 1; 
-    [Export] public int maxLoopBranchRooms = 4; 
-
-    [Export] public int minChanceLoopDistance = 3; 
-    [Export] public int maxChanceLoopDistance = 6; 
-    [Export] public int maxBranchFails = 5; 
 
     public List<DynamicRoom> placedRooms = new List<DynamicRoom>(); 
     private RandomNumberGenerator _rng; 
+
+    // PMD Grid Generation Variables
+    private Dictionary<Vector2I, int> gridMap = new Dictionary<Vector2I, int>();
+    
+    public struct DoorRecord
+    {
+        public Vector2I position;
+        public int tileType; // 2: North, 3: East, 4: South, 5: West
+        public DynamicRoom room;
+    }
+    private List<DoorRecord> previousRoomDoors = new List<DoorRecord>();
 
     public override void _Ready()
     {
@@ -54,28 +52,48 @@ public partial class DynamicGenTest : Node3D
     public async Task<bool> GenerateLevel()
     {
         GD.Print("\n==========================================");
-        GD.Print("   STARTING LEVEL GENERATION (BACKGROUND)");
+        GD.Print("   STARTING LEVEL GENERATION (PMD GRID)");
         GD.Print("==========================================");
 
         bool success = await Task.Run(() =>
         {
-            GD.Print("\n--- GENERATING START ROOM ---");
+            gridMap.Clear();
+            previousRoomDoors.Clear();
+            placedRooms.Clear();
+
+            GD.Print("\n--- [PMD Grid] Placing Start Room ---");
             DynamicRoom startRoom = startRoomScene.Instantiate<DynamicRoom>();
             startRoom.InitializeRoom(DynamicRoom.RoomTypeEnum.Start);
-            startRoom.Transform = Transform3D.Identity;
-            placedRooms.Add(startRoom);
-            GD.Print("[Success] Start room placed at Origin.");
+            startRoom.SetRotation(DynamicRoom.RoomRotationEnum.None);
 
-            GD.Print("\n--- GENERATING MAIN PATH ---");
-            bool pathSuccess = BuildPathRecursive(startRoom, 1);
+            Dictionary<Vector2I, int> startGrid = startRoom.GetRotatedRoomGrid(DynamicRoom.RoomRotationEnum.None);
+            
+            // Center start room at grid origin (0,0)
+            Vector2I startOrigin = new Vector2I(-startRoom.gridWidth / 2, -startRoom.gridHeight / 2);
+            
+            foreach (var kvp in startGrid)
+            {
+                Vector2I globalPos = startOrigin + kvp.Key;
+                gridMap[globalPos] = kvp.Value;
+                if (IsDoor(kvp.Value))
+                {
+                    previousRoomDoors.Add(new DoorRecord { position = globalPos, tileType = kvp.Value, room = startRoom });
+                }
+            }
+
+            startRoom.Position = new Vector3(startOrigin.X * 2.0f, 0, startOrigin.Y * 2.0f);
+            placedRooms.Add(startRoom);
+            GD.Print($"[PMD Grid] Start room placed at origin {startOrigin} with {previousRoomDoors.Count} initial doors registered.");
+
+            GD.Print("\n--- [PMD Grid] Starting Main Path Generation ---");
+            bool pathSuccess = BuildPMDPathRecursive(1);
             if (!pathSuccess)
             {
-                GD.PrintErr("[Error] Main Path generation failed entirely!");
+                GD.PrintErr("[PMD Grid] Error: Main Path generation failed entirely!");
                 return false;
             }
 
-            GenerateBranches();
-            GenerateChanceLoops();
+            SaveShadowGridFile();
             return true;
         });
 
@@ -90,469 +108,226 @@ public partial class DynamicGenTest : Node3D
         return success; 
     }
 
-    private bool BuildPathRecursive(DynamicRoom currentRoom, int currentStep)
+    private bool BuildPMDPathRecursive(int currentStep)
     {
         if (currentStep >= mainPathLength)
         {
-            currentRoom.setRoomType(DynamicRoom.RoomTypeEnum.End);
-            GD.Print($"[Main Path] TARGET REACHED! Converted room at step {currentStep} to END room.");
+            GD.Print($"[PMD Grid] Target main path length {mainPathLength} reached!");
             return true;
-        } 
+        }
 
-        GD.Print($"\n[Main Path] Step {currentStep}/{mainPathLength} - Evaluating exits...");
-        bool isFinalRoom = currentStep == mainPathLength - 1;
-        List<RoomDoor> availableExits = currentRoom.GetAvailableDoors();
-        ShuffleList(availableExits);
+        GD.Print($"\n[PMD Grid] Step {currentStep}/{mainPathLength} - Choosing room and available doors...");
 
-        foreach (RoomDoor exitDoor in availableExits)
+        if (previousRoomDoors.Count == 0)
         {
-            GD.Print($"  -> [Main Path Step {currentStep}] Trying exit facing {exitDoor.cardinalDirection}");
-            List<PackedScene> roomChoices = isFinalRoom ? new List<PackedScene> { endRoomScene } : standardRoomScenes.ToList();
-            ShuffleList(roomChoices);
+            GD.PrintErr("[PMD Grid] Error: previousRoomDoors is empty! Cannot continue path.");
+            return false;
+        }
 
-            foreach (PackedScene roomPrefab in roomChoices)
+        // Shuffle available doors from previous steps
+        List<DoorRecord> shuffledDoors = new List<DoorRecord>(previousRoomDoors);
+        ShuffleList(shuffledDoors);
+
+        List<PackedScene> roomPool = (currentStep == mainPathLength - 1) ? new List<PackedScene> { endRoomScene } : standardRoomScenes.ToList();
+
+        foreach (DoorRecord prevDoor in shuffledDoors)
+        {
+            List<PackedScene> shuffledRooms = new List<PackedScene>(roomPool);
+            ShuffleList(shuffledRooms);
+
+            foreach (PackedScene roomPrefab in shuffledRooms)
             {
-                bool useHallway = !isFinalRoom && _rng.Randf() < hallwayChance;
-                DynamicRoom roomToConnectFrom = currentRoom;
-                RoomDoor activeExit = exitDoor;
-
-                DynamicRoom placedHallway = null;
-                RoomDoor hallwayEntranceUsed = null;
-
-                if (useHallway && hallwayScenes.Count > 0)
+                if (TryPlaceRoomPMD(roomPrefab, prevDoor, currentStep == mainPathLength - 1 ? DynamicRoom.RoomTypeEnum.End : DynamicRoom.RoomTypeEnum.Main))
                 {
-                    GD.Print($"    -> Hallway chance passed. Attempting to place hallway first...");
-                    List<PackedScene> hallways = hallwayScenes.ToList();
-                    ShuffleList(hallways);
+                    GD.Print($"[PMD Grid] Step {currentStep}: Room successfully placed! Moving to next step.");
+                    if (BuildPMDPathRecursive(currentStep + 1)) return true;
+                    
+                    // If recursive path fails further down, we backtrack (simplified for demonstration)
+                }
+            }
+        }
 
-                    foreach (PackedScene hallway in hallways)
+        GD.Print($"[PMD Grid] Step {currentStep}: All door and room combinations failed.");
+        return false;
+    }
+
+    private bool TryPlaceRoomPMD(PackedScene prefab, DoorRecord prevDoor, DynamicRoom.RoomTypeEnum roomType)
+    {
+        DynamicRoom newRoom = prefab.Instantiate<DynamicRoom>();
+        newRoom.InitializeRoom(roomType);
+
+        List<DynamicRoom.RoomRotationEnum> rotations = new List<DynamicRoom.RoomRotationEnum>
+        {
+            DynamicRoom.RoomRotationEnum.None,
+            DynamicRoom.RoomRotationEnum.OneQuarter,
+            DynamicRoom.RoomRotationEnum.Half,
+            DynamicRoom.RoomRotationEnum.ThreeQuarters
+        };
+        ShuffleList(rotations);
+
+        int requiredOppositeDoorType = GetOppositeDoorType(prevDoor.tileType);
+
+        foreach (var rot in rotations)
+        {
+            newRoom.SetRotation(rot);
+            Dictionary<Vector2I, int> rotatedGrid = newRoom.GetRotatedRoomGrid(rot);
+
+            // Find all doors in the rotated room grid that match the required opposite door type
+            List<Vector2I> matchingDoorPositions = rotatedGrid.Where(kvp => kvp.Value == requiredOppositeDoorType).Select(kvp => kvp.Key).ToList();
+            ShuffleList(matchingDoorPositions);
+
+            foreach (Vector2I roomDoorLocalPos in matchingDoorPositions)
+            {
+                // Calculate room origin so that roomDoorLocalPos aligns with prevDoor.position + direction offset
+                Vector2I dirOffset = GetGridDirectionFromTileType(prevDoor.tileType);
+                Vector2I targetCell = prevDoor.position + dirOffset;
+                Vector2I roomOrigin = targetCell - roomDoorLocalPos;
+
+                // 1. Count baseline room & door tiles before placement
+                int currentRoomTiles = gridMap.Values.Count(v => v == 1);
+                int currentDoorTiles = gridMap.Values.Count(v => IsDoor(v));
+
+                int newRoomTilesCount = rotatedGrid.Values.Count(v => v == 1);
+                int newRoomDoorsCount = rotatedGrid.Values.Count(v => IsDoor(v));
+
+                int expectedTotalRooms = currentRoomTiles + newRoomTilesCount;
+                int expectedTotalDoors = currentDoorTiles + newRoomDoorsCount;
+
+                // 2. Build temporary grid copy to test overlap & counts
+                Dictionary<Vector2I, int> tempGrid = new Dictionary<Vector2I, int>(gridMap);
+                bool hasOverlap = false;
+
+                foreach (var kvp in rotatedGrid)
+                {
+                    Vector2I globalPos = roomOrigin + kvp.Key;
+                    int tileVal = kvp.Value;
+
+                    if (tempGrid.ContainsKey(globalPos) && tempGrid[globalPos] > 0)
                     {
-                        placedHallway = TryPlaceRoom(roomToConnectFrom, activeExit, hallway, out hallwayEntranceUsed, DynamicRoom.RoomTypeEnum.Main);
+                        // Overlap detected on non-empty cell
+                        hasOverlap = true;
+                        break;
+                    }
+                    tempGrid[globalPos] = tileVal;
+                }
 
-                        if (placedHallway != null)
+                if (hasOverlap) continue;
+
+                // 3. Validate tile counts
+                int actualTotalRooms = tempGrid.Values.Count(v => v == 1);
+                int actualTotalDoors = tempGrid.Values.Count(v => IsDoor(v));
+
+                if (actualTotalRooms != expectedTotalRooms || actualTotalDoors != expectedTotalDoors)
+                {
+                    GD.Print($"[PMD Overlap Check] Tile count mismatch! Expected Rooms: {expectedTotalRooms}, Actual: {actualTotalRooms} | Expected Doors: {expectedTotalDoors}, Actual: {actualTotalDoors}. Rejecting placement.");
+                    continue;
+                }
+
+                // --- VALID PLACEMENT SUCCESS ---
+                gridMap = tempGrid;
+                newRoom.Position = new Vector3(roomOrigin.X * 2.0f, 0, roomOrigin.Y * 2.0f);
+                placedRooms.Add(newRoom);
+
+                // Register new room's doors into previousRoomDoors (excluding the one connected to prevDoor)
+                foreach (var kvp in rotatedGrid)
+                {
+                    if (IsDoor(kvp.Value))
+                    {
+                        Vector2I doorGlobalPos = roomOrigin + kvp.Key;
+                        if (doorGlobalPos != targetCell) // Don't re-add the connected door entry
                         {
-                            GD.Print($"    -> Hallway placed successfully!");
-                            roomToConnectFrom = placedHallway;
-                            var hallwayExits = placedHallway.GetAvailableDoors();
-                            if (hallwayExits.Count > 0) activeExit = hallwayExits[_rng.RandiRange(0, hallwayExits.Count - 1)];
-                            break;
+                            previousRoomDoors.Add(new DoorRecord { position = doorGlobalPos, tileType = kvp.Value, room = newRoom });
                         }
                     }
                 }
 
-                GD.Print($"    -> Attempting to place Main Room (Step {currentStep + 1})...");
-                DynamicRoom placedRoom = TryPlaceRoom(roomToConnectFrom, activeExit, roomPrefab, out RoomDoor roomEntranceUsed, DynamicRoom.RoomTypeEnum.Main);
-
-                if (placedRoom != null)
-                {
-                    GD.Print($"    -> Main Room placed successfully! Moving to next step.");
-                    if (BuildPathRecursive(placedRoom, currentStep + 1)) return true;
-                    
-                    GD.Print($"    -> [Backtrack] Dead end hit down the line! Undoing Room at step {currentStep + 1}.");
-                    UndoPlacement(placedRoom, activeExit, roomEntranceUsed);
-                }
-
-                if (placedHallway != null) 
-                {
-                    GD.Print($"    -> [Backtrack] Undoing Hallway at step {currentStep}.");
-                    UndoPlacement(placedHallway, exitDoor, hallwayEntranceUsed);
-                }
-            }
-        }
-        
-        GD.Print($"[Main Path Step {currentStep}] All exits and prefabs failed. Falling back to previous step...");
-        return false;
-    }
-
-    private DynamicRoom TryPlaceRoom(DynamicRoom exitRoom, RoomDoor exitDoor, PackedScene prefab, out RoomDoor entranceUsed, DynamicRoom.RoomTypeEnum roomType)
-    {
-        entranceUsed = null;
-        DynamicRoom newRoom = prefab.Instantiate<DynamicRoom>();
-        newRoom.InitializeRoom(roomType);
-
-        List<DynamicRoom.RoomRotationEnum> rotationAngles = new List<DynamicRoom.RoomRotationEnum> 
-        { 
-            DynamicRoom.RoomRotationEnum.None, 
-            DynamicRoom.RoomRotationEnum.OneQuarter, 
-            DynamicRoom.RoomRotationEnum.Half, 
-            DynamicRoom.RoomRotationEnum.ThreeQuarters 
-        };
-        ShuffleList(rotationAngles);
-
-        foreach (DynamicRoom.RoomRotationEnum angle in rotationAngles)
-        {
-            newRoom.SetRotation(angle);
-
-            List<RoomDoor> entrances = newRoom.GetAvailableDoors();
-            ShuffleList(entrances);
-
-            foreach (RoomDoor entrance in entrances)
-            {
-                if (!entrance.CanConnectTo(exitDoor)) continue;
-
-                AlignRooms(exitRoom, exitDoor, newRoom, entrance);
-                
-                bool isOverlapping = CheckOverlap(newRoom, exitRoom, roomSpacing / 2f);
-                if (!isOverlapping)
-                {
-                    exitDoor.SetConnected(true);
-                    entrance.SetConnected(true);
-                    exitDoor.ConnectedTo = entrance;
-                    entrance.ConnectedTo = exitDoor;
-
-                    exitRoom.ConnectedRooms.Add(newRoom);
-                    newRoom.ConnectedRooms.Add(exitRoom);
-
-                    placedRooms.Add(newRoom);
-                    entranceUsed = entrance;
-                    return newRoom;
-                }
+                GD.Print($"[PMD Placement] Successfully placed room {newRoom.Name} at origin {roomOrigin} with rotation {rot}. Total placed rooms: {placedRooms.Count}");
+                return true;
             }
         }
 
         newRoom.QueueFree();
-        return null;
-    }
-
-    private void AlignRooms(DynamicRoom exitRoom, RoomDoor exitDoor, DynamicRoom newRoom, RoomDoor entranceDoor)
-    {
-        Vector3 exitDoorWorldPos = (exitRoom.Transform * exitRoom.GetRelativeTransform(exitDoor)).Origin;
-        newRoom.Position = Vector3.Zero;
-        Vector3 entranceDoorWorldPos = (newRoom.Transform * newRoom.GetRelativeTransform(entranceDoor)).Origin;
-        Vector3 spacingOffset = GetSpacingOffset(exitDoor.cardinalDirection);
-        newRoom.Position = exitDoorWorldPos + spacingOffset - entranceDoorWorldPos;
-    }
-
-    private Vector3 GetSpacingOffset(RoomDoor.DoorDirection direction)
-    {
-        return direction switch
-        {
-            RoomDoor.DoorDirection.North => new Vector3(0, 0, roomSpacing),
-            RoomDoor.DoorDirection.South => new Vector3(0, 0, -roomSpacing),
-            RoomDoor.DoorDirection.East => new Vector3(-roomSpacing, 0, 0),
-            RoomDoor.DoorDirection.West => new Vector3(roomSpacing, 0, 0),
-            _ => Vector3.Zero
-        };
-    }
-
-    private bool CheckOverlap(DynamicRoom newRoom, DynamicRoom parentRoom, float margin)
-    {
-        foreach (DynamicRoom placedRoom in placedRooms)
-        {
-            if (newRoom.IntersectsWith(placedRoom, margin)) return true;
-        }
         return false;
     }
 
-    private void GenerateBranches()
+    private bool IsDoor(int val) => val >= 2 && val <= 5;
+
+    private int GetOppositeDoorType(int doorType)
     {
-        GD.Print("\n--- STARTING BRANCH GENERATION ---");
-        
-        // ONLY gather rooms that belong to the main path, completely ignoring "Regular" branch rooms
-        List<DynamicRoom> mainPathRooms = placedRooms.Where(r => r.roomType == DynamicRoom.RoomTypeEnum.Main).ToList();
-
-        GD.Print($"Found {mainPathRooms.Count} main path rooms to evaluate for branches.");
-
-        // Iterate ONLY through the filtered main path rooms
-        foreach (DynamicRoom room in mainPathRooms)
+        // 2: North, 3: East, 4: South, 5: West
+        return doorType switch
         {
-            GD.Print($"\nEvaluating unused doors for main path room: {room.Name}");
-            foreach (RoomDoor branchDoor in room.GetAvailableDoors())
+            2 => 4, // North -> South
+            3 => 5, // East -> West
+            4 => 2, // South -> North
+            5 => 3, // West -> East
+            _ => 2
+        };
+    }
+
+    private Vector2I GetGridDirectionFromTileType(int doorType)
+    {
+        return doorType switch
+        {
+            2 => new Vector2I(0, -1), // North opens up, so neighbor is North (-Y)
+            3 => new Vector2I(1, 0),  // East opens right (+X)
+            4 => new Vector2I(0, 1),  // South opens down (+Y)
+            5 => new Vector2I(-1, 0), // West opens left (-X)
+            _ => Vector2I.Zero
+        };
+    }
+
+    private void SaveShadowGridFile()
+    {
+        if (gridMap.Count == 0) return;
+
+        int minX = gridMap.Keys.Min(k => k.X);
+        int maxX = gridMap.Keys.Max(k => k.X);
+        int minY = gridMap.Keys.Min(k => k.Y);
+        int maxY = gridMap.Keys.Max(k => k.Y);
+
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.AppendLine("=== POKEMON MYSTERY DUNGEON SHADOW GRID MAP ===");
+
+        for (int y = minY; y <= maxY; y++)
+        {
+            string rowStr = "";
+            for (int x = minX; x <= maxX; x++)
             {
-                if (branchDoor.isConnected) continue;
-
-                if (_rng.Randf() > branchChance)
+                Vector2I pos = new Vector2I(x, y);
+                if (gridMap.TryGetValue(pos, out int val))
                 {
-                    GD.Print($"- Door {branchDoor.cardinalDirection} failed branch chance.");
-                    continue;
+                    rowStr += GetTileSymbol(val);
                 }
-
-                GD.Print($"- Door {branchDoor.cardinalDirection} PASSED branch chance. Initiating generation...");
-
-                // 1. Loop Branch Logic
-                bool tryLoopBranch = _rng.Randf() < loopBranchChance;
-                bool loopBranchSuccess = false;
-
-                if (tryLoopBranch)
-                {
-                    GD.Print("  -> Attempting Loop Branch...");
-                    List<RoomDoor> targetDoors = new List<RoomDoor>();
-                    
-                    foreach (DynamicRoom pr in placedRooms)
-                    {
-                        if (pr == room) continue;
-                        
-                        int navDist = GetNavigationDistance(room, pr);
-                        if ((navDist >= minLoopBranchRooms && navDist <= maxLoopBranchRooms) || navDist == -1)
-                        {
-                            foreach (RoomDoor d in pr.GetAvailableDoors())
-                            {
-                                if (d.cardinalDirection == branchDoor.cardinalDirection)
-                                {
-                                    targetDoors.Add(d);
-                                }
-                            }
-                        }
-                    }
-                    ShuffleList(targetDoors);
-
-                    int targetAttempts = 0;
-                    foreach (RoomDoor targetDoor in targetDoors)
-                    {
-                        if (targetAttempts >= 2) break; 
-                        targetAttempts++;
-
-                        if (BuildLoopBranchRecursive(room, branchDoor, targetDoor, 1))
-                        {
-                            loopBranchSuccess = true;
-                            break;
-                        }
-                    }
-
-                    if (loopBranchSuccess) 
-                    {
-                        GD.Print("  -> Loop Branch SUCCESS!");
-                        continue;
-                    }
-                    else
-                    {
-                        GD.Print("  -> Loop Branch FAILED. Falling back to Regular Branch...");
-                    }
-                }
-
-                // 2. Standard Branch Logic (Variable Length)
-                int targetBranchLength = _rng.RandiRange(minBranchRooms, maxBranchRooms);
-                int branchFails = 0; 
-                GD.Print($"  -> Attempting Regular Branch (Target Depth: {targetBranchLength} standard rooms)");
-                
-                bool success = BuildRegularBranchRecursive(room, branchDoor, 1, targetBranchLength, ref branchFails);
-                
-                if (success)
-                    GD.Print($"  -> Regular Branch SUCCESS! Reached depth {targetBranchLength}.");
                 else
-                    GD.Print($"  -> Regular Branch CANCELED. Exhausted max fails ({maxBranchFails}).");
+                {
+                    rowStr += " . ";
+                }
             }
+            sb.AppendLine(rowStr);
         }
-        GD.Print("\n--- BRANCH GENERATION COMPLETE ---\n");
-    }
 
-    private bool BuildRegularBranchRecursive(DynamicRoom currentRoom, RoomDoor activeExit, int step, int maxDepth, ref int rootFails)
-    {
-        if (rootFails >= maxBranchFails) return false;
-
-        GD.Print($"      [Branch Step {step}/{maxDepth}] Generating candidates...");
-
-        bool useHallway = _rng.Randf() < hallwayChance && hallwayScenes.Count > 0;
-        
-        List<PackedScene> primaryCandidates = useHallway ? hallwayScenes.ToList() : standardRoomScenes.ToList();
-        List<PackedScene> secondaryCandidates = useHallway ? standardRoomScenes.ToList() : hallwayScenes.ToList();
-        
-        ShuffleList(primaryCandidates);
-        ShuffleList(secondaryCandidates);
-        
-        List<PackedScene> candidates = new List<PackedScene>();
-        candidates.AddRange(primaryCandidates);
-        candidates.AddRange(secondaryCandidates);
-
-        foreach (PackedScene prefab in candidates)
+        string filePath = "res://addons/room_grid_editor/dungeon_grid_map.txt";
+        var file = FileAccess.Open(filePath, FileAccess.ModeFlags.Write);
+        if (file != null)
         {
-            if (rootFails >= maxBranchFails) return false; 
-
-            bool isHallway = hallwayScenes.Contains(prefab);
-            DynamicRoom placedRoom = TryPlaceRoom(currentRoom, activeExit, prefab, out RoomDoor entranceUsed, DynamicRoom.RoomTypeEnum.Regular);
-            
-            if (placedRoom != null)
-            {
-                int nextStep = isHallway ? step : step + 1;
-                GD.Print($"      [Branch Step {step}/{maxDepth}] {(isHallway ? "Hallway" : "Standard Room")} placed successfully!");
-
-                if (nextStep > maxDepth) 
-                {
-                    GD.Print($"      [Target Reached] Branch depth of {maxDepth} completed.");
-                    return true;
-                }
-
-                List<RoomDoor> nextExits = placedRoom.GetAvailableDoors();
-                ShuffleList(nextExits);
-                
-                bool branchContinued = false;
-                foreach (RoomDoor nextExit in nextExits)
-                {
-                    if (BuildRegularBranchRecursive(placedRoom, nextExit, nextStep, maxDepth, ref rootFails))
-                    {
-                        branchContinued = true;
-                        break; 
-                    }
-                }
-
-                if (branchContinued) return true;
-
-                GD.Print($"      [Backtrack] Dead end from room placed at Branch Step {step}. Undoing placement...");
-                UndoPlacement(placedRoom, activeExit, entranceUsed);
-                rootFails++;
-                if (step == 1) 
-                {
-                    
-                    GD.Print($"      [Root Fail] Starting door failed pathing. Fail count: {rootFails}/{maxBranchFails}");
-                }
-            }
+            file.StoreString(sb.ToString());
+            file.Close();
+            GD.Print($"\n[PMD Grid] Successfully saved master grid map to: {filePath}\n");
         }
-        
-        GD.Print($"      [Branch Step {step} Failed] All prefabs collided or lacked exits. Returning to previous room...");
-        return false; 
     }
 
-    private bool BuildLoopBranchRecursive(DynamicRoom currentRoom, RoomDoor activeExit, RoomDoor targetDoor, int step)
+    private string GetTileSymbol(int val)
     {
-        if (step > maxLoopBranchRooms) return false;
-
-        GD.Print($"      [Loop Step {step}/{maxLoopBranchRooms}] Trying to path to target door...");
-        List<PackedScene> candidateRooms = new List<PackedScene>();
-        candidateRooms.AddRange(standardRoomScenes);
-        candidateRooms.AddRange(hallwayScenes);
-        ShuffleList(candidateRooms);
-
-        foreach (PackedScene prefab in candidateRooms)
+        return val switch
         {
-            DynamicRoom placedRoom = TryPlaceRoom(currentRoom, activeExit, prefab, out RoomDoor entranceUsed, DynamicRoom.RoomTypeEnum.Regular);
-            
-            if (placedRoom != null)
-            {
-                bool reachedTarget = false;
-                List<RoomDoor> newRoomDoors = placedRoom.GetAvailableDoors();
-
-                foreach (RoomDoor door in newRoomDoors)
-                {
-                    if (!door.CanConnectTo(targetDoor)) continue;
-
-                    Vector3 posA = (placedRoom.Transform * placedRoom.GetRelativeTransform(door)).Origin;
-                    Vector3 posB = (targetDoor.ParentRoom.Transform * targetDoor.ParentRoom.GetRelativeTransform(targetDoor)).Origin;
-                    Vector3 expectedOffset = GetSpacingOffset(door.cardinalDirection);
-
-                    if (posA.DistanceTo(posB - expectedOffset) < 0.5f && step >= minLoopBranchRooms)
-                    {
-                        GD.Print($"      [Loop Success] Perfect physical connection made to target door!");
-                        door.SetConnected(true);
-                        targetDoor.SetConnected(true);
-                        door.ConnectedTo = targetDoor;
-                        targetDoor.ConnectedTo = door;
-                        placedRoom.ConnectedRooms.Add(targetDoor.ParentRoom);
-                        targetDoor.ParentRoom.ConnectedRooms.Add(placedRoom);
-                        reachedTarget = true;
-                        break;
-                    }
-                }
-
-                if (reachedTarget) return true;
-
-                if (step < maxLoopBranchRooms && newRoomDoors.Count > 0)
-                {
-                    Vector3 targetPos = (targetDoor.ParentRoom.Transform * targetDoor.ParentRoom.GetRelativeTransform(targetDoor)).Origin;
-                    RoomDoor bestExit = newRoomDoors.OrderBy(d => 
-                        ((placedRoom.Transform * placedRoom.GetRelativeTransform(d)).Origin).DistanceTo(targetPos)
-                    ).FirstOrDefault();
-
-                    if (bestExit != null)
-                    {
-                        if (BuildLoopBranchRecursive(placedRoom, bestExit, targetDoor, step + 1)) return true;
-                    }
-                }
-
-                GD.Print($"      [Loop Backtrack] Undoing room placement at loop step {step}.");
-                UndoPlacement(placedRoom, activeExit, entranceUsed);
-                break; 
-            }
-        }
-        return false; 
-    }
-
-    private void GenerateChanceLoops()
-    {
-        GD.Print("\n--- STARTING CHANCE LOOPS ---");
-        float alignmentTolerance = 0.5f;
-        int loopCount = 0;
-
-        foreach (DynamicRoom roomA in placedRooms)
-        {
-            foreach (RoomDoor doorA in roomA.GetAvailableDoors())
-            {
-                foreach (DynamicRoom roomB in placedRooms)
-                {
-                    if (roomA == roomB) continue;
-
-                    foreach (RoomDoor doorB in roomB.GetAvailableDoors())
-                    {
-                        if (!doorA.CanConnectTo(doorB)) continue;
-
-                        Vector3 posA = (roomA.Transform * roomA.GetRelativeTransform(doorA)).Origin;
-                        Vector3 posB = (roomB.Transform * roomB.GetRelativeTransform(doorB)).Origin;
-                        Vector3 expectedOffset = GetSpacingOffset(doorA.cardinalDirection);
-
-                        if (posA.DistanceTo(posB - expectedOffset) < alignmentTolerance)
-                        {
-                            int navDistance = GetNavigationDistance(roomA, roomB);
-
-                            if ((navDistance >= minChanceLoopDistance && navDistance <= maxChanceLoopDistance) || navDistance == -1)
-                            {
-                                doorA.SetConnected(true);
-                                doorB.SetConnected(true);
-                                doorA.ConnectedTo = doorB;
-                                doorB.ConnectedTo = doorA;
-                                roomA.ConnectedRooms.Add(roomB);
-                                roomB.ConnectedRooms.Add(roomA);
-                                loopCount++;
-                                GD.Print($"  -> [Chance Loop Formed] Connected a room to another room over a nav distance of {navDistance}");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        GD.Print($"--- CHANCE LOOPS COMPLETE (Formed {loopCount} loops) ---\n");
-    }
-
-    private int GetNavigationDistance(DynamicRoom start, DynamicRoom target)
-    {
-        if (start == target) return 0;
-
-        Queue<Tuple<DynamicRoom, int>> queue = new Queue<Tuple<DynamicRoom, int>>();
-        HashSet<DynamicRoom> visited = new HashSet<DynamicRoom>();
-
-        queue.Enqueue(new Tuple<DynamicRoom, int>(start, 0));
-        visited.Add(start);
-
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
-            DynamicRoom currentRoom = current.Item1;
-            int currentDist = current.Item2;
-
-            if (currentRoom == target) return currentDist;
-
-            foreach (DynamicRoom neighbor in currentRoom.ConnectedRooms)
-            {
-                if (!visited.Contains(neighbor))
-                {
-                    visited.Add(neighbor);
-                    queue.Enqueue(new Tuple<DynamicRoom, int>(neighbor, currentDist + 1));
-                }
-            }
-        }
-        return -1;
-    }
-
-    private void UndoPlacement(DynamicRoom room, RoomDoor exitDoorUsed, RoomDoor entranceDoorUsed)
-    {
-        GD.Print($"[Undo] Severing door connections and freeing room from memory.");
-        exitDoorUsed.SetConnected(false);
-        entranceDoorUsed.SetConnected(false);
-
-        exitDoorUsed.ConnectedTo = null;
-        entranceDoorUsed.ConnectedTo = null;
-        exitDoorUsed.ParentRoom.ConnectedRooms.Remove(room);
-
-        placedRooms.Remove(room);
-        room.QueueFree();
+            1 => "[#]", // Room
+            2 => "[N]", // DoorNorth
+            3 => "[E]", // DoorEast
+            4 => "[S]", // DoorSouth
+            5 => "[W]", // DoorWest
+            _ => " . "
+        };
     }
 
     private void FinalizeLevel()
