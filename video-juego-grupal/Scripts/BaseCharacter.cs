@@ -6,11 +6,7 @@ public partial class BaseCharacter : CharacterBody3D
 	// Called when the node enters the scene tree for the first time.
 	[Export] public CharacterStats Stats { get; set; }
 	[Export] public Timer InvulnerabilityTimer { get; set; }
-    [Export] public bool CanBeDamaged { get; protected set; } = true;
 	protected virtual Vector3 GetMoveDirection() => Vector3.Zero;
-
-	public float Health { get; protected set; }
-    protected virtual void OnCollided(Node collider) { }
 	public override void _Ready()
 	{
 		if (Stats == null)
@@ -22,7 +18,8 @@ public partial class BaseCharacter : CharacterBody3D
 
         // Copia propia, para que los cambios no afecten al .tres ni a otros personajes
         Stats = (CharacterStats)Stats.Duplicate(true);
-        Health = Stats.Health;
+        GD.Print(Stats.Health, Stats.Speed, Stats.InvulnerabilityTimer);
+        Stats.Health = Stats.MaxHealth;
 
         if (InvulnerabilityTimer == null) return;
 
@@ -49,34 +46,28 @@ public partial class BaseCharacter : CharacterBody3D
                 OnCollided(collider);
         }
 	}
+    protected virtual void OnCollided(Node collider)
+    {
+        if (collider is BaseCharacter other)
+		{
+			if (other.Stats.Attack > this.Stats.Defense)
+			{
+				GD.Print("Vida: " + this.Stats.Health + " Ataque: " + other.Stats.Attack + " Defensa: " + this.Stats.Defense);
+				Stats.Health = this.Stats.Health - other.Stats.Attack + this.Stats.Defense;
+				GD.Print("Daño Recibido: " + (other.Stats.Attack - this.Stats.Defense));
+				GD.Print("Vida: " + this.Stats.Health);
+                InvulnerabilityTimer.Start();
+                Stats.CanBeDamaged = false;
+			}
+			//Lo que quede
+		}
+    }
 	private void GetHurt()
     {
-        //if (CanBeDamaged)
-        //{
-        //    Health--;
-		//	InvulnerabilityTimer.Start();
-//
-        //    if (Health <= 0)
-        //    {
-        ///        QueueFree();
-//
-        //        SetPhysicsProcess(false);
-//
-        //        return;
-        //    }
-		//} 
-        //else
-		//{
-		//	return;
-		//}
-		//CanBeDamaged = false;
-//
-        //GD.Print(
-        //    $"[DEBUG] Vida: {Health}"
-        //);
+        //
     }
 	private void OnInvulnerabilityTimerTimeout()
 	{
-		CanBeDamaged = true;
+		Stats.CanBeDamaged = true;
 	}
 }

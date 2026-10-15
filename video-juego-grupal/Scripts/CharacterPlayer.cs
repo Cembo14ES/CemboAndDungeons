@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class CharacterSon : BaseCharacter
+public partial class CharacterPlayer : BaseCharacter
 {
 	[Export] public int Arrows;
 	// Called when the node enters the scene tree for the first time.
@@ -25,5 +25,9 @@ public partial class CharacterSon : BaseCharacter
 			GD.Print("Me estoy moviendo");
 		}
 		return (Transform.Basis * new Vector3(input.X, 0, input.Y)).Normalized();
+	}
+	protected override void OnCollided(Node collider)
+	{
+		base.OnCollided(collider);
 	}
 }
