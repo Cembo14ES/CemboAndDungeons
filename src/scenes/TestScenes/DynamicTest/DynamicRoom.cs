@@ -5,21 +5,20 @@ using System.Linq;
 [Tool]
 public partial class DynamicRoom : Node3D
 {
+    // SIGNALS
     [Signal] public delegate void Signal_SetRoomStatesEventHandler(DynamicRoom room);
+    [Signal] public delegate void Signal_RoomInitializedEventHandler(DynamicRoom room);
 
     public enum TileType { Empty = 0, Room = 1, DoorNorth = 2, DoorEast = 3, DoorSouth = 4, DoorWest = 5 }
     public enum RoomRotationEnum { None = 0, OneQuarter = 1, Half = 2, ThreeQuarters = 3 } 
     public enum RoomStateEnum { Active, Inactive, Disabled } 
-    public enum RoomTypeEnum { Regular, Start, End, Main, Loop } 
+    public enum RoomTypeEnum { Regular, Start, End, Main, Branch } 
 
-    [Export] public Area3D roomArea; 
     [Export] public Node3D doorFolder; 
-
     [Export] public Sprite3D endSprite;
     [Export] public Sprite3D startSprite;
     [Export] public Sprite3D mainSprite;
     [Export] public Sprite3D loopSprite;
-
     [Export] public int gridWidth = 5;
     [Export] public int gridHeight = 5;
 
@@ -32,7 +31,6 @@ public partial class DynamicRoom : Node3D
     private RoomRotationEnum roomRotation = RoomRotationEnum.None; 
     private RoomStateEnum roomState = RoomStateEnum.Disabled; 
     public RoomTypeEnum roomType = RoomTypeEnum.Regular; 
-    private List<CollisionShape3D> roomAreaShapes = new List<CollisionShape3D>();
     private bool isInitialized = false;
 
     public RoomRotationEnum GetCurrentRotation() => roomRotation;
@@ -40,10 +38,9 @@ public partial class DynamicRoom : Node3D
     public static int RotateTileValue(int tileVal, RoomRotationEnum rotation)
     {
         if (tileVal < 2 || tileVal > 5) return tileVal;
-        int shift = (int)rotation; // 0=None, 1=90CW, 2=180, 3=270CW
-        int baseDir = tileVal - 2; // 0=N, 1=E, 2=S, 3=W
-        int newDir = (baseDir + shift) % 4;
-        return newDir + 2;
+        int shift = (int)rotation;
+        int baseDir = tileVal - 2;
+        return ((baseDir + shift) % 4) + 2;
     }
 
     public Dictionary<Vector2I, int> GetRotatedRoomGrid(RoomRotationEnum rotation)
@@ -55,7 +52,6 @@ public partial class DynamicRoom : Node3D
         foreach (var kvp in roomGrid)
         {
             Vector2I pos = kvp.Key;
-            int val = kvp.Value;
             int x = pos.X;
             int y = pos.Y;
 
@@ -68,7 +64,7 @@ public partial class DynamicRoom : Node3D
                 _ => new Vector2I(x, y)
             };
             
-            rotatedGrid[newPos] = RotateTileValue(val, rotation);
+            rotatedGrid[newPos] = RotateTileValue(kvp.Value, rotation);
         }
         return rotatedGrid;
     }
@@ -87,11 +83,6 @@ public partial class DynamicRoom : Node3D
                 door.RotateDoorToDirection();
             }
         }
-
-        foreach (Node child in roomArea.GetChildren())
-        {
-            if (child is CollisionShape3D colShape) roomAreaShapes.Add(colShape);
-        }
         
         if (roomGrid.Count == 0 && gridMapData.Count == gridWidth * gridHeight)
         {
@@ -100,15 +91,13 @@ public partial class DynamicRoom : Node3D
                 for (int x = 0; x < gridWidth; x++)
                 {
                     int idx = (y * gridWidth) + x;
-                    if (gridMapData[idx] > 0)
-                    {
-                        roomGrid[new Vector2I(x, y)] = gridMapData[idx];
-                    }
+                    if (gridMapData[idx] > 0) roomGrid[new Vector2I(x, y)] = gridMapData[idx];
                 }
             }
         }
 
         setRoomType(type);
+        EmitSignal(SignalName.Signal_RoomInitialized, this);
     }
 
     public void SetRotation(RoomRotationEnum newRotation)
@@ -117,72 +106,12 @@ public partial class DynamicRoom : Node3D
 
         foreach (RoomDoor door in Doors)
         {
-            door.cardinalDirection = (RoomDoor.DoorDirection)(((int)door.cardinalDirection + steps) % 4);
+            int currentIdx = RoomDoor.DirectionToIndex(door.cardinalDirection);
+            door.cardinalDirection = RoomDoor.IndexToDirection(currentIdx + steps);
         }
 
         roomRotation = newRotation;
-        RotationDegrees = new Vector3(0, (int)newRotation * 90, 0);
-    }
-
-    private List<Aabb> GetRoomAABBs()
-    {
-        List<Aabb> roomAABBs = new List<Aabb>();
-        foreach (CollisionShape3D colShape in roomAreaShapes)
-        {
-            Transform3D nodeWorldTransform = Transform * GetRelativeTransform(colShape);
-            Aabb globalAABB = new Aabb();
-            bool hasValidShape = true;
-
-            if (colShape.Shape is ConvexPolygonShape3D convex)
-            {
-                Vector3[] points = convex.Points;
-                if (points != null && points.Length > 0)
-                {
-                    globalAABB = new Aabb(nodeWorldTransform * points[0], Vector3.Zero);
-                    for (int i = 1; i < points.Length; i++)
-                        globalAABB = globalAABB.Expand(nodeWorldTransform * points[i]);
-                }
-                else hasValidShape = false;
-            }
-            else if (colShape.Shape is BoxShape3D box)
-            {
-                Vector3 half = box.Size / 2;
-                Vector3[] corners = {
-                    new Vector3(-half.X, -half.Y, -half.Z), new Vector3(half.X, -half.Y, -half.Z),
-                    new Vector3(-half.X, half.Y, -half.Z), new Vector3(half.X, half.Y, -half.Z),
-                    new Vector3(-half.X, -half.Y, half.Z), new Vector3(half.X, -half.Y, half.Z),
-                    new Vector3(-half.X, half.Y, half.Z), new Vector3(half.X, half.Y, half.Z)
-                };
-
-                globalAABB = new Aabb(nodeWorldTransform * corners[0], Vector3.Zero);
-                for (int i = 1; i < 8; i++)
-                    globalAABB = globalAABB.Expand(nodeWorldTransform * corners[i]);
-            }
-            else
-            {
-                hasValidShape = false;
-            }
-
-            if (hasValidShape) roomAABBs.Add(globalAABB);
-        }
-        return roomAABBs;
-    }
-
-    public bool IntersectsWith(DynamicRoom otherRoom, float roomSpacing)
-    {
-        List<Aabb> thisRoomAABBs = GetRoomAABBs();
-        List<Aabb> otherRoomAABBs = otherRoom.GetRoomAABBs();
-
-        foreach (Aabb myAABB in thisRoomAABBs)
-        {
-            Aabb shrunkMine = myAABB.Grow(roomSpacing); 
-            foreach (Aabb otherAABB in otherRoomAABBs)
-            {
-                Aabb shrunkOther = otherAABB.Grow(roomSpacing); 
-                if (shrunkMine.Intersects(shrunkOther)) return true; 
-            }
-        }
-        return false; 
+        RotationDegrees = new Vector3(0, -(int)newRotation * 90, 0);
     }
 
     public Transform3D GetRelativeTransform(Node3D childNode)
@@ -201,42 +130,30 @@ public partial class DynamicRoom : Node3D
     public void SetRoomState(RoomStateEnum state)
     {
         roomState = state;
-        switch (state)
-        {
-            case RoomStateEnum.Active:
-                Visible = true;
-                SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Always);
-                break;
-            case RoomStateEnum.Inactive:
-                Visible = true;
-                SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Disabled);
-                break;
-            case RoomStateEnum.Disabled:
-                Visible = false;
-                SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Disabled);
-                break;
-        }
-        EmitSignal(SignalName.Signal_SetRoomStates, this);
+        Visible = state != RoomStateEnum.Disabled;
+        SetDeferred(Node.PropertyName.ProcessMode, state == RoomStateEnum.Active ? (int)ProcessModeEnum.Always : (int)ProcessModeEnum.Disabled);
     }
     
-    public List<RoomDoor> GetAvailableDoors()
-    {
-        return Doors.Where(d => !d.isConnected).ToList();
-    }
+    public List<RoomDoor> GetAvailableDoors() => Doors.Where(d => !d.isConnected).ToList();
 
     public void setRoomType(RoomTypeEnum type)
     {
         roomType = type;
-        if (type == RoomTypeEnum.Regular)
+        endSprite.Visible = (type == RoomTypeEnum.End);
+        startSprite.Visible = (type == RoomTypeEnum.Start);
+        mainSprite.Visible = (type == RoomTypeEnum.Main);
+        loopSprite.Visible = (type == RoomTypeEnum.Branch);
+    }  
+
+    /// <summary>
+    /// Lisitener para cuando el personaje entra en el Area3D de la habitacion.
+    /// </summary>
+    /// <param name="body"></param>
+    private void On_PlayerEnter(Node3D body)
+    {
+        if (body.Name == "Character")
         {
-            endSprite.Visible = false;
-            startSprite.Visible = false;
-            mainSprite.Visible = false;
-            loopSprite.Visible = false;
+            EmitSignal(SignalName.Signal_SetRoomStates, this); //Emite una señal para actualizar el estado de la habitacion.
         }
-        if (type == RoomTypeEnum.End) endSprite.Visible = true;
-        if (type == RoomTypeEnum.Start) startSprite.Visible = true;
-        if (type == RoomTypeEnum.Main) mainSprite.Visible = true;
-        if (type == RoomTypeEnum.Loop) loopSprite.Visible = true;
     }
 }

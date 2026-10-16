@@ -19,7 +19,6 @@ config/features=PackedStringArray("4.7", "C#", "Mobile")
 DebugMaster="*uid://dhkaqo8s3w2iw"
 GlobalManager="*uid://dalg4k5wlb3ft"
 DebugLayer="*uid://dohtqgur2utev"
-Stats="*uid://bvib6uv5blxs7"
 
 [display]
 
@@ -31,10 +30,6 @@ window/stretch/aspect="expand"
 [dotnet]
 
 project/assembly_name="Main"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/room_grid_editor/plugin.cfg")
 
 [input]
 

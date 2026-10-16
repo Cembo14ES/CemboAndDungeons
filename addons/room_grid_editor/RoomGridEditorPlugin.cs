@@ -43,18 +43,16 @@ public partial class RoomGridEditorControl : VBoxContainer
 {
     private Node _roomNode;
     private GridContainer _gridContainer;
-    
-    // Made static so the selected brush persists when the inspector control is re-instantiated
     private static int _selectedTileType = 1; 
 
     private readonly Dictionary<int, Color> _tileColors = new Dictionary<int, Color>()
     {
-        { 0, new Color(0.15f, 0.15f, 0.15f, 1f) }, // Empty (Dark Gray)
-        { 1, new Color(0.6f, 0.6f, 0.6f, 1f) },    // Room (Light Gray)
-        { 2, new Color(0.9f, 0.2f, 0.2f, 1f) },    // DoorNorth (Red)
-        { 3, new Color(0.2f, 0.8f, 0.2f, 1f) },    // DoorEast (Green)
-        { 4, new Color(0.2f, 0.4f, 0.9f, 1f) },    // DoorSouth (Blue)
-        { 5, new Color(0.9f, 0.7f, 0.1f, 1f) }     // DoorWest (Yellow/Orange)
+        { 0, new Color(0.15f, 0.15f, 0.15f, 1f) }, 
+        { 1, new Color(0.6f, 0.6f, 0.6f, 1f) },    
+        { 2, new Color(0.9f, 0.2f, 0.2f, 1f) },    
+        { 3, new Color(0.2f, 0.8f, 0.2f, 1f) },    
+        { 4, new Color(0.2f, 0.4f, 0.9f, 1f) },    
+        { 5, new Color(0.9f, 0.7f, 0.1f, 1f) }     
     };
 
     private readonly Dictionary<int, string> _tileNames = new Dictionary<int, string>()
@@ -80,7 +78,6 @@ public partial class RoomGridEditorControl : VBoxContainer
         label.Text = "PMD Room Grid Painter (C#)";
         AddChild(label);
 
-        // Palette Selection Bar
         var paletteBar = new HBoxContainer();
         paletteBar.Alignment = HBoxContainer.AlignmentMode.Center;
         AddChild(paletteBar);
@@ -103,7 +100,6 @@ public partial class RoomGridEditorControl : VBoxContainer
             paletteBar.AddChild(btn);
         }
 
-        // Action Buttons Bar (Fill All & Clear Grid)
         var actionBars = new HBoxContainer();
         actionBars.Alignment = HBoxContainer.AlignmentMode.Center;
         AddChild(actionBars);
@@ -119,10 +115,7 @@ public partial class RoomGridEditorControl : VBoxContainer
             Godot.Collections.Array currentData = currentDataVariant.VariantType == Variant.Type.Array ? (Godot.Collections.Array)currentDataVariant : null;
             if (currentData != null)
             {
-                for (int i = 0; i < w * h; i++)
-                {
-                    currentData[i] = _selectedTileType;
-                }
+                for (int i = 0; i < w * h; i++) currentData[i] = _selectedTileType;
                 _roomNode.Set("gridMapData", currentData);
                 _roomNode.NotifyPropertyListChanged();
                 RebuildGridUi();
@@ -141,10 +134,7 @@ public partial class RoomGridEditorControl : VBoxContainer
             Godot.Collections.Array currentData = currentDataVariant.VariantType == Variant.Type.Array ? (Godot.Collections.Array)currentDataVariant : null;
             if (currentData != null)
             {
-                for (int i = 0; i < w * h; i++)
-                {
-                    currentData[i] = 0; // Empty
-                }
+                for (int i = 0; i < w * h; i++) currentData[i] = 0;
                 _roomNode.Set("gridMapData", currentData);
                 _roomNode.NotifyPropertyListChanged();
                 RebuildGridUi();
@@ -152,7 +142,6 @@ public partial class RoomGridEditorControl : VBoxContainer
         };
         actionBars.AddChild(clearBtn);
 
-        // Grid Dimensions Controls
         var dimBar = new HBoxContainer();
         AddChild(dimBar);
 
@@ -190,7 +179,6 @@ public partial class RoomGridEditorControl : VBoxContainer
         };
         dimBar.AddChild(hSpin);
 
-        // Grid Container UI
         _gridContainer = new GridContainer();
         _gridContainer.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
         AddChild(_gridContainer);
@@ -221,10 +209,7 @@ public partial class RoomGridEditorControl : VBoxContainer
                     {
                         int oldIdx = (y * oldW) + x;
                         int newIdx = (y * w) + x;
-                        if (oldIdx < gridData.Count)
-                        {
-                            newArray[newIdx] = gridData[oldIdx];
-                        }
+                        if (oldIdx < gridData.Count) newArray[newIdx] = gridData[oldIdx];
                     }
                 }
             }
@@ -234,10 +219,7 @@ public partial class RoomGridEditorControl : VBoxContainer
 
     private void RebuildGridUi()
     {
-        foreach (Node child in _gridContainer.GetChildren())
-        {
-            child.QueueFree();
-        }
+        foreach (Node child in _gridContainer.GetChildren()) child.QueueFree();
 
         int w = (int)_roomNode.Get("gridWidth");
         int h = (int)_roomNode.Get("gridHeight");
@@ -255,6 +237,9 @@ public partial class RoomGridEditorControl : VBoxContainer
 
                 var cellBtn = new Button();
                 cellBtn.CustomMinimumSize = new Vector2(32, 32);
+                
+                // NEW: Hover tooltip showing exact grid coordinates
+                cellBtn.TooltipText = $"Grid Pos: ({x}, {y})";
 
                 var sb = new StyleBoxFlat();
                 sb.BgColor = _tileColors.ContainsKey(tileVal) ? _tileColors[tileVal] : _tileColors[0];

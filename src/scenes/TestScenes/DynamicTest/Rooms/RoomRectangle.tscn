@@ -60,7 +60,7 @@ startSprite = NodePath("Start")
 mainSprite = NodePath("Main")
 loopSprite = NodePath("loop")
 gridHeight = 7
-gridMapData = [1, 2, 1, 2, 1, 3, 1, 1, 1, 5, 1, 1, 1, 1, 1, 3, 1, 1, 1, 5, 1, 1, 1, 1, 1, 3, 1, 1, 1, 5, 1, 4, 1, 4, 1]
+gridMapData = Array[int]([1, 2, 1, 2, 1, 5, 1, 1, 1, 3, 1, 1, 1, 1, 1, 5, 1, 1, 1, 3, 1, 1, 1, 1, 1, 5, 1, 1, 1, 3, 1, 4, 1, 4, 1])
 
 [node name="Meshes" type="StaticBody3D" parent="." unique_id=228434307]
 
@@ -69,40 +69,50 @@ gridMapData = [1, 2, 1, 2, 1, 3, 1, 1, 1, 5, 1, 1, 1, 1, 1, 3, 1, 1, 1, 5, 1, 1,
 [node name="DoorW1" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, -10)
 cardinalDirection = 3
+RoomGridPosition = Vector2i(0, 5)
 
 [node name="DoorW2" parent="Meshes/Doors" unique_id=1282693300 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 0)
 cardinalDirection = 3
+RoomGridPosition = Vector2i(0, 3)
 
 [node name="DoorW3" parent="Meshes/Doors" unique_id=2108099714 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 10)
 cardinalDirection = 3
+RoomGridPosition = Vector2i(0, 1)
 
 [node name="DoorE1" parent="Meshes/Doors" unique_id=1419161874 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, -10)
 cardinalDirection = 2
+RoomGridPosition = Vector2i(4, 5)
 
 [node name="DoorE2" parent="Meshes/Doors" unique_id=1778864581 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, 0)
 cardinalDirection = 2
+RoomGridPosition = Vector2i(4, 3)
 
 [node name="DoorE3" parent="Meshes/Doors" unique_id=646411918 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, 10)
 cardinalDirection = 2
+RoomGridPosition = Vector2i(4, 1)
 
 [node name="DoorN1" parent="Meshes/Doors" unique_id=850874986 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, 17.5)
+RoomGridPosition = Vector2i(1, 0)
 
 [node name="DoorN2" parent="Meshes/Doors" unique_id=871200510 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, 17.5)
+RoomGridPosition = Vector2i(3, 0)
 
 [node name="DoorS1" parent="Meshes/Doors" unique_id=395935690 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, -17.5)
 cardinalDirection = 1
+RoomGridPosition = Vector2i(3, 6)
 
 [node name="DoorS2" parent="Meshes/Doors" unique_id=1698258645 instance=ExtResource("1_lcm7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, -17.5)
 cardinalDirection = 1
+RoomGridPosition = Vector2i(1, 6)
 
 [node name="RoomMesh" type="MeshInstance3D" parent="Meshes" unique_id=2029193781]
 mesh = SubResource("ArrayMesh_ttkgc")

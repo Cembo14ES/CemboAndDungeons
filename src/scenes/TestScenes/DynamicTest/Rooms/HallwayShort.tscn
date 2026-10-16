@@ -61,7 +61,7 @@ mainSprite = NodePath("Main")
 loopSprite = NodePath("loop")
 gridWidth = 1
 gridHeight = 3
-gridMapData = [2, 1, 4]
+gridMapData = Array[int]([2, 1, 4])
 
 [node name="Meshes" type="StaticBody3D" parent="." unique_id=1549644665]
 
@@ -73,12 +73,13 @@ shape = SubResource("ConcavePolygonShape3D_3jlvl")
 
 [node name="Doors" type="Node3D" parent="Meshes" unique_id=1841529905]
 
+[node name="DoorN" parent="Meshes/Doors" unique_id=1833591825 instance=ExtResource("1_62dxu")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 7.5)
+
 [node name="DoorS" parent="Meshes/Doors" unique_id=140992456 instance=ExtResource("1_62dxu")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, -7.5)
 cardinalDirection = 1
-
-[node name="DoorN" parent="Meshes/Doors" unique_id=1833591825 instance=ExtResource("1_62dxu")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 7.5)
+RoomGridPosition = Vector2i(0, 2)
 
 [node name="PlayerArea" type="Area3D" parent="." unique_id=107520504]
 process_mode = 3
