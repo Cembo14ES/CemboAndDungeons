@@ -12,7 +12,6 @@ public partial class CharacterStats : Resource
 	[Export] public float Speed { get; set; }
 	[Export] public float AttackSpeed { get; set; }
 	[Export] public float Knockback { get; set; }
-	[Export] public float InvulnerabilityTimer { get; set; }
-	[Export] public bool CanBeDamaged { get; set; }
-	[Export] public AtackStats BasicAttack { get; set; }
+	[Export] public float InvulnerabilityTimerStat { get; set; }
+	//[Export] public AtackStats BasicAttack { get; set; }
 }

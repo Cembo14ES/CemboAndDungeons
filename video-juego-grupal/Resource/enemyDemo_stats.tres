@@ -5,9 +5,22 @@
 
 [sub_resource type="Resource" id="Resource_jaap0"]
 script = ExtResource("1_v8owp")
+Multiplier = 1.0
+ProjectileSpeed = 1.0
+Force = 1.0
+Lifetime = 1.0
+HitboxFrames = 1
 metadata/_custom_type_script = "uid://ctyoytl6vxste"
 
 [resource]
 script = ExtResource("1_obfh2")
+MaxHealth = 20.0
+Health = 20.0
+Attack = 1.0
+Defense = 1.0
+Speed = 1.0
+AttackSpeed = 1.0
+Knockback = 1.0
+InvulnerabilityTimer = 1.0
 BasicAttack = SubResource("Resource_jaap0")
 metadata/_custom_type_script = "uid://tgjnaj6cmewb"

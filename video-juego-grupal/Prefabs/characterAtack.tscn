@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://b33jt3klgvkga"]
+
+[ext_resource type="Script" uid="uid://pjccm0pxrpl7" path="res://Scripts/AtackDamage.cs" id="1_2dcgm"]
+[ext_resource type="Resource" uid="uid://ctgej6rqkbknj" path="res://Resource/demoAtack_stats.tres" id="2_3760w"]
+[ext_resource type="Texture2D" uid="uid://cv8gfuxcp1nh3" path="res://Sprites/SlimeBall.png" id="3_uok2c"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
+
+[node name="AtackHitbox" type="Area3D" unique_id=1401100611 node_paths=PackedStringArray("Sprite")]
+script = ExtResource("1_2dcgm")
+Stats = ExtResource("2_3760w")
+Sprite = NodePath("Sprite3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=282005542]
+shape = SubResource("BoxShape3D_8erxc")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1531094613]
+transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, 0, 0.40957522, 0)
+pixel_size = 0.1
+texture = ExtResource("3_uok2c")

@@ -1,37 +1,48 @@
 using Godot;
-using System;
 
 public partial class BaseCharacter : CharacterBody3D
 {
-	// Called when the node enters the scene tree for the first time.
-	[Export] public CharacterStats Stats { get; set; }
-	[Export] public Timer InvulnerabilityTimer { get; set; }
-	protected virtual Vector3 GetMoveDirection() => Vector3.Zero;
-	public override void _Ready()
-	{
-		if (Stats == null)
+    [Export] public CharacterStats Stats { get; set; }
+    [Export] public Timer InvulnerabilityTimer { get; set; }
+    [Export] public AtackDamage Hitbox { get; set; }
+    [Export] public StringName HostileGroup { get; set; }   // a quién ataca (Enemies en el jugador, Player en enemigos)
+
+    public bool CanBeDamaged { get; private set; } = true;
+
+    // Los hijos sobrescriben estos métodos
+    protected virtual Vector3 GetMoveDirection() => Vector3.Zero;
+    protected virtual bool WantsToAttack() => false; // el hijo decide si quiere atacar
+
+    public override void _Ready()
+    {
+        if (Stats == null)
         {
             GD.PushError($"{Name}: no tiene Stats asignado.");
             SetPhysicsProcess(false);
             return;
         }
 
-        // Copia propia, para que los cambios no afecten al .tres ni a otros personajes
+        // Copia propia, para no modificar el .tres ni afectar a otros personajes
         Stats = (CharacterStats)Stats.Duplicate(true);
-        GD.Print(Stats.Health, Stats.Speed, Stats.InvulnerabilityTimer);
-        Stats.Health = Stats.MaxHealth;
+        Stats.Health = Stats.MaxHealth; //en un futuro se tiene que cambiar, por el guardado de la partida
 
-        if (InvulnerabilityTimer == null) return;
+        if (InvulnerabilityTimer != null)
+        {
+            InvulnerabilityTimer.WaitTime = Mathf.Max(Stats.InvulnerabilityTimerStat, 0.05f);
+            InvulnerabilityTimer.OneShot = true;
+            InvulnerabilityTimer.Timeout += () => CanBeDamaged = true;
+        }
+        
+        if (Hitbox == null)
+        {
+            //Hitbox = GetNode<AtackDamage>("AtackHitbox");
+            //GD.PushError($"{Name}: No se encontró ningún nodo hijo llamado 'AtackHitbox'.");
+        }
+    }
 
-        InvulnerabilityTimer.WaitTime = Stats.InvulnerabilityTimer;
-        InvulnerabilityTimer.OneShot = true;
-        InvulnerabilityTimer.Timeout += OnInvulnerabilityTimerTimeout;
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _PhysicsProcess(double delta)
-	{  
-		Vector3 direction = GetMoveDirection();
+    public override void _PhysicsProcess(double delta)
+    {
+        Vector3 direction = GetMoveDirection();
         Vector3 velocity = Velocity;
 
         velocity.X = direction.X * Stats.Speed;
@@ -40,34 +51,60 @@ public partial class BaseCharacter : CharacterBody3D
         Velocity = velocity;
         MoveAndSlide();
 
-		for (int i = 0; i < GetSlideCollisionCount(); i++)
+        if (WantsToAttack()) //Metodo del hijo que indica si quiere atacar
+        {
+            Attack();
+        }           
+
+        for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
             if (GetSlideCollision(i).GetCollider() is Node collider)
                 OnCollided(collider);
         }
-	}
-    protected virtual void OnCollided(Node collider)
+    }
+
+    protected virtual void OnCollided(Node collider) //...
     {
-        if (collider is BaseCharacter other)
+        
+    }
+
+    protected virtual void Attack() //revisions
+    {
+        //GD.Print($"{Hitbox}");
+        Hitbox?.StartAtack();   // él mismo comprueba CanAtack
+        /* es lo mismo que:
+		if (Hitbox != null)
 		{
-			if (other.Stats.Attack > this.Stats.Defense)
-			{
-				GD.Print("Vida: " + this.Stats.Health + " Ataque: " + other.Stats.Attack + " Defensa: " + this.Stats.Defense);
-				Stats.Health = this.Stats.Health - other.Stats.Attack + this.Stats.Defense;
-				GD.Print("Daño Recibido: " + (other.Stats.Attack - this.Stats.Defense));
-				GD.Print("Vida: " + this.Stats.Health);
-                InvulnerabilityTimer.Start();
-                Stats.CanBeDamaged = false;
-			}
-			//Lo que quede
+    		Hitbox?.StartAtack(); 
 		}
+		Lo de abajo lo mismo*/
     }
-	private void GetHurt()
+
+    public void TakeDamage(float incomingDamage)
     {
-        //
+        if (!CanBeDamaged) return;
+
+        float damage = Mathf.Max(0f, incomingDamage - Stats.Defense);
+        Stats.Health -= damage;
+        GD.Print($"[DAÑO] {Name} recibe {damage}. Vida: {Stats.Health}/{Stats.MaxHealth}");
+
+        if (Stats.Health <= 0)
+        {
+            Die();
+            return;
+        }
+
+        if (InvulnerabilityTimer != null)
+        {
+            CanBeDamaged = false;
+            InvulnerabilityTimer.Start();
+        }
     }
-	private void OnInvulnerabilityTimerTimeout()
-	{
-		Stats.CanBeDamaged = true;
-	}
+
+    protected virtual void Die() //revisar
+    {
+        SetPhysicsProcess(false);
+        QueueFree();
+    }
 }
+

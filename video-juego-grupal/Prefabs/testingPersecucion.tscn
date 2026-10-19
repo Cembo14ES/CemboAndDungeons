@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://bhx4pfnsu48w0"]
+
+[ext_resource type="PackedScene" uid="uid://bquatbsnyt18i" path="res://Prefabs/character2.tscn" id="1_33jtv"]
+[ext_resource type="PackedScene" uid="uid://b8qlc8oci1tbn" path="res://Prefabs/enemy2.tscn" id="2_i18vy"]
+
+[node name="Node3D" type="Node3D" unique_id=32337258]
+
+[node name="Character" parent="." unique_id=1780338015 instance=ExtResource("1_33jtv")]
+
+[node name="CharacterBody3D" parent="." unique_id=1405340408 instance=ExtResource("2_i18vy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6200104, 0, 0)
