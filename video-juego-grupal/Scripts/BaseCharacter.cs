@@ -8,6 +8,7 @@ public partial class BaseCharacter : CharacterBody3D
     [Export] public StringName HostileGroup { get; set; }   // a quién ataca (Enemies en el jugador, Player en enemigos)
 
     public bool CanBeDamaged { get; private set; } = true;
+    public Vector3 Facing { get; private set; } = Vector3.Back; 
 
     // Los hijos sobrescriben estos métodos
     protected virtual Vector3 GetMoveDirection() => Vector3.Zero;
@@ -32,17 +33,15 @@ public partial class BaseCharacter : CharacterBody3D
             InvulnerabilityTimer.OneShot = true;
             InvulnerabilityTimer.Timeout += () => CanBeDamaged = true;
         }
-        
-        if (Hitbox == null)
-        {
-            //Hitbox = GetNode<AtackDamage>("AtackHitbox");
-            //GD.PushError($"{Name}: No se encontró ningún nodo hijo llamado 'AtackHitbox'.");
-        }
     }
 
     public override void _PhysicsProcess(double delta)
     {
         Vector3 direction = GetMoveDirection();
+        if (direction != Vector3.Zero)
+        {
+            Facing = direction;   
+        }
         Vector3 velocity = Velocity;
 
         velocity.X = direction.X * Stats.Speed;
@@ -53,6 +52,7 @@ public partial class BaseCharacter : CharacterBody3D
 
         if (WantsToAttack()) //Metodo del hijo que indica si quiere atacar
         {
+            GD.Print($"[ATAQUE] {Name} ataca.");
             Attack();
         }           
 
@@ -70,8 +70,7 @@ public partial class BaseCharacter : CharacterBody3D
 
     protected virtual void Attack() //revisions
     {
-        //GD.Print($"{Hitbox}");
-        Hitbox?.StartAtack();   // él mismo comprueba CanAtack
+        Hitbox?.StartAtack(Facing);   // él mismo comprueba CanAtack
         /* es lo mismo que:
 		if (Hitbox != null)
 		{

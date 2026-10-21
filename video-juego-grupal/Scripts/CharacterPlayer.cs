@@ -17,11 +17,7 @@ public partial class CharacterPlayer : BaseCharacter
 	}
 	protected override Vector3 GetMoveDirection()
 	{
-		Vector2 input = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
-		if (input != Vector2.Zero)
-		{
-			GD.Print("Me estoy moviendo");
-		}
+		Vector2 input = Input.GetVector("move_backward", "move_forward", "move_left", "move_right");
 		return (Transform.Basis * new Vector3(input.X, 0, input.Y)).Normalized();
 	}
 	protected override void Attack()

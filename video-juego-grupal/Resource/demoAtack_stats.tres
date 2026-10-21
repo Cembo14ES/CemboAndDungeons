@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_8fdk1")
-Attack = 1.0
+Attack = 5.0
 Multiplier = 1.0
 ProjectileSpeed = 1.0
 Force = 1.0

@@ -1,26 +1,14 @@
 [gd_resource type="Resource" script_class="CharacterStats" format=3 uid="uid://vfc675cx1vfw"]
 
 [ext_resource type="Script" uid="uid://tgjnaj6cmewb" path="res://Scripts/CharacterStats.cs" id="1_obfh2"]
-[ext_resource type="Script" uid="uid://ctyoytl6vxste" path="res://Scripts/AtackStats.cs" id="1_v8owp"]
-
-[sub_resource type="Resource" id="Resource_jaap0"]
-script = ExtResource("1_v8owp")
-Multiplier = 1.0
-ProjectileSpeed = 1.0
-Force = 1.0
-Lifetime = 1.0
-HitboxFrames = 1
-metadata/_custom_type_script = "uid://ctyoytl6vxste"
 
 [resource]
 script = ExtResource("1_obfh2")
-MaxHealth = 20.0
-Health = 20.0
-Attack = 1.0
+MaxHealth = 10.0
+Health = 10.0
+Attack = 5.0
 Defense = 1.0
 Speed = 1.0
 AttackSpeed = 1.0
 Knockback = 1.0
-InvulnerabilityTimer = 1.0
-BasicAttack = SubResource("Resource_jaap0")
 metadata/_custom_type_script = "uid://tgjnaj6cmewb"

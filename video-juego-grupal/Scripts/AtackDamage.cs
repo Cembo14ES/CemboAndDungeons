@@ -50,22 +50,35 @@ public partial class AtackDamage : Area3D
         }
     }
 
-    public void StartAtack()
+    public void StartAtack(Vector3 direction)
     {
-		GD.Print(CanAtack);
         if (!CanAtack || Stats == null) return;
+        
+        AimAt(direction);
 
         CanAtack = false;
         AtackTime?.Start(); 
-		/* es lo mismo que:
+        Monitoring = true;
+        HitboxTime?.Start();
+		GD.Print("atacando");
+        /* es lo mismo que:
 		if (AtackTime != null)
 		{
     		AtackTime.Start();
 		}
 		Lo de abajo lo mismo*/
-        Monitoring = true;
-        HitboxTime?.Start();
-		GD.Print("atacando");
+    }
+    private void AimAt(Vector3 direction) //Hay que ajustarlas mejor, pero por el momento lo dejo así
+    {
+        direction.Y = 0;
+        if (direction == Vector3.Zero) return;
+
+        float step = Mathf.Pi / 4f;
+        float angle = Mathf.Round(Mathf.Atan2(direction.X, direction.Z) / step) * step;
+
+        Position = new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * 2;
+
+        Rotation = new Vector3(0, angle, 0);
     }
 
     private void OnBodyEntered(Node3D body) //filtros para que solo haga daño a lo que le tiene que hacer daño

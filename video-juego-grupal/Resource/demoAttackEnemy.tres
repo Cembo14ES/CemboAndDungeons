@@ -4,4 +4,10 @@
 
 [resource]
 script = ExtResource("1_wyvav")
+Attack = 5.0
+Multiplier = 1.0
+ProjectileSpeed = 1.0
+Force = 1.0
+AtackTimeStat = 0.5
+HitboxFramesStat = 0.4
 metadata/_custom_type_script = "uid://ctyoytl6vxste"

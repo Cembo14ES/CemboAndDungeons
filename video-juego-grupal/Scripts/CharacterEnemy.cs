@@ -30,4 +30,12 @@ public partial class CharacterEnemy : BaseCharacter
 	{
 		base.OnCollided(collider);
 	}
+	protected override bool WantsToAttack()
+	{
+		return true; //siempre ataca, porque va por cuerpo
+	}
+	protected override void Attack()
+	{
+		base.Attack();
+	}
 }
