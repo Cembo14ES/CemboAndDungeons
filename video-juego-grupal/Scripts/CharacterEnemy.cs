@@ -4,7 +4,7 @@ using System;
 public partial class CharacterEnemy : BaseCharacter
 {
 	// Called when the node enters the scene tree for the first time.
-	[Export] public Node3D Target { get; set; }
+	private Node3D Target { get; set; }
 	public override void _Ready()
 	{
 		base._Ready();
@@ -18,8 +18,9 @@ public partial class CharacterEnemy : BaseCharacter
 	}
     protected override Vector3 GetMoveDirection()
     {
-        if (Target == null)
-		{ 
+        if (!IsInstanceValid(Target))
+		{
+			Target = null;
 			return Vector3.Zero;
 		}
         Vector3 toTarget = Target.GlobalPosition - GlobalPosition;

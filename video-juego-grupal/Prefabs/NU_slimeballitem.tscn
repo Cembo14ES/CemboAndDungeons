@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d26427c76gy4e"]
 
-[ext_resource type="Script" uid="uid://dp24ab73ojrvl" path="res://Scripts/SlimeBallItem.cs" id="1_bpox2"]
+[ext_resource type="Script" uid="uid://dp24ab73ojrvl" path="res://Scripts/NU_SlimeBallItem.cs" id="1_bpox2"]
 [ext_resource type="Texture2D" uid="uid://cv8gfuxcp1nh3" path="res://Sprites/SlimeBall.png" id="1_fftd5"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]

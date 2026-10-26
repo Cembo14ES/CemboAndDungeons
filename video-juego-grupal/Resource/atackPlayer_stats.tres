@@ -1,13 +1,13 @@
 [gd_resource type="Resource" script_class="AtackStats" format=3 uid="uid://ctgej6rqkbknj"]
 
-[ext_resource type="Script" uid="uid://ctyoytl6vxste" path="res://Scripts/AtackStats.cs" id="1_8fdk1"]
+[ext_resource type="Script" uid="uid://ctyoytl6vxste" path="res://Scripts/AtackStats.cs" id="1_1dtdy"]
 
 [resource]
-script = ExtResource("1_8fdk1")
+script = ExtResource("1_1dtdy")
 Attack = 5.0
 Multiplier = 1.0
 ProjectileSpeed = 1.0
 Force = 1.0
-AtackTimeStat = 0.5
-HitboxFramesStat = 0.4
+AtackTimeStat = 0.8
+HitboxFramesStat = 0.75
 metadata/_custom_type_script = "uid://ctyoytl6vxste"

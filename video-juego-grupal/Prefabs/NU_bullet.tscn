@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://j26ehiwffi0o"]
 
 [ext_resource type="Texture2D" uid="uid://cyxvxsxsdfh7x" path="res://Sprites/Bala.png" id="1_62lvt"]
-[ext_resource type="Script" uid="uid://v0sycjif74i2" path="res://Scripts/Bullet.cs" id="1_m4f65"]
+[ext_resource type="Script" uid="uid://v0sycjif74i2" path="res://Scripts/NU_Bullet.cs" id="1_m4f65"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
 

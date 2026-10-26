@@ -1,18 +1,25 @@
 [gd_scene format=3 uid="uid://bhx4pfnsu48w0"]
 
-[ext_resource type="PackedScene" uid="uid://bquatbsnyt18i" path="res://Prefabs/character2.tscn" id="1_33jtv"]
-[ext_resource type="PackedScene" uid="uid://b8qlc8oci1tbn" path="res://Prefabs/enemy2.tscn" id="2_i18vy"]
+[ext_resource type="PackedScene" uid="uid://bquatbsnyt18i" path="res://Prefabs/characterPlayer.tscn" id="1_33jtv"]
+[ext_resource type="PackedScene" uid="uid://b8qlc8oci1tbn" path="res://Prefabs/characterEnemy.tscn" id="2_i18vy"]
 [ext_resource type="Texture2D" uid="uid://cyxvxsxsdfh7x" path="res://Sprites/Bala.png" id="3_2svgk"]
+[ext_resource type="Script" uid="uid://dl5ocoa7l6il0" path="res://Scripts/CameraPlayer.cs" id="4_84psh"]
 
 [node name="Node3D" type="Node3D" unique_id=32337258]
 
 [node name="Character" parent="." unique_id=1780338015 instance=ExtResource("1_33jtv")]
 
-[node name="CharacterBody3D" parent="." unique_id=1405340408 instance=ExtResource("2_i18vy")]
+[node name="CharacterBody3D" parent="." unique_id=1405340408 node_paths=PackedStringArray("Target") instance=ExtResource("2_i18vy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+Target = NodePath("../Character")
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=903751517]
 transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, 0, 0, 0)
 visible = false
 pixel_size = 4.0
 texture = ExtResource("3_2svgk")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=872509453 node_paths=PackedStringArray("Target")]
+transform = Transform3D(-4.371139e-08, 1, 4.371139e-08, 0, -4.371139e-08, 1, 1, 4.371139e-08, 1.9106855e-15, 0, 10, 0)
+script = ExtResource("4_84psh")
+Target = NodePath("../Character")

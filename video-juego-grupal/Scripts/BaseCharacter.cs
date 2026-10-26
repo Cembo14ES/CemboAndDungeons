@@ -4,7 +4,7 @@ public partial class BaseCharacter : CharacterBody3D
 {
     [Export] public CharacterStats Stats { get; set; }
     [Export] public Timer InvulnerabilityTimer { get; set; }
-    [Export] public AtackDamage Hitbox { get; set; }
+    [Export] public BaseAttackDamage Hitbox { get; set; }
     [Export] public StringName HostileGroup { get; set; }   // a quién ataca (Enemies en el jugador, Player en enemigos)
 
     public bool CanBeDamaged { get; private set; } = true;
@@ -52,7 +52,6 @@ public partial class BaseCharacter : CharacterBody3D
 
         if (WantsToAttack()) //Metodo del hijo que indica si quiere atacar
         {
-            GD.Print($"[ATAQUE] {Name} ataca.");
             Attack();
         }           
 
