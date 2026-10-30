@@ -1,20 +1,17 @@
 [gd_scene format=3 uid="uid://tr6t5rv12txu"]
 
-[ext_resource type="Script" uid="uid://8ygcsm05bybs" path="res://Scripts/AtackDamageEnemy.cs" id="1_xn74l"]
-[ext_resource type="Resource" uid="uid://df1b2f0vaiu4u" path="res://Resource/atackEnemy.tres" id="2_rbudy"]
+[ext_resource type="Script" uid="uid://8ygcsm05bybs" path="res://Scripts/AttackEnemy.cs" id="1_xn74l"]
 [ext_resource type="Texture2D" uid="uid://cv8gfuxcp1nh3" path="res://Sprites/SlimeBall.png" id="3_i8pbw"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fp2fi"]
+size = Vector3(2.25, 0.2, 3)
 
-[node name="AtackHitbox" type="Area3D" unique_id=633052869 node_paths=PackedStringArray("Sprite")]
+[node name="EnemyAttackHitbox" type="Area3D" unique_id=633052869]
 script = ExtResource("1_xn74l")
-Stats = ExtResource("2_rbudy")
-Sprite = NodePath("Sprite3D")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=730263384]
-transform = Transform3D(2.05, 0, 0, 0, 0.2, 0, 0, 0, 2.55, -0.4, 0, 0.3)
+[node name="AttackHitbox" type="CollisionShape3D" parent="." unique_id=730263384]
 shape = SubResource("BoxShape3D_fp2fi")
 
-[node name="Sprite3D" type="Sprite3D" parent="." unique_id=16388671]
+[node name="ExampleForDebugging" type="Sprite3D" parent="." unique_id=16388671]
 transform = Transform3D(8, 0, 0, 0, -3.496911e-07, -8, 0, 8, -3.496911e-07, 0, 0.5, 0)
 texture = ExtResource("3_i8pbw")

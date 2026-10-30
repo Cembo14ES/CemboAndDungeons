@@ -1,13 +1,13 @@
-[gd_resource type="Resource" script_class="AtackStats" format=3 uid="uid://ctgej6rqkbknj"]
+[gd_resource type="Resource" script_class="AttackStats" format=3 uid="uid://ctgej6rqkbknj"]
 
-[ext_resource type="Script" uid="uid://ctyoytl6vxste" path="res://Scripts/AtackStats.cs" id="1_1dtdy"]
+[ext_resource type="Script" uid="uid://dlxcwswxx3qe0" path="res://Scripts/AttackStats.cs" id="1_1dtdy"]
 
 [resource]
 script = ExtResource("1_1dtdy")
-Attack = 5.0
+Damage = 20.0
 Multiplier = 1.0
 ProjectileSpeed = 1.0
 Force = 1.0
-AtackTimeStat = 0.8
+AttackTimeStat = 1.0
 HitboxFramesStat = 0.75
 metadata/_custom_type_script = "uid://ctyoytl6vxste"

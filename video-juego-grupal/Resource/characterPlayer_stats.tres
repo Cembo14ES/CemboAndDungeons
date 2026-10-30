@@ -5,10 +5,9 @@
 [resource]
 script = ExtResource("1_72iim")
 MaxHealth = 20.0
-Health = 20.0
-Attack = 5.0
+Damage = 5.0
 Defense = 1.0
-Speed = 2.0
+MoveSpeed = 2.0
 AttackSpeed = 1.0
 Knockback = 1.0
 metadata/_custom_type_script = "uid://tgjnaj6cmewb"

@@ -3,13 +3,10 @@ using System;
 
 public partial class CharacterPlayer : BaseCharacter
 {
-	//[Export] public int Arrows;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		base._Ready();
-		
-		//Arrows = 10;
 	}
 	public override void _PhysicsProcess(double delta)
 	{
