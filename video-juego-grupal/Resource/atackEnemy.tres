@@ -4,11 +4,7 @@
 
 [resource]
 script = ExtResource("1_6uag6")
-Damage = 5.0
-Multiplier = 1.0
-ProjectileSpeed = 1.0
-Force = 1.0
-AttackTimeStat = 1.0
-HitboxFramesStat = 1.0
-attackGroup = 1
-HitboxAlwaysActive = true
+AttackMultiplier = 1.0
+AttackNodeAliveTimeStat = 1.0
+HitboxNodeAliveTimeStat = 1.0
+AttackAlwaysActive = true

@@ -11,23 +11,22 @@ public partial class CharacterPlayer : BaseCharacter
 	public override void _PhysicsProcess(double delta)
 	{
 		base._PhysicsProcess(delta);
+		if (canRegularAttack && Input.IsActionJustPressed(InputActions.character_RegularAttack))
+            RegularAttack();
 	}
-	protected override Vector3 GetMoveDirection()
+	protected override Vector3 GetMovementDirection()
 	{
-		Vector2 input = Input.GetVector("move_backward", "move_forward", "move_left", "move_right");
+		Vector2 input = Input.GetVector(InputActions.character_Right, InputActions.character_Left, InputActions.character_Down, InputActions.character_Up);
 		return (Transform.Basis * new Vector3(input.X, 0, input.Y)).Normalized();
 	}
-	protected override void Attack()
+	protected override void RegularAttack()
 	{
-		base.Attack();
+		base.RegularAttack();
 	}
 	protected override void OnCollided(Node collider)
 	{
 		base.OnCollided(collider);
 	}
-	protected override bool WantsToAttack()
-	{
-		return Input.IsActionJustPressed("attack"); //click
-	}
+	
 }
     

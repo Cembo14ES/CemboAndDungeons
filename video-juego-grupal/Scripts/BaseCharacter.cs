@@ -1,120 +1,122 @@
 using Godot;
- 
+
 public partial class BaseCharacter : CharacterBody3D
 {
-    [Export] public CharacterStats Stats { get; set; }
-    [Export] public Timer InvulnerabilityTimer { get; set; }
-    [Export] public PackedScene AttackScene { get; set; }   // el .tscn del ataque
-    [Export] public AttackStats AttackStats { get; set; }   // el .tres del ataque
-    [Export] public StringName HostileGroup { get; set; }   // Enemies en el jugador, Player en enemigos
- 
-    public float Health { get; protected set; } //Vida del personaje
-    public bool CanBeDamaged { get; private set; } = true;
-    public bool CanAttack => attackCooldownLeft <= 0;
-    public Vector3 Facing { get; private set; } = Vector3.Back;
- 
-    private double attackCooldownLeft;
-    private bool hasPersistentAttack;
- 
-    protected virtual Vector3 GetMoveDirection() => Vector3.Zero;
-    protected virtual bool WantsToAttack() => false;
+    [Export] public CharacterStats Stats { get; set; } // Las estadisticas del personaje.
+
+    [Export] public PackedScene RegularAttackScene { get; set; } // La Escena (.tscn) del ataque Normal.
+    [Export] public EnumCharacterType characterType { get; set; } // El Tipo de entidad que es.
+    public enum EnumCharacterType {Player = 0, Enemy = 1}
+
+    public float currentHealth { get; protected set; } // Vida actual del personaje.
+    public bool canBeDamaged { get; private set; } = true; // Booleano que determina si el personaje esta en un estado de invulnerabilidad o no.
+    public bool canRegularAttack { get; private set; } = true; // Booleano que determina si el personaje puede atacar.
+    public Vector3 characterFacingDirection { get; private set; } = Vector3.Back; // Direccion en la que mira el personaje.
+
+    private Timer invulnerabilityTimer = new Timer(); //Timer para la invulnerabilidad del personaje.
+    private Timer regularAttackCooldownTimer = new Timer(); //Timer para el cooldown del ataque.
+
+    protected virtual Vector3 GetMovementDirection() => Vector3.Zero; //Los personajes lo sobreescriben para determinar la direccion de movimiento.
     protected virtual void OnCollided(Node collider) { }
- 
+
     public override void _Ready()
     {
+        //Realiza comprobaciones de varias variables para ver si estan inicializadas.
         if (Stats == null)
         {
-            GD.PushError($"{Name}: no tiene Stats asignado.");
+            GD.PushError($"{Name}: No tiene Stats asignado.");
             SetPhysicsProcess(false);
             return;
         }
- 
-        Stats = (CharacterStats)Stats.Duplicate(true);
-        Health = Stats.MaxHealth;
- 
-        if (InvulnerabilityTimer != null)
-        {
-            InvulnerabilityTimer.WaitTime = Mathf.Max(Stats.InvulnerabilityTimerStat, 0.05f);
-            InvulnerabilityTimer.OneShot = true;
-            InvulnerabilityTimer.Timeout += () => CanBeDamaged = true;
-        }
- 
-        SpawnPersistentAttackIfNeeded();
-    }
- 
-    // Si el ataque es AlwaysActive, se crea UNA vez como hijo del personaje
-    // (así se mueve con él) y ya no se usa Attack() para este personaje.
-    private void SpawnPersistentAttackIfNeeded()
-    {
-        if (AttackScene == null || AttackStats == null) return;
- 
-        if (!AttackStats.HitboxAlwaysActive) return;   // ataque normal: se crea al atacar
 
-        BaseAttack attack = AttackScene.Instantiate<BaseAttack>();
-        attack.Setup(this, AttackStats, Facing);
-        AddChild(attack);    // hijo del personaje; muere con él
-        hasPersistentAttack = true;
+        if (RegularAttackScene == null)
+        {
+            GD.PushError($"{Name}: No tiene Regular Attack asignado.");
+            SetPhysicsProcess(false);
+            return;
+        }
+
+        currentHealth = Stats.MaxHealth;
+
+        //Inicializa los Timers.
+        AddChild(invulnerabilityTimer);
+        invulnerabilityTimer.WaitTime = Mathf.Max(Stats.InvulnerabilityTimerStat, 0.05f);
+        invulnerabilityTimer.OneShot = true;
+        invulnerabilityTimer.Timeout += () => canBeDamaged = true;
+
+        AddChild(regularAttackCooldownTimer);
+        regularAttackCooldownTimer.WaitTime = Stats.RegularAttackCooldown;
+        regularAttackCooldownTimer.OneShot = true;
+        regularAttackCooldownTimer.Timeout += () => canRegularAttack = true;
     }
- 
+
+
     public override void _PhysicsProcess(double delta)
     {
-        Vector3 direction = GetMoveDirection();
-        if (direction != Vector3.Zero)
-            Facing = direction;
- 
-        Vector3 velocity = Velocity;
-        velocity.X = direction.X * Stats.MoveSpeed;
-        velocity.Z = direction.Z * Stats.MoveSpeed;
-        Velocity = velocity;
-        MoveAndSlide();
- 
-        if (attackCooldownLeft > 0)
-            attackCooldownLeft -= delta;
- 
-        if (!hasPersistentAttack && CanAttack && WantsToAttack())
-            Attack();
- 
+        Movement();
+
         for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
             if (GetSlideCollision(i).GetCollider() is Node collider)
                 OnCollided(collider);
         }
     }
- 
-    protected virtual void Attack()
+
+    /// <summary>
+    /// Realiza el movimiento del personaje. Utiliza el valor de GetMovementDirection(). Los hijos pueden sobreescribirlo.
+    /// </summary>
+    protected virtual void Movement()
     {
-        if (AttackScene == null || AttackStats == null) return;
- 
-        BaseAttack attack = AttackScene.Instantiate<BaseAttack>();
-        attack.Setup(this, AttackStats, Facing);
- 
-        // En la escena actual, para que no se mueva con el personaje
-        AddChild(attack); 
- 
-        attackCooldownLeft = AttackStats.AttackTimeStat;
+        Vector3 direction = GetMovementDirection();
+        if (direction != Vector3.Zero)
+            characterFacingDirection = direction;
+
+        Vector3 velocity = Velocity;
+        velocity.X = direction.X * Stats.MovementSpeed;
+        velocity.Z = direction.Z * Stats.MovementSpeed;
+        Velocity = velocity;
+        MoveAndSlide();
     }
- 
+
+    /// <summary>
+    /// Realiza un ataque nomral. Los hijo pueden sobreescribirlo.
+    /// </summary>
+    protected virtual void RegularAttack()
+    {
+        BaseAttack attack = RegularAttackScene.Instantiate<BaseAttack>();
+        attack.Setup(this, characterFacingDirection, Position);
+        AddChild(attack);
+
+        canRegularAttack = false;
+        regularAttackCooldownTimer.Start();
+    }
+
+    /// <summary>
+    /// Realiza los procesos de recivir daño del personaje. Los hijo pueden sobreescribirlo.
+    /// </summary>
+    /// <param name="incomingDamage">El daño recivido</param>
     public void TakeDamage(float incomingDamage)
     {
-        if (!CanBeDamaged || Health <= 0) return;
- 
+        if (!canBeDamaged || currentHealth <= 0) return;
+
         float damage = Mathf.Max(0f, incomingDamage - Stats.Defense);
-        Health -= damage;
-        GD.Print($"[DAÑO] {Name} recibe {damage}. Vida: {Health}/{Stats.MaxHealth}");
- 
-        if (Health <= 0)
+        currentHealth -= damage;
+        GD.Print($"[DAÑO] {Name} recibe {damage}. Vida: {currentHealth}/{Stats.MaxHealth}");
+
+        if (currentHealth <= 0)
         {
             Die();
             return;
         }
- 
-        if (InvulnerabilityTimer != null)
-        {
-            CanBeDamaged = false;
-            InvulnerabilityTimer.Start();
-        }
+
+        canBeDamaged = false;
+        invulnerabilityTimer.Start();
+
     }
- 
+
+    /// <summary>
+    /// Muelto. Los hijo pueden sobreescribirlo.
+    /// </summary>
     protected virtual void Die()
     {
         SetPhysicsProcess(false);

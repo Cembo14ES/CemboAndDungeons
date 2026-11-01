@@ -3,12 +3,15 @@ using System;
 
 public partial class CharacterEnemy : BaseCharacter
 {
-	// Called when the node enters the scene tree for the first time.
-	private Node3D Target { get; set; }
+	private Node3D Target { get; set; } //El objetivo que el Slime persigue.
 	public override void _Ready()
 	{
 		base._Ready();
 		Target = GetTree().GetFirstNodeInGroup("player") as Node3D;
+
+		BaseAttack attack = RegularAttackScene.Instantiate<BaseAttack>();
+        attack.Setup(this, Vector3.Zero, Vector3.Zero);
+        AddChild(attack);    // hijo del personaje; muere con él
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -16,7 +19,7 @@ public partial class CharacterEnemy : BaseCharacter
 	{
 		base._PhysicsProcess(delta);
 	}
-    protected override Vector3 GetMoveDirection()
+    protected override Vector3 GetMovementDirection()
     {
         if (!IsInstanceValid(Target))
 		{
@@ -31,12 +34,8 @@ public partial class CharacterEnemy : BaseCharacter
 	{
 		base.OnCollided(collider);
 	}
-	protected override bool WantsToAttack()
+	protected override void RegularAttack()
 	{
-		return true; //siempre ataca, porque va por cuerpo
-	}
-	protected override void Attack()
-	{
-		base.Attack();
+		base.RegularAttack();
 	}
 }

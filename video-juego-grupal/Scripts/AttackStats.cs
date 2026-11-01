@@ -4,14 +4,13 @@ using System;
 [GlobalClass]
 public partial class AttackStats : Resource
 {
-    [Export] public float Damage { get; set; } //Daño al ataque
-    [Export] public float Multiplier { get; set; } //Multiplicador de daño
-    [Export] public float ProjectileSpeed { get; set; } //Velocidad del proyectil
-    [Export] public float Force { get; set; } //Empuje de ataque
-    [Export] public float AttackTimeStat { get; set; } //Tiempo que dura el ataque
-    [Export] public float HitboxFramesStat { get; set; } //Tiempo de la hitbox
-    [Export] public AttackGroup attackGroup { get; set; } //Grupo perteneciente del ataque
-    [Export] public bool HitboxAlwaysActive { get; set; }
-    public enum AttackGroup {Player = 0, Enemy = 1, EnemyFriendlyFire = 2}
-    public float FinalDamage => Damage * Multiplier;
+    public float AttackDamage { get; set; } //Daño al ataque (Viene de la estadistica del jugador).
+    [Export] public float AttackMultiplier { get; set; } //Multiplicador de daño.
+    [Export] public float AttackNodeAliveTimeStat { get; set; } //Tiempo que dura el ataque (en segundos).
+    [Export] public float HitboxNodeAliveTimeStat { get; set; } //Tiempo de la hitbox (en segundos).
+    [Export] public bool AttackAlwaysActive { get; set; } // Determina si el ataque dura permanentemente o no
+    [Export] public EnumAttackTarget attackTarget { get; set; } //El objetivo de el ataque.
+    
+    public enum EnumAttackTarget {Player = 0, Enemy = 1, All = 2}
+    public float FinalDamage => AttackDamage * AttackMultiplier;
 }
