@@ -1,0 +1,345 @@
+[gd_scene format=3 uid="uid://c24nbekagsjin"]
+
+[ext_resource type="Script" uid="uid://vj8erlbmo0vn" path="res://test/DynamicTest/Room.cs" id="1_wbto7"]
+[ext_resource type="Script" uid="uid://xn7r2k7g8dsf" path="res://test/DynamicTest/RoomCreator/RoomBuilder.cs" id="2_qbube"]
+[ext_resource type="PackedScene" uid="uid://bbd0as3pweqo3" path="res://test/DynamicTest/RoomCreator/Tiles/FloorMesh.tscn" id="3_d0vdb"]
+[ext_resource type="PackedScene" uid="uid://c2m1s1cly55sg" path="res://test/DynamicTest/RoomCreator/Tiles/WallMesh.tscn" id="4_ulnbt"]
+[ext_resource type="PackedScene" uid="uid://rr3salxmv75o" path="res://test/DynamicTest/RoomCreator/Tiles/Door.tscn" id="5_3ss32"]
+[ext_resource type="Script" uid="uid://53p8y45g4okb" path="res://test/DynamicTest/Door.cs" id="6_rthh1"]
+[ext_resource type="Texture2D" uid="uid://86xrn2one1y3" path="res://assets/sprites/debug_room_assets/start.png" id="7_7rt73"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m0gj5"]
+resource_name = "Material"
+cull_mode = 2
+albedo_color = Color(0.9063318, 0.9063318, 0.9063318, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_cbsgb"]
+_surfaces = [{
+"aabb": AABB(-2.5, 0, -2.5, 5, 1e-05, 5),
+"format": 34896613377,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0)
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_u276d"]
+resource_name = "floor_Cube"
+_surfaces = [{
+"aabb": AABB(-2.5, 0, -2.5, 5, 1e-05, 5),
+"attribute_data": PackedByteArray(255, 159, 255, 127, 255, 223, 255, 63, 255, 223, 255, 127, 255, 159, 255, 63),
+"format": 34896613399,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"material": SubResource("StandardMaterial3D_m0gj5"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(255, 255, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 255, 255, 255, 255, 255, 127, 255, 191, 255, 127, 255, 191, 255, 127, 255, 191, 255, 127, 255, 191)
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_cbsgb")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t2nj1"]
+resource_name = "Material"
+cull_mode = 2
+albedo_color = Color(0.9063318, 0.9063318, 0.9063318, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_3imcf"]
+_surfaces = [{
+"aabb": AABB(0, 0, -2.5, 1e-05, 10, 5),
+"format": 34896613377,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_hsyil"]
+resource_name = "RoomDoor_Cube"
+_surfaces = [{
+"aabb": AABB(0, 0, -2.5, 1e-05, 10, 5),
+"attribute_data": PackedByteArray(255, 95, 152, 217, 255, 159, 204, 204, 255, 159, 152, 217, 255, 95, 204, 204),
+"format": 34896613399,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"material": SubResource("StandardMaterial3D_t2nj1"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 255, 255, 84, 213, 0, 0, 255, 255, 0, 0, 84, 213, 0, 0, 255, 255, 255, 255, 84, 213, 0, 0, 0, 0, 0, 0, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213)
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_3imcf")
+
+[node name="DonutSmall" type="Node3D" unique_id=1823202004 node_paths=PackedStringArray("doorFolder")]
+script = ExtResource("1_wbto7")
+doorFolder = NodePath("RoomBuilder/Meshes/Doors")
+gridMapData = Array[int]([13, 2, 6, 2, 10, 5, 1, 8, 1, 3, 9, 7, 0, 9, 7, 5, 1, 6, 1, 3, 12, 4, 8, 4, 11])
+
+[node name="RoomBuilder" type="Node3D" parent="." unique_id=896027964]
+script = ExtResource("2_qbube")
+FloorMeshScene = ExtResource("3_d0vdb")
+WallMeshScene = ExtResource("4_ulnbt")
+DoorScene = ExtResource("5_3ss32")
+
+[node name="Meshes" type="Node3D" parent="RoomBuilder" unique_id=380474277]
+
+[node name="Visuals" type="Node3D" parent="RoomBuilder/Meshes" unique_id=1674760753]
+
+[node name="CornerNorthWest_0_0" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=760502 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="CornerNorthWest_0_0_A" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1362746268 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 10, 0, 12.5)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="CornerNorthWest_0_0_B" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=2068158852 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 10)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="DoorWest_0_1" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=505146369 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallWest_0_2" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=453867466 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 0)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallWest_0_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1984591980 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 0)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="DoorWest_0_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1886896521 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="CornerSouthWest_0_4" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1345327856 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="CornerSouthWest_0_4_A" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1882524770 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 10, 0, -12.5)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="CornerSouthWest_0_4_B" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1218768862 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, -10)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="DoorNorth_1_0" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=2086238214 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="Floor_1_1" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=970868437 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="Floor_1_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1446560820 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="DoorSouth_1_4" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=446843455 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallNorth_2_0" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=716563032 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallNorth_2_1" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1547445861 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 12.5)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="WallSouth_2_4" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1126696676 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallSouth_2_5" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1893423055 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, -12.5)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="DoorNorth_3_0" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1811746681 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="Floor_3_1" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1380422435 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="Floor_3_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=2077993854 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="DoorSouth_3_4" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1659104441 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="CornerNorthEast_4_0" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1817597166 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="CornerNorthEast_4_0_A" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1464164846 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -10, 0, 12.5)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="CornerNorthEast_4_0_B" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1467513727 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -12.5, 0, 10)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="DoorEast_4_1" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=25465067 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallEast_4_2" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1788336559 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 0)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallEast_4_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=263500513 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -12.5, 0, 0)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="DoorEast_4_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=2115250019 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="CornerSouthEast_4_4" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1563906240 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -10)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="CornerSouthEast_4_4_A" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=580423645 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -10, 0, -12.5)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="CornerSouthEast_4_4_B" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1900753359 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -12.5, 0, -10)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="WallNorth_2_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1229352523 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallNorth_2_4" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1034319390 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, -2.5)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="WallSouth_2_1" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=233318142 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallSouth_2_2" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1753673926 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, 2.5)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="WallWest_3_2" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=424818970 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallWest_3_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=353867332 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 0)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="WallEast_1_2" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=1415655668 instance=ExtResource("3_d0vdb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
+mesh = SubResource("ArrayMesh_u276d")
+
+[node name="WallEast_1_3" type="MeshInstance3D" parent="RoomBuilder/Meshes/Visuals" unique_id=772443571 instance=ExtResource("4_ulnbt")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 2.5, 0, 0)
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="Doors" type="Node3D" parent="RoomBuilder/Meshes" unique_id=1691965935]
+
+[node name="DoorWest_0_2" type="StaticBody3D" parent="RoomBuilder/Meshes/Doors" unique_id=140992456 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint") instance=ExtResource("5_3ss32")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 5)
+script = ExtResource("6_rthh1")
+cardinalDirection = 3
+RoomGridPosition = Vector2i(0, 1)
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="DoorWest_0_3" type="StaticBody3D" parent="RoomBuilder/Meshes/Doors" unique_id=461039211 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint") instance=ExtResource("5_3ss32")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, -5)
+script = ExtResource("6_rthh1")
+cardinalDirection = 3
+RoomGridPosition = Vector2i(0, 3)
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="DoorNorth_1_1" type="StaticBody3D" parent="RoomBuilder/Meshes/Doors" unique_id=974541413 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint") instance=ExtResource("5_3ss32")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5, 0, 12.5)
+script = ExtResource("6_rthh1")
+RoomGridPosition = Vector2i(1, 0)
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="DoorSouth_1_5" type="StaticBody3D" parent="RoomBuilder/Meshes/Doors" unique_id=1650556112 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint") instance=ExtResource("5_3ss32")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 5, 0, -12.5)
+script = ExtResource("6_rthh1")
+cardinalDirection = 1
+RoomGridPosition = Vector2i(1, 4)
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="DoorNorth_3_1" type="StaticBody3D" parent="RoomBuilder/Meshes/Doors" unique_id=622220329 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint") instance=ExtResource("5_3ss32")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5, 0, 12.5)
+script = ExtResource("6_rthh1")
+RoomGridPosition = Vector2i(3, 0)
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="DoorSouth_3_4" type="StaticBody3D" parent="RoomBuilder/Meshes/Doors" unique_id=729117848 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint") instance=ExtResource("5_3ss32")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -5, 0, -12.5)
+script = ExtResource("6_rthh1")
+cardinalDirection = 1
+RoomGridPosition = Vector2i(3, 4)
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="DoorEast_4_1" type="StaticBody3D" parent="RoomBuilder/Meshes/Doors" unique_id=217500037 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint") instance=ExtResource("5_3ss32")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -12.5, 0, 5)
+script = ExtResource("6_rthh1")
+cardinalDirection = 2
+RoomGridPosition = Vector2i(4, 1)
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="DoorEast_4_4" type="StaticBody3D" parent="RoomBuilder/Meshes/Doors" unique_id=2125151001 node_paths=PackedStringArray("wallMesh", "wallCollision", "teleportArea", "teleportPoint") instance=ExtResource("5_3ss32")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -12.5, 0, -5)
+script = ExtResource("6_rthh1")
+cardinalDirection = 2
+RoomGridPosition = Vector2i(4, 3)
+wallMesh = NodePath("DoorMesh")
+wallCollision = NodePath("DoorCollision")
+teleportArea = NodePath("Teleport")
+teleportPoint = NodePath("Teleport/TeleportPoint")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=691564441]
+transform = Transform3D(1, 0, 0, 0, 0.003553697, -0.9999937, 0, 0.9999937, 0.003553697, 0, 2.1359615, 0)
+visible = false
+texture = ExtResource("7_7rt73")

@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://c2m1s1cly55sg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t2nj1"]
+resource_name = "Material"
+cull_mode = 2
+albedo_color = Color(0.9063318, 0.9063318, 0.9063318, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_3imcf"]
+_surfaces = [{
+"aabb": AABB(0, 0, -2.5, 1e-05, 10, 5),
+"format": 34896613377,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_hsyil"]
+resource_name = "RoomDoor_Cube"
+_surfaces = [{
+"aabb": AABB(0, 0, -2.5, 1e-05, 10, 5),
+"attribute_data": PackedByteArray(255, 95, 152, 217, 255, 159, 204, 204, 255, 159, 152, 217, 255, 95, 204, 204),
+"format": 34896613399,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"material": SubResource("StandardMaterial3D_t2nj1"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 255, 255, 84, 213, 0, 0, 255, 255, 0, 0, 84, 213, 0, 0, 255, 255, 255, 255, 84, 213, 0, 0, 0, 0, 0, 0, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213, 84, 213)
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_3imcf")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3imcf"]
+points = PackedVector3Array(0, 10, 2.5, 0, 10, -2.5, 0, 0, 2.5, 0, 0, -2.5)
+
+[node name="DoorMesh" type="MeshInstance3D" unique_id=1362746268]
+mesh = SubResource("ArrayMesh_hsyil")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=71537606]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1766074440]
+shape = SubResource("ConvexPolygonShape3D_3imcf")
