@@ -18,6 +18,7 @@ public partial class BaseCharacter : CharacterBody3D
 
     protected virtual Vector3 GetMovementDirection() => Vector3.Zero; //Los personajes lo sobreescriben para determinar la direccion de movimiento.
     protected virtual void OnCollided(Node collider) { }
+    [Export] AnimatedSprite3D characterAnimation { get; set; } // Animacion del personaje.
 
     public override void _Ready()
     {
@@ -69,13 +70,39 @@ public partial class BaseCharacter : CharacterBody3D
     {
         Vector3 direction = GetMovementDirection();
         if (direction != Vector3.Zero)
+        {
             characterFacingDirection = direction;
+            PlayAnimation(GetWalkAnimation(direction));
+        }
+        else
+        {
+            characterAnimation.Play("Idle");
+        }
 
         Vector3 velocity = Velocity;
         velocity.X = direction.X * Stats.MovementSpeed;
         velocity.Z = direction.Z * Stats.MovementSpeed;
         Velocity = velocity;
         MoveAndSlide();
+    }
+    private void PlayAnimation(string animationName)
+    {
+        if (characterAnimation == null || characterAnimation.SpriteFrames == null) return;
+        // Evita reiniciar la animación en cada frame
+        if (characterAnimation.Animation != animationName)
+        {
+            characterAnimation.Play(animationName);
+        }
+    }
+    private string GetWalkAnimation(Vector3 direction)
+    {
+        // Animacion izquierda o/y derecha
+        if (Mathf.Abs(direction.X) > Mathf.Abs(direction.Z))
+        {
+            return direction.X > 0 ? "Walking_Right" : "Walking_Left";
+        }
+        // Animacion arriba o/y abajo
+        return direction.Z < 0 ? "Walking_Down" : "Walking_Up";
     }
 
     /// <summary>

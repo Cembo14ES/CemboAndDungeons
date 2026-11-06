@@ -3,7 +3,176 @@
 [ext_resource type="Script" uid="uid://yumiabkfbir3" path="res://Scripts/CharacterPlayer.cs" id="1_jaap0"]
 [ext_resource type="Resource" uid="uid://ce4ubrhauq5g" path="res://Resource/characterPlayer_stats.tres" id="2_7n8lb"]
 [ext_resource type="Texture2D" uid="uid://cfwstbmb8xuya" path="res://Sprites/Knight_Idle.png" id="3_gpghh"]
+[ext_resource type="Texture2D" uid="uid://bmrl1o2xv7bp3" path="res://Sprites/char.png" id="3_ud1au"]
 [ext_resource type="PackedScene" uid="uid://b33jt3klgvkga" path="res://Prefabs/characterPlayerAttack.tscn" id="4_7n8lb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1pfka"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nh2ea"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l31ur"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1qqg4"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ud1au"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(0, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1x08j"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(64, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a6av1"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(128, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_82ao4"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(192, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d7oed"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(0, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sl7na"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(64, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sxro1"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(128, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lm0n3"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(192, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fhtgk"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(0, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ys3kv"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(64, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k5vxm"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(128, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lkwso"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(192, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8uf6x"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(0, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_poohs"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(64, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iwo6y"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(128, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hlhdw"]
+atlas = ExtResource("3_ud1au")
+region = Rect2(192, 128, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8erxc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1pfka")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nh2ea")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l31ur")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1qqg4")
+}],
+"loop": 1,
+"name": &"Idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ud1au")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1x08j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a6av1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_82ao4")
+}],
+"loop": 1,
+"name": &"Walking_Down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d7oed")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sl7na")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sxro1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lm0n3")
+}],
+"loop": 1,
+"name": &"Walking_Left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fhtgk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ys3kv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k5vxm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lkwso")
+}],
+"loop": 1,
+"name": &"Walking_Right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8uf6x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_poohs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iwo6y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hlhdw")
+}],
+"loop": 1,
+"name": &"Walking_Up",
+"speed": 5.0
+}]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vobto"]
 size = Vector3(3.744873, 0.2, 3.7788086)
@@ -11,13 +180,22 @@ size = Vector3(3.744873, 0.2, 3.7788086)
 [sub_resource type="BoxShape3D" id="BoxShape3D_ud1au"]
 size = Vector3(1.7522094, 1.0836303, 2.6966186)
 
-[node name="TestPlayer" type="CharacterBody3D" unique_id=1780338015 groups=["player"]]
+[node name="TestPlayer" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("characterAnimation") groups=["player"]]
 script = ExtResource("1_jaap0")
 Stats = ExtResource("2_7n8lb")
 RegularAttackScene = ExtResource("4_7n8lb")
+characterAnimation = NodePath("AnimatedSprite3D")
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1576201207]
+transform = Transform3D(6, 0, 0, 0, -2.6226832e-07, -6, 0, 6, -2.6226832e-07, 0, 0, 0)
+texture_filter = 2
+sprite_frames = SubResource("SpriteFrames_8erxc")
+animation = &"Idle"
+autoplay = "Idle"
 
 [node name="PlayerSprite" type="Sprite3D" parent="." unique_id=2038590288]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+visible = false
 flip_h = true
 texture = ExtResource("3_gpghh")
 
@@ -29,3 +207,6 @@ shape = SubResource("BoxShape3D_vobto")
 [node name="PlayerTriggerCollisionArea" type="CollisionShape3D" parent="PlayerTriggerCollision" unique_id=1301786104]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.33535194, 0, 0)
 shape = SubResource("BoxShape3D_ud1au")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1489137242]
+transform = Transform3D(-1, 8.742278e-08, 0, 3.821371e-15, 4.371139e-08, 1, 8.742278e-08, 1, -4.371139e-08, 0, 10, 0)

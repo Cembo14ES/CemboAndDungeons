@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bquatbsnyt18i" path="res://Prefabs/characterPlayer.tscn" id="1_33jtv"]
 [ext_resource type="PackedScene" uid="uid://b8qlc8oci1tbn" path="res://Prefabs/characterEnemy.tscn" id="2_i18vy"]
 [ext_resource type="Texture2D" uid="uid://cyxvxsxsdfh7x" path="res://Sprites/Bala.png" id="3_2svgk"]
+[ext_resource type="Script" uid="uid://dboynie2tnasq" path="res://Scripts/SystemPerformance.cs" id="4_84psh"]
 
 [node name="Node3D" type="Node3D" unique_id=32337258]
 
@@ -20,3 +21,8 @@ texture = ExtResource("3_2svgk")
 [node name="Camera3D" type="Camera3D" parent="." unique_id=650662303]
 transform = Transform3D(-0.99999994, 8.742277e-08, 3.821371e-15, 0, -4.3711385e-08, 1, 8.742277e-08, 0.99999994, 4.371139e-08, 0, 9.852196, 0)
 current = true
+
+[node name="Label" type="Label" parent="." unique_id=1460035827]
+offset_right = 40.0
+offset_bottom = 23.0
+script = ExtResource("4_84psh")
