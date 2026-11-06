@@ -16,25 +16,27 @@ public partial class RoomBuilder : Node3D
     }
 
     [ExportGroup("Grid Settings")]
-    [Export] public int GridWidth 
-    { 
-        get => _gridWidth; 
-        set 
-        { 
-            _gridWidth = Mathf.Max(1, value); 
+    [Export]
+    public int GridWidth
+    {
+        get => _gridWidth;
+        set
+        {
+            _gridWidth = Mathf.Max(1, value);
             AutoSaveRoom();
             BuildRoom3D();
-        } 
+        }
     }
-    [Export] public int GridHeight 
-    { 
-        get => _gridHeight; 
-        set 
-        { 
-            _gridHeight = Mathf.Max(1, value); 
+    [Export]
+    public int GridHeight
+    {
+        get => _gridHeight;
+        set
+        {
+            _gridHeight = Mathf.Max(1, value);
             AutoSaveRoom();
             BuildRoom3D();
-        } 
+        }
     }
 
     private int _gridWidth = 5;
@@ -48,10 +50,11 @@ public partial class RoomBuilder : Node3D
     [Export] public PackedScene DoorScene;
 
     [ExportGroup("Actions")]
-    [Export] public bool TriggerBuildPreview 
-    { 
-        get => false; 
-        set { if (value) BuildRoom3D(); } 
+    [Export]
+    public bool TriggerBuildPreview
+    {
+        get => false;
+        set { if (value) BuildRoom3D(); }
     }
 
     private Dictionary<Vector2I, TileType> _roomGrid = new Dictionary<Vector2I, TileType>();
@@ -80,18 +83,13 @@ public partial class RoomBuilder : Node3D
         if (roomScript.gridHeight > 0) _gridHeight = roomScript.gridHeight;
 
         _roomGrid.Clear();
-        if (roomScript.gridMapData != null && roomScript.gridMapData.Count > 0)
+        if (roomScript.gridMapData != null)
         {
-            int expectedCount = _gridWidth * _gridHeight;
-            for (int i = 0; i < roomScript.gridMapData.Count && i < expectedCount; i++)
+            foreach (var kvp in roomScript.gridMapData)
             {
-                int x = i % _gridWidth;
-                int y = i / _gridWidth;
-                int val = (int)roomScript.gridMapData[i];
-                
-                if (val > 0 && Enum.IsDefined(typeof(TileType), val))
+                if (kvp.Value > 0 && Enum.IsDefined(typeof(TileType), kvp.Value))
                 {
-                    _roomGrid[new Vector2I(x, y)] = (TileType)val;
+                    _roomGrid[kvp.Key] = (TileType)kvp.Value;
                 }
             }
         }
@@ -102,7 +100,7 @@ public partial class RoomBuilder : Node3D
         if (gridPos.X >= 0 && gridPos.X < _gridWidth && gridPos.Y >= 0 && gridPos.Y < _gridHeight)
         {
             TileType currentTile = GetTile(gridPos);
-            if (currentTile == type) return; // Optimization: do nothing if the tile is unchanged!
+            if (currentTile == type) return; // Optimization: do nothing if the tile is unchanged
 
             if (type == TileType.Empty)
                 _roomGrid.Remove(gridPos);
@@ -141,7 +139,7 @@ public partial class RoomBuilder : Node3D
                 int invX = _gridWidth - 1 - x;
                 int invY = _gridHeight - 1 - y;
                 Vector3 worldPos = new Vector3((invX * GridTileSize) - offsetX, 0, (invY * GridTileSize) - offsetZ);
-                
+
                 List<Node> spawned = SpawnTileVisuals(pos, tile, worldPos);
                 if (spawned.Count > 0)
                 {
@@ -221,7 +219,6 @@ public partial class RoomBuilder : Node3D
 
         if (roomScript != null)
         {
-            // Prioritize DynamicRoom's assigned doorFolder if configured
             if (roomScript.doorFolder != null && IsInstanceValid(roomScript.doorFolder))
             {
                 _doorsFolder = roomScript.doorFolder;
@@ -364,7 +361,7 @@ public partial class RoomBuilder : Node3D
         {
             GD.PushWarning("No Wall Scene is Loaded");
             return null;
-        } 
+        }
         Node3D wall = (Node3D)WallMeshScene.Instantiate();
         _visualsFolder.AddChild(wall);
         SafeSetOwner(wall);
@@ -380,8 +377,8 @@ public partial class RoomBuilder : Node3D
         {
             GD.PushWarning("No Door Scene is Loaded");
             return null;
-        } 
-        
+        }
+
         Door doorNode = DoorScene.Instantiate<Door>();
         doorNode.RoomGridPosition = gridPos;
 
@@ -416,12 +413,11 @@ public partial class RoomBuilder : Node3D
         roomScript.gridHeight = _gridHeight;
         roomScript.gridMapData.Clear();
 
-        for (int y = 0; y < _gridHeight; y++)
+        foreach (var kvp in _roomGrid)
         {
-            for (int x = 0; x < _gridWidth; x++)
+            if (kvp.Value != TileType.Empty)
             {
-                TileType tile = GetTile(new Vector2I(x, y));
-                roomScript.gridMapData.Add((int)tile);
+                roomScript.gridMapData[kvp.Key] = (int)kvp.Value;
             }
         }
         roomScript.NotifyPropertyListChanged();

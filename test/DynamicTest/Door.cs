@@ -7,9 +7,13 @@ public partial class Door : StaticBody3D
     [Signal] public delegate void Signal_TeleportPlayerEventHandler(Vector3 teleportPoint);
 
     [ExportGroup("Grid Information")]
-    [Export] public DoorDirection cardinalDirection = DoorDirection.North; //La direccion cardinal que tiene la puerta
-    [Export] public Vector2I RoomGridPosition { get; set; } = Vector2I.Zero; //La posicion en la que la puerta se encuentra en el tablero
 
+    [Export] public DoorDirection cardinalDirection = DoorDirection.North; //La direccion cardinal que tiene la puerta
+    /// <summary>
+    /// La posicion que tiene la puerta en el Tablero de su Habitacion Padre.
+    /// </summary>
+    [Export] public Vector2I RoomGridPosition { get; set; } = Vector2I.Zero; //La posicion en la que la puerta se encuentra en el tablero de su habitacion.
+    [Export] public Vector2I GlobalGridPosition { get; set; } = Vector2I.Zero;
 
     [ExportGroup("References")]
     [Export] public MeshInstance3D wallMesh; //El modelo 3D de la puerta
@@ -18,37 +22,61 @@ public partial class Door : StaticBody3D
     [Export] public Node3D teleportPoint; //El punto en el que el jugador sera teletrasportado
 
 
-    //Otras variables
+    /// <summary>
+    /// Una lista de posibles direcciones que pueden tener la puertas.
+    /// </summary>
     public enum DoorDirection { North = 0, South = 1, East = 2, West = 3 }  //Enum para las direcciones de la puerta
 
-    public Door ConnectedTo { get; set; } //La puerta a la que esta conectada
-    public Room ParentRoom { get; set; } //La habitacion en la que se encuentra la puerta
-    [Export] public bool isConnected { get; set; } = false; //Si la puerta esta conectada con otra o no
-    public bool isValidForConnection { get; set; } = true; //Si la puerta es valida para conexion (necesita trabajo.)
+    /// <summary>
+    /// Si la puerta esta conectada a otra puerta, la otra puerta se almacena en esta variable.
+    /// </summary>
+    private Door connectedTo { get; set; }
 
     /// <summary>
-    /// Actualiza el estado de conexion la puerta.
+    /// La habitacion en la que se encuentra esta puerta.
     /// </summary>
-    /// <param name="state">El nuevo estado de la puerta</param>
-    public void SetConnected(bool state)
+    private Room parentRoom { get; set; }
+
+    /// <summary>
+    /// Determina si la puerta ya esta conectada a otra puerta.
+    /// </summary>
+    [Export] private bool isConnected { get; set; } = false;
+
+    /// <summary>
+    /// Determina si la puerta es valida para ser conectada a otra puerta. Una puerta es invalida cuando ya esta conectada, o cuando tiene un muro enfrente.
+    /// </summary>
+    [Export] private bool isValidForConnection { get; set; } = true;
+
+
+    /// Getters y Setters
+
+    public bool GetIsConnected() => isConnected;
+    public bool GetAvailableForConnection() => isValidForConnection;
+    public Room GetParentRoom() => parentRoom;
+    
+
+
+    /// <summary>
+    /// Conecta esta puerta a otra y viceversa.
+    /// </summary>
+    /// <param name="doorThatIsConnectedTo">La otra puerta.</param>
+    public void ConnectDoor(Door doorThatIsConnectedTo)
     {
-        isConnected = state;
-        isValidForConnection = !state;
+        isConnected = true;
+        isValidForConnection = false;
+        connectedTo = doorThatIsConnectedTo;
+
+        doorThatIsConnectedTo.isConnected = true;
+        doorThatIsConnectedTo.isValidForConnection = false;
+        doorThatIsConnectedTo.connectedTo = this;
     }
 
     /// <summary>
-    /// Rota la puerta sobre el eje Y dependiendo de la direccion cardinal que es.
+    /// Marks this door as not being able to be connected.
     /// </summary>
-    public void RotateDoor()
+    public void SetInvalidForConnection()
     {
-        Rotation = cardinalDirection switch
-        {
-            DoorDirection.North => new Vector3(0, Mathf.DegToRad(-90), 0),
-            DoorDirection.South => new Vector3(0, Mathf.DegToRad(90), 0),
-            DoorDirection.East => new Vector3(0, Mathf.DegToRad(180), 0),
-            DoorDirection.West => new Vector3(0, 0, 0),
-            _ => Vector3.Zero
-        };
+        isValidForConnection = false;
     }
 
     /// <summary>
@@ -70,21 +98,48 @@ public partial class Door : StaticBody3D
     }
 
     /// <summary>
+    /// Guarda la habitacion en la que se encuentra la puerta, y calcula el GlobalGridPosition.
+    /// </summary>
+    /// <param name="room"></param>
+    public void SetParentRoom(Room room)
+    {
+        parentRoom = room;
+        //RoomGridPosition es la posicion original de la puerta, asi que hay que rotarla con la habitacion antes de sumarle el origen.
+        GlobalGridPosition = parentRoom.gridMapOrigin + parentRoom.RotateGridPosition(RoomGridPosition, parentRoom.GetCurrentRotation(), parentRoom.gridWidth, parentRoom.gridHeight);
+    }
+
+    /// <summary>
+    /// Obtiene el tipo de tile numérico de la puerta aplicando la rotación de la habitación padre.
+    /// </summary>
+    public int GetRotatedTileType()
+    {
+        int baseDirType = cardinalDirection switch
+        {
+            DoorDirection.North => 2,
+            DoorDirection.East => 3,
+            DoorDirection.South => 4,
+            DoorDirection.West => 5,
+            _ => 2
+        };
+        if (parentRoom == null) return baseDirType;
+        return Room.RotateTileValue(baseDirType, parentRoom.GetCurrentRotation());
+    }
+
+    /// <summary>
     /// Actualiza el estado fisico de la puerta, si deveria de desaparecver o no, y si hay que activar el teletransportador.
     /// </summary>
     /// <param name="activateTP">Si hay que activar el Teletransporte</param>
-    public void InitializeDoor(bool activateTP)
+    public void InitializeDoorVisuals(bool activateTP)
     {
         if (wallMesh != null) wallMesh.Visible = !isConnected;
         if (wallCollision != null) wallCollision.SetDeferred("disabled", isConnected);
 
         if (teleportArea != null)
         {
-            if (!isConnected || !activateTP) 
+            if (!isConnected || !activateTP)
             {
                 teleportArea.QueueFree();
                 teleportArea = null;
-                
             }
             else
             {
@@ -100,9 +155,9 @@ public partial class Door : StaticBody3D
     /// <param name="body">El Nodo que ha entrado en el area de TP</param>
     public void On_teleportEntered(Node3D body)
     {
-        if (body.Name == "Character" && ConnectedTo != null && IsInstanceValid(ConnectedTo.teleportPoint))
+        if (body.Name == "Character" && connectedTo != null && IsInstanceValid(connectedTo.teleportPoint))
         {
-            EmitSignal(SignalName.Signal_TeleportPlayer, ConnectedTo.teleportPoint.GlobalPosition);
+            EmitSignal(SignalName.Signal_TeleportPlayer, connectedTo.teleportPoint.GlobalPosition);
         }
     }
 }

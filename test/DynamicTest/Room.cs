@@ -19,8 +19,14 @@ public partial class Room : Node3D
     [Export] public int gridWidth = 5;
     [Export] public int gridHeight = 5;
 
-    //Contiene el tablero con la informacion del personaje
-    [Export] public Godot.Collections.Array<int> gridMapData = new Godot.Collections.Array<int>();
+    
+    public Vector2I gridMapOrigin { get; set; } = Vector2I.Zero; // Origen (Esquina superir izquierda) de la habitación en la cuadrícula global de la mazmorra (gridMap)
+
+    // Diccionario exportado: Godot lo guarda y carga de la escena automáticamente
+    [Export] public Godot.Collections.Dictionary<Vector2I, int> gridMapData { get; set; } = new Godot.Collections.Dictionary<Vector2I, int>();
+
+    // Copia del tablero original (sin rotar). Se guarda la primera vez que se rota, para que cada rotacion se calcule siempre desde el original.
+    private Godot.Collections.Dictionary<Vector2I, int> baseGridMapData;
 
     public List<Door> Doors { get; private set; } = new List<Door>(); //Las puertas de la habitacion
     public List<Room> ConnectedRooms { get; private set; } = new List<Room>(); //Las habitaciones conectadas a esta.
@@ -29,23 +35,19 @@ public partial class Room : Node3D
     private RoomStateEnum roomState = RoomStateEnum.Disabled; //El estado de actividad de la habitacion.
     public RoomTypeEnum roomType = RoomTypeEnum.Regular; //El tipo de habitacion
 
-    public enum RoomRotationEnum { None = 0, OneQuarter = 1, Half = 2, ThreeQuarters = 3 } //La rotacion que posee la habitacion.
-    public enum RoomStateEnum { Active, Inactive, Disabled } //El estado de actividad de la habitacion.
-    public enum RoomTypeEnum { Regular, Start, End, Main, Branch } //El tipo de habitacion
-    private bool isInitialized = false; //Determina si la habitacion ya ha sido inicializada.
+    public enum RoomRotationEnum { None = 0, OneQuarter = 1, Half = 2, ThreeQuarters = 3 }
+    public enum RoomStateEnum { Active, Inactive, Disabled }
+    public enum RoomTypeEnum { Regular, Start, End, Main, Branch }
+    private bool isInitialized = false;
 
     /// <summary>
     /// Getter para la rotacion de la habitacion
     /// </summary>
-    /// <returns>Rotación actual de la habitación</returns>
     public RoomRotationEnum GetCurrentRotation() => roomRotation;
 
     /// <summary>
     /// Rota el valor numérico de una casilla de puerta según la rotación de la habitación.
     /// </summary>
-    /// <param name="tileVal">Valor numérico de la baldosa</param>
-    /// <param name="rotation">Rotación aplicada</param>
-    /// <returns>Valor de baldosa rotado</returns>
     public static int RotateTileValue(int tileVal, RoomRotationEnum rotation)
     {
         if (tileVal < 2 || tileVal > 5) return tileVal;
@@ -56,47 +58,40 @@ public partial class Room : Node3D
 
     /// <summary>
     /// Este metodo calcula y devuelve el roomGridMap de la habitacion rotado a la rotacion necesaria.
+    /// Siempre parte del tablero original, asi que se puede llamar varias veces con distintas rotaciones sin que se acumulen.
     /// </summary>
-    /// <param name="rotation">La rotacion a calcular</param>
-    /// <returns>Un roomGridMap con la rotacion aplicada</returns>
-    public Dictionary<Vector2I, int> GetRotatedRoomGrid(RoomRotationEnum rotation)
+    public void RotateRoomGrid()
     {
-        Dictionary<Vector2I, int> rotatedGrid = new Dictionary<Vector2I, int>();
+        Godot.Collections.Dictionary<Vector2I, int> rotatedGrid = new Godot.Collections.Dictionary<Vector2I, int>();
         int localWidth = gridWidth;
         int localHeight = gridHeight;
 
-        if (gridMapData == null || gridMapData.Count != localWidth * localHeight) return rotatedGrid;
+        baseGridMapData ??= gridMapData; //Guarda el tablero original la primera vez.
 
-        for (int y = 0; y < localHeight; y++)
+        foreach (var kvp in baseGridMapData)
         {
-            for (int x = 0; x < localWidth; x++)
+            Vector2I pos = kvp.Key;
+            int tileVal = kvp.Value;
+            if (tileVal <= 0) continue;
+
+            Vector2I newPos = roomRotation switch
             {
-                int idx = (y * localWidth) + x;
-                int tileVal = gridMapData[idx];
-                if (tileVal <= 0) continue;
+                RoomRotationEnum.None => pos,
+                RoomRotationEnum.OneQuarter => new Vector2I(localHeight - 1 - pos.Y, pos.X),
+                RoomRotationEnum.Half => new Vector2I(localWidth - 1 - pos.X, localHeight - 1 - pos.Y),
+                RoomRotationEnum.ThreeQuarters => new Vector2I(pos.Y, localWidth - 1 - pos.X),
+                _ => pos
+            };
 
-                Vector2I newPos = rotation switch
-                {
-                    RoomRotationEnum.None => new Vector2I(x, y),
-                    RoomRotationEnum.OneQuarter => new Vector2I(localHeight - 1 - y, x),
-                    RoomRotationEnum.Half => new Vector2I(localWidth - 1 - x, localHeight - 1 - y),
-                    RoomRotationEnum.ThreeQuarters => new Vector2I(y, localWidth - 1 - x),
-                    _ => new Vector2I(x, y)
-                };
-
-                rotatedGrid[newPos] = RotateTileValue(tileVal, rotation);
-            }
+            rotatedGrid[newPos] = RotateTileValue(tileVal, roomRotation);
         }
-        return rotatedGrid;
+        gridMapData = rotatedGrid;
     }
 
     /// <summary>
     /// Inicializa la habitacion, sus puertas y configura cuáles están conectadas inicialmente.
     /// </summary>
-    /// <param name="type">El tipo de habitacion que es.</param>
-    /// <param name="connectedDoors">Lista opcional de posiciones locales rotadas de puertas que deben iniciar conectadas.</param>
-    /// <param name="activateTP">Si el teletransporte debe activarse.</param>
-    public void InitializeRoom(RoomTypeEnum type, List<Vector2I> connectedDoors = null, bool activateTP = false)
+    public void InitializeRoom(RoomTypeEnum type, Door otherDoor, List<Vector2I> connectedDoors = null, bool activateTP = false)
     {
         if (isInitialized) return;
         isInitialized = true;
@@ -108,56 +103,37 @@ public partial class Room : Node3D
                 if (child is Door door)
                 {
                     Doors.Add(door);
-                    door.ParentRoom = this;
-
+  
                     Vector2I rotatedPos = RotateGridPosition(door.RoomGridPosition, roomRotation, gridWidth, gridHeight);
-                    bool isConnected = connectedDoors != null && connectedDoors.Contains(rotatedPos);
-                    door.SetConnected(isConnected);
-                    door.InitializeDoor(activateTP);
+                    if (connectedDoors != null && otherDoor != null && connectedDoors.Contains(rotatedPos))
+                    {                      
+                        door.ConnectDoor(otherDoor);
+                        otherDoor.InitializeDoorVisuals(activateTP);
+                    }
+                    door.SetParentRoom(this);
+                    door.InitializeDoorVisuals(activateTP);
                 }
             }
         }
 
         SetRoomType(type);
-
-
-
         EmitSignal(SignalName.Signal_RoomInitialized, this);
-    }
-
-    /// <summary>
-    /// Actualiza una sola puerta de la habitación que ya ha sido inicializada previamente.
-    /// </summary>
-    /// <param name="localDoorPos">Posición local rotada de la puerta a actualizar</param>
-    /// <param name="connected">Nuevo estado de conexión</param>
-    /// <param name="connectedToDoor">Puerta de destino conectada</param>
-    /// <param name="activateTP">Si se debe activar el teletransporte</param>
-    public void UpdateDoor(Vector2I localDoorPos, bool connected, Door connectedToDoor, bool activateTP)
-    {
-        Door door = Doors.FirstOrDefault(d => RotateGridPosition(d.RoomGridPosition, roomRotation, gridWidth, gridHeight) == localDoorPos);
-        if (door != null)
-        {
-            door.SetConnected(connected);
-            door.ConnectedTo = connectedToDoor;
-            door.InitializeDoor(activateTP);
-        }
     }
 
     /// <summary>
     /// Este metodo rota la habitacion sobre su propio eje.
     /// </summary>
-    /// <param name="newRotation">La nueva rotacion de la habitacion.</param>
     public void RotateRoom(RoomRotationEnum newRotation)
     {
         roomRotation = newRotation;
-        RotationDegrees = new Vector3(0, -(int)newRotation * 90, 0);
+        RotateRoomGrid();
+
+        RotationDegrees = new Vector3(0, -90f * (int)newRotation, 0);
     }
 
     /// <summary>
     /// Obtiene la transformación relativa de un nodo hijo respecto a la habitación.
     /// </summary>
-    /// <param name="childNode">Nodo hijo a evaluar</param>
-    /// <returns>Transform3D resultante</returns>
     public Transform3D GetRelativeTransform(Node3D childNode)
     {
         Transform3D localTrans = childNode.Transform;
@@ -174,7 +150,6 @@ public partial class Room : Node3D
     /// <summary>
     /// Establece el estado de actividad de la habitación.
     /// </summary>
-    /// <param name="state">Nuevo estado de la habitación</param>
     public void SetRoomState(RoomStateEnum state)
     {
         roomState = state;
@@ -185,13 +160,11 @@ public partial class Room : Node3D
     /// <summary>
     /// Devuelve una lista de puertas disponibles que no están conectadas.
     /// </summary>
-    /// <returns>Lista de puertas disponibles</returns>
-    public List<Door> GetAvailableDoors() => Doors.Where(d => !d.isConnected).ToList();
+    public List<Door> GetAvailableDoorsForConnection() => Doors.Where(d => d.GetAvailableForConnection()).ToList();
 
     /// <summary>
     /// Configura el tipo de habitación y actualiza su visibilidad visual.
     /// </summary>
-    /// <param name="type">Tipo de habitación a establecer</param>
     public void SetRoomType(RoomTypeEnum type)
     {
         roomType = type;
@@ -204,12 +177,7 @@ public partial class Room : Node3D
     /// <summary>
     /// Rota una posición de cuadrícula local según la rotación especificada.
     /// </summary>
-    /// <param name="pos">Posición a rotar</param>
-    /// <param name="rotation">Rotación aplicada</param>
-    /// <param name="w">Ancho de la cuadrícula</param>
-    /// <param name="h">Alto de la cuadrícula</param>
-    /// <returns>Posición rotada</returns>
-    private Vector2I RotateGridPosition(Vector2I pos, RoomRotationEnum rotation, int w, int h)
+    public Vector2I RotateGridPosition(Vector2I pos, RoomRotationEnum rotation, int w, int h)
     {
         return rotation switch
         {
@@ -224,12 +192,11 @@ public partial class Room : Node3D
     /// <summary>
     /// Lisitener para cuando el personaje entra en el Area3D de la habitacion.
     /// </summary>
-    /// <param name="body">Cuerpo que entra al área</param>
     private void On_PlayerEnter(Node3D body)
     {
         if (body.Name == "Character")
         {
-            EmitSignal(SignalName.Signal_SetRoomStates, this); //Emite una señal para actualizar el estado de la habitacion.
+            EmitSignal(SignalName.Signal_SetRoomStates, this);
         }
     }
 }

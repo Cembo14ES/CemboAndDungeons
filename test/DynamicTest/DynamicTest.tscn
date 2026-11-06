@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://cwn0e5xtx6m6u" path="res://test/DynamicTest/DynamicTest.cs" id="1_u2gym"]
 [ext_resource type="Script" uid="uid://di7a61cuokf0d" path="res://test/DynamicTest/DynamicGenTest.cs" id="1_x53nq"]
+[ext_resource type="PackedScene" uid="uid://cdk0ydwrvbyvl" path="res://test/DynamicTest/RoomCreator/BuildedRooms/Room_Test_01.tscn" id="3_556uj"]
 [ext_resource type="Script" uid="uid://dd5rdglc7ghg3" path="res://src/scripts/Debug/DebugCamera.cs" id="3_ovaaa"]
-[ext_resource type="PackedScene" uid="uid://c24nbekagsjin" path="res://test/DynamicTest/RoomCreator/BuildedRooms/Room_DonutSmall.tscn" id="4_jwtnk"]
 [ext_resource type="Script" uid="uid://dnp4r0ulyj82w" path="res://src/scripts/TestScripts/CameraController.cs" id="9_xf05x"]
 [ext_resource type="PackedScene" uid="uid://ua5hfrhr7hba" path="res://src/Entities/simpleCharacter.tscn" id="10_u2gym"]
 
@@ -18,16 +18,16 @@ character = NodePath("Character")
 transform = Transform3D(0.99305534, -0.07451704, 0.09104195, 0, 0.7738403, 0.63338095, -0.117649466, -0.62898225, 0.7684661, 0, 10.912521, 0)
 
 [node name="GenAlgorithm" type="Node3D" parent="." unique_id=943615371 node_paths=PackedStringArray("roomFolder")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.013089, 7.3737864, -2.2289352)
 script = ExtResource("1_x53nq")
 roomFolder = NodePath("../Rooms")
-startRoomScene = ExtResource("4_jwtnk")
-endRoomScene = ExtResource("4_jwtnk")
-standardRoomScenes = Array[PackedScene]([ExtResource("4_jwtnk")])
-minMainPathLength = 10
-maxMainPathLength = 30
+startRoomScene = ExtResource("3_556uj")
+endRoomScene = ExtResource("3_556uj")
+ExportStandardRoomScenes = Array[PackedScene]([ExtResource("3_556uj")])
+minMainPathLength = 30
+maxMainPathLength = 40
 minRoomDistance = 5
 maxRoomDistance = 25
-hallwayChance = 0.0
 
 [node name="MainCamera" type="Camera3D" parent="." unique_id=351000332 node_paths=PackedStringArray("character")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
