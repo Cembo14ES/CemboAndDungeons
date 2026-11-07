@@ -7,12 +7,15 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_fp2fi"]
 size = Vector3(2.25, 0.2, 3)
 
-[node name="EnemyAttackHitbox" type="Area3D" unique_id=633052869 node_paths=PackedStringArray("hitboxShape")]
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=732677401 node_paths=PackedStringArray("hitboxShape", "hitboxArea")]
 script = ExtResource("1_xn74l")
 stats = ExtResource("2_i8pbw")
-hitboxShape = NodePath("AttackHitbox")
+hitboxShape = NodePath("EnemyAttackHitbox/AttackHitbox")
+hitboxArea = NodePath("EnemyAttackHitbox")
 
-[node name="AttackHitbox" type="CollisionShape3D" parent="." unique_id=730263384]
+[node name="EnemyAttackHitbox" type="Area3D" parent="." unique_id=633052869]
+
+[node name="AttackHitbox" type="CollisionShape3D" parent="EnemyAttackHitbox" unique_id=730263384]
 shape = SubResource("BoxShape3D_fp2fi")
 
 [node name="ExampleForDebugging" type="Sprite3D" parent="." unique_id=16388671]
