@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="AttackStats" format=3 uid="uid://ctgej6rqkbknj"]
 
-[ext_resource type="Script" uid="uid://dlxcwswxx3qe0" path="res://Scripts/AttackStats.cs" id="1_1dtdy"]
+[ext_resource type="Script" uid="uid://dlxcwswxx3qe0" path="res://Scripts/Attacks/AttackStats.cs" id="1_1dtdy"]
 
 [resource]
 script = ExtResource("1_1dtdy")
 AttackMultiplier = 1.2
-AttackNodeAliveTimeStat = 1.0
-HitboxNodeAliveTimeStat = 0.5
+AttackNodeAliveTimeStat = 0.3
+HitboxNodeAliveTimeStat = 0.3
 attackTarget = 1

@@ -12,9 +12,9 @@ public partial class BaseAttack : CharacterBody3D
     protected Vector3 attackDirection; //La direcion a la que va a apuntar el ataque.
     protected Vector3 attackPosition; //La posicion en la que va a spwanear el ataque.
 
-    private Timer hitboxTimer = new Timer(); //Timer para el tiempo de vida de la hitbox del ataque.
-    private Timer attackTimer = new Timer(); //Timer para el tiempo de vida del ataque.
-    private readonly HashSet<BaseCharacter> alreadyHit = new(); //Contiene todos los personajes que el ataque ya haya golpeado.
+    protected Timer hitboxTimer = new Timer(); //Timer para el tiempo de vida de la hitbox del ataque.
+    protected Timer attackTimer = new Timer(); //Timer para el tiempo de vida del ataque.
+    protected readonly HashSet<BaseCharacter> alreadyHit = new(); //Contiene todos los personajes que el ataque ya haya golpeado.
 
 
     /// <summary>
@@ -31,7 +31,7 @@ public partial class BaseAttack : CharacterBody3D
         attackPosition = newPosition;
         hitboxTimer.WaitTime = stats.HitboxNodeAliveTimeStat;
         attackTimer.WaitTime = Mathf.Max(stats.AttackNodeAliveTimeStat, 0.05f);
-        stats.AttackDamage = newOwner.Stats.Damage; //Obtiene el daño del ataque.
+        stats.AttackDamage = newOwner.stats.Damage; //Obtiene el daño del ataque.
     }
 
     public override void _Ready()
@@ -40,13 +40,13 @@ public partial class BaseAttack : CharacterBody3D
         if (owner == null || stats == null)
         {
             GD.PushError($"{Name}: Se instanció sin llamar a Setup, o no tiene Stats asignado.");
-            QueueFree();
+            Die();
             return;
         }
         if (hitboxShape == null)
         {
             GD.PushError($"{Name}: Se instanció sin asignar la hitbox en el editor");
-            QueueFree();
+            Die();
             return;
         }
 
@@ -56,7 +56,7 @@ public partial class BaseAttack : CharacterBody3D
         {
             AddChild(attackTimer);
             attackTimer.OneShot = true;
-            attackTimer.Timeout += QueueFree;
+            attackTimer.Timeout += Die;
             attackTimer.Start();
 
             AddChild(hitboxTimer);
@@ -79,7 +79,7 @@ public partial class BaseAttack : CharacterBody3D
         {
             if (!IsInstanceValid(owner)) //Si el padre desaparece, el ataque permanente tambien
             {
-                QueueFree();
+                Die();
                 return;
             }
         }     
@@ -106,5 +106,10 @@ public partial class BaseAttack : CharacterBody3D
     {
         Position = attackPosition;
         Rotation = attackDirection;
+    }
+
+    protected virtual void Die()
+    {
+        QueueFree();
     }
 }

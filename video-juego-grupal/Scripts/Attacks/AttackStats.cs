@@ -10,6 +10,7 @@ public partial class AttackStats : Resource
     [Export] public float HitboxNodeAliveTimeStat { get; set; } //Tiempo de la hitbox (en segundos).
     [Export] public bool AttackAlwaysActive { get; set; } // Determina si el ataque dura permanentemente o no
     [Export] public EnumAttackTarget attackTarget { get; set; } //El objetivo de el ataque.
+    [Export] public float projectileSpeed { get; set; } //Determina si el ataque es un proyectil, y su velocidad.
     
     public enum EnumAttackTarget {Player = 0, Enemy = 1, All = 2}
     public float FinalDamage => AttackDamage * AttackMultiplier;

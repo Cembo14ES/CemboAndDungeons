@@ -1,10 +1,14 @@
 [gd_scene format=3 uid="uid://bquatbsnyt18i"]
 
-[ext_resource type="Script" uid="uid://yumiabkfbir3" path="res://Scripts/CharacterPlayer.cs" id="1_jaap0"]
-[ext_resource type="Resource" uid="uid://ce4ubrhauq5g" path="res://Resource/characterPlayer_stats.tres" id="2_7n8lb"]
-[ext_resource type="Texture2D" uid="uid://cfwstbmb8xuya" path="res://Sprites/Knight_Idle.png" id="3_gpghh"]
+[ext_resource type="Script" uid="uid://yumiabkfbir3" path="res://Scripts/Characters/PlayerCharacters/Character_TestPlayer.cs" id="1_jaap0"]
+[ext_resource type="Resource" uid="uid://ce4ubrhauq5g" path="res://Resource/Stats_Character_TestCharacter.tres" id="2_7n8lb"]
+[ext_resource type="PackedScene" uid="uid://dkmum26xmrdht" path="res://Scenes/Attacks/Attack_TestCharacter_Proyectile.tscn" id="3_nh2ea"]
 [ext_resource type="Texture2D" uid="uid://bmrl1o2xv7bp3" path="res://Sprites/char.png" id="3_ud1au"]
-[ext_resource type="PackedScene" uid="uid://b33jt3klgvkga" path="res://Prefabs/characterPlayerAttack.tscn" id="4_7n8lb"]
+[ext_resource type="PackedScene" uid="uid://b33jt3klgvkga" path="res://Scenes/Attacks/Attack_TestCharacter_Melee.tscn" id="4_7n8lb"]
+[ext_resource type="Texture2D" uid="uid://ca70vbi2dt3b1" path="res://Sprites/test_pointerArrow.png" id="5_1pfka"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vobto"]
+size = Vector3(3.744873, 0.2, 3.7788086)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1pfka"]
 atlas = ExtResource("3_ud1au")
@@ -174,40 +178,34 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_vobto"]
-size = Vector3(3.744873, 0.2, 3.7788086)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_ud1au"]
 size = Vector3(1.7522094, 1.0836303, 2.6966186)
 
-[node name="TestPlayer" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("characterAnimation") groups=["player"]]
+[node name="TestPlayer" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("pointerArrow", "characterAnimation") groups=["player"]]
 script = ExtResource("1_jaap0")
-Stats = ExtResource("2_7n8lb")
+pointerArrow = NodePath("CharacterSprites/PointerArrow")
 RegularAttackScene = ExtResource("4_7n8lb")
-characterType = null
-characterAnimation = NodePath("AnimatedSprite3D")
+SkillAttackScene = ExtResource("3_nh2ea")
+stats = ExtResource("2_7n8lb")
+characterAnimation = NodePath("CharacterSprites")
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1576201207]
+[node name="PlayerCollision" type="CollisionShape3D" parent="." unique_id=1431325890]
+shape = SubResource("BoxShape3D_vobto")
+
+[node name="CharacterSprites" type="AnimatedSprite3D" parent="." unique_id=1576201207]
 transform = Transform3D(6, 0, 0, 0, -2.6226832e-07, -6, 0, 6, -2.6226832e-07, 0, 0, 0)
 texture_filter = 2
 sprite_frames = SubResource("SpriteFrames_8erxc")
 animation = &"Idle"
 autoplay = "Idle"
 
-[node name="PlayerSprite" type="Sprite3D" parent="." unique_id=2038590288]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
-visible = false
-flip_h = true
-texture = ExtResource("3_gpghh")
-
-[node name="PlayerCollision" type="CollisionShape3D" parent="." unique_id=1431325890]
-shape = SubResource("BoxShape3D_vobto")
+[node name="PointerArrow" type="Sprite3D" parent="CharacterSprites" unique_id=18741906]
+transform = Transform3D(0.16666667, 0, 0, 0, 0.16666666, 0, 0, 0, 0.16666666, 0, 0, 0)
+centered = false
+offset = Vector2(0, -50)
+texture = ExtResource("5_1pfka")
 
 [node name="PlayerTriggerCollision" type="Area3D" parent="." unique_id=1962387203]
 
 [node name="PlayerTriggerCollisionArea" type="CollisionShape3D" parent="PlayerTriggerCollision" unique_id=1301786104]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.33535194, 0, 0)
 shape = SubResource("BoxShape3D_ud1au")
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1489137242]
-transform = Transform3D(-1, 8.742278e-08, 0, 3.821371e-15, 4.371139e-08, 1, 8.742278e-08, 1, -4.371139e-08, 0, 10, 0)

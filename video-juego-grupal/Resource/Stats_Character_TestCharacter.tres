@@ -1,13 +1,15 @@
 [gd_resource type="Resource" script_class="CharacterStats" format=3 uid="uid://ce4ubrhauq5g"]
 
-[ext_resource type="Script" uid="uid://tgjnaj6cmewb" path="res://Scripts/CharacterStats.cs" id="1_72iim"]
+[ext_resource type="Script" uid="uid://tgjnaj6cmewb" path="res://Scripts/Characters/CharacterStats.cs" id="1_gk1bh"]
 
 [resource]
-script = ExtResource("1_72iim")
+script = ExtResource("1_gk1bh")
 MaxHealth = 20.0
 Damage = 5.0
 Defense = 1.0
 MovementSpeed = 5.0
-RegularAttackCooldown = 3.0
+RegularAttackCooldown = 0.5
+SkillAttackCooldown = 0.5
+UltimateAttackCooldown = 10.0
 InvulnerabilityTimerStat = 2.0
 metadata/_custom_type_script = "uid://tgjnaj6cmewb"

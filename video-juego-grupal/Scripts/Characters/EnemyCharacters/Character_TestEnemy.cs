@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class CharacterEnemy : BaseCharacter
+public partial class Character_TestEnemy : BaseCharacter
 {
 	[Export] public PackedScene RegularAttackScene { get; set; } // La Escena (.tscn) del ataque del enemigo (hitbox de contacto).
 
@@ -12,7 +12,7 @@ public partial class CharacterEnemy : BaseCharacter
 		base._Ready();
 
 		// Si el base falló (sin Stats) no seguimos.
-		if (Stats == null) return;
+		if (stats == null) return;
 
 		Target = GetTree().GetFirstNodeInGroup("player") as Node3D;
 

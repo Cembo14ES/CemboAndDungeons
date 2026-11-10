@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://b8qlc8oci1tbn"]
 
-[ext_resource type="Script" uid="uid://cd1qtviabpucu" path="res://Scripts/CharacterEnemy.cs" id="1_sb3na"]
-[ext_resource type="Resource" uid="uid://vfc675cx1vfw" path="res://Resource/characterEnemy.tres" id="2_jbua2"]
+[ext_resource type="Script" uid="uid://cd1qtviabpucu" path="res://Scripts/Characters/EnemyCharacters/Character_TestEnemy.cs" id="1_sb3na"]
+[ext_resource type="Resource" uid="uid://vfc675cx1vfw" path="res://Resource/Stats_Character_TestEnemy.tres" id="2_jbua2"]
 [ext_resource type="Texture2D" uid="uid://cdpilcdk3rrkj" path="res://Sprites/Slime_Icon.png" id="2_ky4g8"]
-[ext_resource type="PackedScene" uid="uid://tr6t5rv12txu" path="res://Prefabs/characterEnemyAttack.tscn" id="3_fp2fi"]
+[ext_resource type="PackedScene" uid="uid://tr6t5rv12txu" path="res://Scenes/Attacks/Attack_TestEnemy_PermanentAttack.tscn" id="3_fp2fi"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_lgw76"]
 size = Vector3(3.1172485, 0.2, 2.3677979)
@@ -13,20 +13,19 @@ size = Vector3(1.8028107, 0.2, 1.7031174)
 
 [node name="CharacterEnemy" type="CharacterBody3D" unique_id=1405340408 groups=["enemies"]]
 script = ExtResource("1_sb3na")
-Stats = ExtResource("2_jbua2")
 RegularAttackScene = ExtResource("3_fp2fi")
+stats = ExtResource("2_jbua2")
+characterType = 1
 
 [node name="EnemySprite" type="Sprite3D" parent="." unique_id=1196324939]
-transform = Transform3D(4, 0, 0, 0, -1.7484555e-07, -4, 0, 4, -1.7484555e-07, 0, 0, 0)
+transform = Transform3D(4, 0, 0, 0, -1.7484555e-07, -4, 0, 4, -1.7484555e-07, 0.14630389, 0, 0.31896436)
 flip_h = true
 texture = ExtResource("2_ky4g8")
 
 [node name="EnemyCollision" type="CollisionShape3D" parent="." unique_id=1558907576]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2649536)
 shape = SubResource("BoxShape3D_lgw76")
 
 [node name="EnemyTriggerCollision" type="Area3D" parent="." unique_id=101478440]
 
 [node name="EnemyTriggerCollisionArea" type="CollisionShape3D" parent="EnemyTriggerCollision" unique_id=1005538294]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.19324493, 0, -0.35409927)
 shape = SubResource("BoxShape3D_8erxc")

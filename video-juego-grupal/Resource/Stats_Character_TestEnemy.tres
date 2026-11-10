@@ -1,13 +1,12 @@
 [gd_resource type="Resource" script_class="CharacterStats" format=3 uid="uid://vfc675cx1vfw"]
 
-[ext_resource type="Script" uid="uid://tgjnaj6cmewb" path="res://Scripts/CharacterStats.cs" id="1_obfh2"]
+[ext_resource type="Script" uid="uid://tgjnaj6cmewb" path="res://Scripts/Characters/CharacterStats.cs" id="1_obfh2"]
 
 [resource]
 script = ExtResource("1_obfh2")
-MaxHealth = 10.0
+MaxHealth = 30.0
 Damage = 5.0
 Defense = 1.0
 MovementSpeed = 2.0
 RegularAttackCooldown = 2.0
-Knockback = 1.0
 metadata/_custom_type_script = "uid://tgjnaj6cmewb"

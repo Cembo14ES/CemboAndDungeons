@@ -2,35 +2,44 @@ using Godot;
 
 public partial class BaseCharacter : CharacterBody3D
 {
-    [Export] public CharacterStats Stats { get; set; } // Las estadisticas del personaje.
+    [Export] public CharacterStats stats { get; set; } // Las estadisticas del personaje.
+    protected CharacterStats originalStats; // Copia de las estadisticas que guarda los valores originales.
     [Export] public EnumCharacterType characterType { get; set; } // El Tipo de entidad que es.
-    public enum EnumCharacterType {Player = 0, Enemy = 1}
+    public enum EnumCharacterType { Player = 0, Enemy = 1 }
 
     public float currentHealth { get; protected set; } // Vida actual del personaje.
-    public bool canBeDamaged { get; private set; } = true; // Booleano que determina si el personaje esta en un estado de invulnerabilidad o no.
-    public Vector3 characterFacingDirection { get; private set; } = Vector3.Back; // Direccion en la que mira el personaje.
+    public bool canBeDamaged { get; protected set; } = true; // Booleano que determina si el personaje esta en un estado de invulnerabilidad o no.
+    public Vector3 characterFacingDirection { get; protected set; } = Vector3.Back; // Direccion en la que mira el personaje.
 
-    private Timer invulnerabilityTimer = new Timer(); //Timer para la invulnerabilidad del personaje.
+    protected Timer invulnerabilityTimer = new Timer(); //Timer para la invulnerabilidad del personaje.
 
     protected virtual Vector3 GetMovementDirection() => Vector3.Zero; //Los personajes lo sobreescriben para determinar la direccion de movimiento.
     protected virtual void OnCollided(Node collider) { }
     [Export] AnimatedSprite3D characterAnimation { get; set; } // Animacion del personaje.
 
     public override void _Ready()
-    {
+    {  
+        CollisionLayer = 0;
+        CollisionMask = 0;
+
+        SetCollisionLayerValue(2, true);  //Asigna a el personaje con la colision tipo "Character"
+        SetCollisionMaskValue(1, true); //Asigna que puede interactuar con collisiones tipo "World"
+
         //Realiza comprobaciones de varias variables para ver si estan inicializadas.
-        if (Stats == null)
+        if (stats == null)
         {
             GD.PushError($"{Name}: No tiene Stats asignado.");
             SetPhysicsProcess(false);
             return;
         }
 
-        currentHealth = Stats.MaxHealth;
+        originalStats = stats;
+
+        currentHealth = stats.MaxHealth;
 
         //Inicializa los Timers.
         AddChild(invulnerabilityTimer);
-        invulnerabilityTimer.WaitTime = Mathf.Max(Stats.InvulnerabilityTimerStat, 0.05f);
+        invulnerabilityTimer.WaitTime = Mathf.Max(stats.InvulnerabilityTimerStat, 0.05f);
         invulnerabilityTimer.OneShot = true;
         invulnerabilityTimer.Timeout += () => canBeDamaged = true;
     }
@@ -64,12 +73,12 @@ public partial class BaseCharacter : CharacterBody3D
         }
 
         Vector3 velocity = Velocity;
-        velocity.X = direction.X * Stats.MovementSpeed;
-        velocity.Z = direction.Z * Stats.MovementSpeed;
+        velocity.X = direction.X * stats.MovementSpeed;
+        velocity.Z = direction.Z * stats.MovementSpeed;
         Velocity = velocity;
         MoveAndSlide();
     }
-    private void PlayAnimation(string animationName)
+    protected void PlayAnimation(string animationName)
     {
         if (characterAnimation == null || characterAnimation.SpriteFrames == null) return;
         // Evita reiniciar la animación en cada frame
@@ -78,7 +87,7 @@ public partial class BaseCharacter : CharacterBody3D
             characterAnimation.Play(animationName);
         }
     }
-    private string GetWalkAnimation(Vector3 direction)
+    protected string GetWalkAnimation(Vector3 direction)
     {
         // Animacion izquierda o/y derecha
         if (Mathf.Abs(direction.X) > Mathf.Abs(direction.Z))
@@ -97,9 +106,9 @@ public partial class BaseCharacter : CharacterBody3D
     {
         if (!canBeDamaged || currentHealth <= 0) return;
 
-        float damage = Mathf.Max(0f, incomingDamage - Stats.Defense);
+        float damage = Mathf.Max(0f, incomingDamage - stats.Defense);
         currentHealth -= damage;
-        GD.Print($"[DAÑO] {Name} recibe {damage}. Vida: {currentHealth}/{Stats.MaxHealth}");
+        GD.Print($"[DAÑO] {Name} recibe {damage}. Vida: {currentHealth}/{stats.MaxHealth}");
 
         if (currentHealth <= 0)
         {
@@ -109,7 +118,6 @@ public partial class BaseCharacter : CharacterBody3D
 
         canBeDamaged = false;
         invulnerabilityTimer.Start();
-
     }
 
     /// <summary>
