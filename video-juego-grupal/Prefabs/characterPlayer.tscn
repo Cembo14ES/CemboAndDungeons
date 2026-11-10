@@ -184,6 +184,7 @@ size = Vector3(1.7522094, 1.0836303, 2.6966186)
 script = ExtResource("1_jaap0")
 Stats = ExtResource("2_7n8lb")
 RegularAttackScene = ExtResource("4_7n8lb")
+characterType = null
 characterAnimation = NodePath("AnimatedSprite3D")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1576201207]

@@ -3,18 +3,14 @@ using Godot;
 public partial class BaseCharacter : CharacterBody3D
 {
     [Export] public CharacterStats Stats { get; set; } // Las estadisticas del personaje.
-
-    [Export] public PackedScene RegularAttackScene { get; set; } // La Escena (.tscn) del ataque Normal.
     [Export] public EnumCharacterType characterType { get; set; } // El Tipo de entidad que es.
     public enum EnumCharacterType {Player = 0, Enemy = 1}
 
     public float currentHealth { get; protected set; } // Vida actual del personaje.
     public bool canBeDamaged { get; private set; } = true; // Booleano que determina si el personaje esta en un estado de invulnerabilidad o no.
-    public bool canRegularAttack { get; private set; } = true; // Booleano que determina si el personaje puede atacar.
     public Vector3 characterFacingDirection { get; private set; } = Vector3.Back; // Direccion en la que mira el personaje.
 
     private Timer invulnerabilityTimer = new Timer(); //Timer para la invulnerabilidad del personaje.
-    private Timer regularAttackCooldownTimer = new Timer(); //Timer para el cooldown del ataque.
 
     protected virtual Vector3 GetMovementDirection() => Vector3.Zero; //Los personajes lo sobreescriben para determinar la direccion de movimiento.
     protected virtual void OnCollided(Node collider) { }
@@ -30,13 +26,6 @@ public partial class BaseCharacter : CharacterBody3D
             return;
         }
 
-        if (RegularAttackScene == null)
-        {
-            GD.PushError($"{Name}: No tiene Regular Attack asignado.");
-            SetPhysicsProcess(false);
-            return;
-        }
-
         currentHealth = Stats.MaxHealth;
 
         //Inicializa los Timers.
@@ -44,11 +33,6 @@ public partial class BaseCharacter : CharacterBody3D
         invulnerabilityTimer.WaitTime = Mathf.Max(Stats.InvulnerabilityTimerStat, 0.05f);
         invulnerabilityTimer.OneShot = true;
         invulnerabilityTimer.Timeout += () => canBeDamaged = true;
-
-        AddChild(regularAttackCooldownTimer);
-        regularAttackCooldownTimer.WaitTime = Stats.RegularAttackCooldown;
-        regularAttackCooldownTimer.OneShot = true;
-        regularAttackCooldownTimer.Timeout += () => canRegularAttack = true;
     }
 
 
@@ -103,19 +87,6 @@ public partial class BaseCharacter : CharacterBody3D
         }
         // Animacion arriba o/y abajo
         return direction.Z < 0 ? "Walking_Down" : "Walking_Up";
-    }
-
-    /// <summary>
-    /// Realiza un ataque nomral. Los hijo pueden sobreescribirlo.
-    /// </summary>
-    protected virtual void RegularAttack()
-    {
-        BaseAttack attack = RegularAttackScene.Instantiate<BaseAttack>();
-        attack.Setup(this, characterFacingDirection, Position);
-        AddChild(attack);
-
-        canRegularAttack = false;
-        regularAttackCooldownTimer.Start();
     }
 
     /// <summary>
