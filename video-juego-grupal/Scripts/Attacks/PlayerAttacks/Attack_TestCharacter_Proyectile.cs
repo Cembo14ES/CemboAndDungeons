@@ -17,8 +17,7 @@ public partial class Attack_TestCharacter_Proyectile : BaseAttack
     /// Realiza calculos para que el ataque spawnee adelante del jugador, en las 8 direcciones disponibles.
     /// </summary>
     protected override void PlaceAttack(Vector3 attackDirection, Vector3 attackPosition)
-    {
-        
+    {    
         if (attackDirection == Vector3.Zero) attackDirection = Vector3.Back;
 
         float angle = -(attackDirection.Y + Mathf.DegToRad(180));
@@ -49,11 +48,11 @@ public partial class Attack_TestCharacter_Proyectile : BaseAttack
             if (!stats.AttackAlwaysActive)
                 if (!alreadyHit.Add(target)) continue; //Ignora los personajes que el ataque ya haya atacado.
 
-            target.TakeDamage(stats.FinalDamage);
+            target.TakeDamage(stats.FinalDamage, attackDirectionAngle);
             QueueFree();
         }
 
-		float rotation = attackDirection.Y;
+		float rotation = attackDirectionAngle;
 
 		Vector2 velocity = Vector2.FromAngle(rotation - Mathf.DegToRad(90));
         Velocity = new Vector3(velocity.X, 0, velocity.Y) * stats.projectileSpeed;

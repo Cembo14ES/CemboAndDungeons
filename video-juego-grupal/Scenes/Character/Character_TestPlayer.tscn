@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bmrl1o2xv7bp3" path="res://Sprites/char.png" id="3_ud1au"]
 [ext_resource type="PackedScene" uid="uid://b33jt3klgvkga" path="res://Scenes/Attacks/Attack_TestCharacter_Melee.tscn" id="4_7n8lb"]
 [ext_resource type="Texture2D" uid="uid://ca70vbi2dt3b1" path="res://Sprites/test_pointerArrow.png" id="5_1pfka"]
+[ext_resource type="PackedScene" uid="uid://cmsex2telr8lh" path="res://Scenes/DamageNumber.tscn" id="5_pvp1w"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vobto"]
 size = Vector3(3.744873, 0.2, 3.7788086)
@@ -181,12 +182,14 @@ animations = [{
 [sub_resource type="BoxShape3D" id="BoxShape3D_ud1au"]
 size = Vector3(1.7522094, 1.0836303, 2.6966186)
 
-[node name="TestPlayer" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("pointerArrow", "characterAnimation") groups=["player"]]
+[node name="TestPlayer" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("pointerArrow", "triggerShape", "characterAnimation") groups=["player"]]
 script = ExtResource("1_jaap0")
 pointerArrow = NodePath("CharacterSprites/PointerArrow")
 RegularAttackScene = ExtResource("4_7n8lb")
 SkillAttackScene = ExtResource("3_nh2ea")
 stats = ExtResource("2_7n8lb")
+damageNumber = ExtResource("5_pvp1w")
+triggerShape = NodePath("PlayerTriggerCollision/PlayerTriggerCollisionArea")
 characterAnimation = NodePath("CharacterSprites")
 
 [node name="PlayerCollision" type="CollisionShape3D" parent="." unique_id=1431325890]

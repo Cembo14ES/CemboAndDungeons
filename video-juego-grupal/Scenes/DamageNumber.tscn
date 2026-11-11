@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://cmsex2telr8lh"]
+
+[ext_resource type="Script" uid="uid://cl3ikrc03o08n" path="res://Scenes/DamageNumber.cs" id="1_wgk1c"]
+
+[sub_resource type="Animation" id="Animation_wgk1c"]
+length = 0.001
+tracks/0/type = "scale_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 1, 1, 1)
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:outline_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ym0hm"]
+resource_name = "UI_DamageNumbers"
+tracks/0/type = "scale_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.1, 1, 1.5, 1.5, 1.5, 0.2, 1, 1, 1, 1)
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(-0.033333335, 0.099999994, 0.7, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:outline_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(-0.033333335, 0.099999994, 0.7, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1), Color(0, 0, 0, 1), Color(0, 0, 0, 0)]
+}
+tracks/3/type = "position_3d"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 2
+tracks/3/loop_wrap = true
+tracks/3/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.1, 1, 0, 0, 1, 0.2, 1, 0, 0, 0, 0.26666668, 1, 0, 0, 0.2, 0.33333334, 1, 0, 0, 0, 0.7, 1, 0, 0, 0, 1, 1, 0, 0, -1)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0k1js"]
+_data = {
+&"RESET": SubResource("Animation_wgk1c"),
+&"UI_DamageNumbers": SubResource("Animation_ym0hm")
+}
+
+[node name="Marker3D" type="Marker3D" unique_id=1720831651 node_paths=PackedStringArray("label")]
+script = ExtResource("1_wgk1c")
+label = NodePath("Label3D")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=183463877]
+root_node = NodePath("../Label3D")
+libraries/ = SubResource("AnimationLibrary_0k1js")
+autoplay = &"UI_DamageNumbers"
+
+[node name="Label3D" type="Label3D" parent="." unique_id=770510919]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.09880015)
+billboard = 1
+text = "10"
+font_size = 200
+outline_size = 127

@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 public partial class BaseCharacter : CharacterBody3D
@@ -6,6 +7,9 @@ public partial class BaseCharacter : CharacterBody3D
     protected CharacterStats originalStats; // Copia de las estadisticas que guarda los valores originales.
     [Export] public EnumCharacterType characterType { get; set; } // El Tipo de entidad que es.
     public enum EnumCharacterType { Player = 0, Enemy = 1 }
+
+    [Export] public PackedScene damageNumber;
+    [Export] public CollisionShape3D triggerShape;
 
     public float currentHealth { get; protected set; } // Vida actual del personaje.
     public bool canBeDamaged { get; protected set; } = true; // Booleano que determina si el personaje esta en un estado de invulnerabilidad o no.
@@ -102,7 +106,7 @@ public partial class BaseCharacter : CharacterBody3D
     /// Realiza los procesos de recivir daño del personaje. Los hijo pueden sobreescribirlo.
     /// </summary>
     /// <param name="incomingDamage">El daño recivido</param>
-    public void TakeDamage(float incomingDamage)
+    public void TakeDamage(float incomingDamage, float incomingAttackDirection)
     {
         if (!canBeDamaged || currentHealth <= 0) return;
 
@@ -118,6 +122,14 @@ public partial class BaseCharacter : CharacterBody3D
 
         canBeDamaged = false;
         invulnerabilityTimer.Start();
+
+        DamageNumber damageUI = damageNumber.Instantiate<DamageNumber>();
+
+        BoxShape3D shape = (BoxShape3D) triggerShape.Shape;
+        Vector3 size = new Vector3((float) Math.Log(shape.Size.X), 0, (float) Math.Log(shape.Size.Z));
+        
+        damageUI.Setup(incomingDamage, incomingAttackDirection, size * 5);
+        AddChild(damageUI);   
     }
 
     /// <summary>

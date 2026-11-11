@@ -59,10 +59,10 @@ public partial class BasePlayerCharacter : BaseCharacter
 	/// <summary>
 	/// Realiza un ataque normal. Los hijos pueden sobreescribirlo.
 	/// </summary>
-	protected virtual void RegularAttack(BaseCharacter owner, Vector3 direction, Vector3 position)
+	protected virtual void RegularAttack(BaseCharacter owner, float directionAngle, Vector3 position)
 	{	
 		BaseAttack attack = RegularAttackScene.Instantiate<BaseAttack>();
-		attack.Setup(owner, direction, position);
+		attack.Setup(owner, directionAngle, position);
 		AddChild(attack);
 
 		regularAttackCooldownEmpty = false;
@@ -72,10 +72,10 @@ public partial class BasePlayerCharacter : BaseCharacter
 	/// <summary>
 	/// Realiza una ataque habilidad de ataque. Los hijos pueden sobreescribirlo.
 	/// </summary>
-	protected virtual void SkillAttack(BaseCharacter owner, Vector3 direction, Vector3 position)
+	protected virtual void SkillAttack(BaseCharacter owner, float directionAngle, Vector3 position)
 	{
 		BaseAttack skillAttack = SkillAttackScene.Instantiate<BaseAttack>();
-		skillAttack.Setup(owner, direction, position);
+		skillAttack.Setup(owner, directionAngle, position);
 		AddChild(skillAttack);
 
 		skillAttackCooldownEmpty = false;
@@ -85,10 +85,10 @@ public partial class BasePlayerCharacter : BaseCharacter
 	/// <summary>
 	/// Realiza una ulti. Los hijos pueden sobreescribirlo.
 	/// </summary>
-	protected virtual void UltimateAttack()
+	protected virtual void UltimateAttack(BaseCharacter owner, float directionAngle, Vector3 position)
 	{
 		BaseAttack ultimateAttack = UltimateAttackScene.Instantiate<BaseAttack>();
-		ultimateAttack.Setup(this, characterFacingDirection, Position);
+		ultimateAttack.Setup(owner, directionAngle, position);
 		AddChild(ultimateAttack);
 
 		ultimateAttackCooldownEmpty = false;

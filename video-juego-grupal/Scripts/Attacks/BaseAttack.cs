@@ -9,7 +9,7 @@ public partial class BaseAttack : CharacterBody3D
     [Export] public Area3D hitboxArea;
 
     protected BaseCharacter owner; //El BaseCharacter que ha spawneado el ataque.
-    protected Vector3 attackDirection; //La direcion a la que va a apuntar el ataque.
+    protected float attackDirectionAngle; //La direcion a la que va a apuntar el ataque.
     protected Vector3 attackPosition; //La posicion en la que va a spwanear el ataque.
 
     protected Timer hitboxTimer = new Timer(); //Timer para el tiempo de vida de la hitbox del ataque.
@@ -24,10 +24,10 @@ public partial class BaseAttack : CharacterBody3D
     /// <param name="newOwner">El personaje que crea este ataque.</param>
     /// <param name="newDirection">La direccion a la que el ataque apunta.</param>
     /// <param name="newPosition">La posicion en la que el ataque Spawnea.</param>
-    public void Setup(BaseCharacter newOwner, Vector3 newDirection, Vector3 newPosition)
+    public void Setup(BaseCharacter newOwner, float newDirectionAngle, Vector3 newPosition)
     {
         owner = newOwner;
-        attackDirection = newDirection;
+        attackDirectionAngle = newDirectionAngle;
         attackPosition = newPosition;
         hitboxTimer.WaitTime = stats.HitboxNodeAliveTimeStat;
         attackTimer.WaitTime = Mathf.Max(stats.AttackNodeAliveTimeStat, 0.05f);
@@ -70,7 +70,7 @@ public partial class BaseAttack : CharacterBody3D
         // Así un ataque no puede golpear a otro ataque (ni a su dueño a través de él).
         hitboxArea.Monitorable = false;
 
-        PlaceAttack(attackDirection, attackPosition); //Inicializa la posicion y direccion del ataque.
+        PlaceAttack(new Vector3(0, attackDirectionAngle, 0), attackPosition); //Inicializa la posicion y direccion del ataque.
     }
 
     public override void _PhysicsProcess(double delta)
@@ -93,12 +93,12 @@ public partial class BaseAttack : CharacterBody3D
             if (!stats.AttackAlwaysActive)
                 if (!alreadyHit.Add(target)) continue; //Ignora los personajes que el ataque ya haya atacado.
 
-            target.TakeDamage(stats.FinalDamage);
+            target.TakeDamage(stats.FinalDamage, attackDirectionAngle);
         }
     }
 
     /// <summary>
-    /// Coloca el ataque en el espacio 3D. LOs hijos deberian sobreecribirlo.
+    /// Coloca el ataque en el espacio 3D. Los hijos deberian sobreecribirlo.
     /// </summary>
     /// <param name="attackDirection">La direccion a donde apunta el ataque</param>
     /// <param name="attackPosition">La posicion en la que Spawnea el ataque</param>

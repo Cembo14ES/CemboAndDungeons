@@ -2,9 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://bquatbsnyt18i" path="res://Scenes/Character/Character_TestPlayer.tscn" id="1_33jtv"]
 [ext_resource type="PackedScene" uid="uid://b8qlc8oci1tbn" path="res://Scenes/Character/Character_TestEnemy.tscn" id="2_i18vy"]
-[ext_resource type="Texture2D" uid="uid://cyxvxsxsdfh7x" path="res://Sprites/Bala.png" id="3_2svgk"]
-[ext_resource type="Resource" uid="uid://vfc675cx1vfw" path="res://Resource/Stats_Character_TestEnemy.tres" id="3_i2sar"]
-[ext_resource type="Script" uid="uid://dboynie2tnasq" path="res://Scripts/Misc/SystemPerformance.cs" id="4_84psh"]
 
 [node name="Node3D" type="Node3D" unique_id=32337258]
 
@@ -13,19 +10,7 @@ camera = NodePath("../Camera3D")
 
 [node name="Enemy" parent="." unique_id=1405340408 instance=ExtResource("2_i18vy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.812402, 0, 0.21436119)
-stats = ExtResource("3_i2sar")
-
-[node name="Sprite3D" type="Sprite3D" parent="." unique_id=903751517]
-transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, 0, 0, 0)
-visible = false
-pixel_size = 4.0
-texture = ExtResource("3_2svgk")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=650662303]
 transform = Transform3D(-0.99999994, 8.742277e-08, 3.821371e-15, 0, -4.3711385e-08, 1, 8.742277e-08, 0.99999994, 4.371139e-08, 0, 9.852196, 0)
 current = true
-
-[node name="Label" type="Label" parent="." unique_id=1460035827]
-offset_right = 40.0
-offset_bottom = 23.0
-script = ExtResource("4_84psh")

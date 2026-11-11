@@ -23,7 +23,7 @@ public partial class Character_TestEnemy : BaseCharacter
 		}
 
 		BaseAttack attack = RegularAttackScene.Instantiate<BaseAttack>();
-		attack.Setup(this, Vector3.Zero, Vector3.Zero);
+		attack.Setup(this, 0, Vector3.Zero);
 		AddChild(attack);    // hijo del personaje; muere con él
 	}
 
