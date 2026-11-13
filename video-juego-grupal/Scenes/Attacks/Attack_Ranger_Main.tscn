@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://b1gq3o4gf2awt"]
+
+[ext_resource type="Script" uid="uid://r3ng74v5wj1q" path="res://Scenes/Attacks/Attack_Ranger_Main.cs" id="1_18fpr"]
+[ext_resource type="Texture2D" uid="uid://cl6vmrgwonqba" path="res://Sprites/arrow.png" id="1_cucm4"]
+[ext_resource type="Resource" uid="uid://ckdml6jbb6tev" path="res://Resource/Stats_Attack_Ranger_Main.tres" id="2_jnnc8"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2xynd"]
+size = Vector3(0.33184814, 0.17797852, 0.82110596)
+
+[node name="AttackRangerMain" type="CharacterBody3D" unique_id=261246223 node_paths=PackedStringArray("hitboxShape", "hitboxArea")]
+script = ExtResource("1_18fpr")
+stats = ExtResource("2_jnnc8")
+hitboxShape = NodePath("Hitbox/HitboxShape")
+hitboxArea = NodePath("Hitbox")
+
+[node name="Hitbox" type="Area3D" parent="." unique_id=235847459]
+
+[node name="HitboxShape" type="CollisionShape3D" parent="Hitbox" unique_id=1038664861]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0002136229, 0.013305664, 0.003387451)
+shape = SubResource("BoxShape3D_2xynd")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=103723756]
+transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, 0, 0, 0)
+pixel_size = 0.08
+texture_filter = 2
+texture = ExtResource("1_cucm4")

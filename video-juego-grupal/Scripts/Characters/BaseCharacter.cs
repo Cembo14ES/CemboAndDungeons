@@ -9,7 +9,8 @@ public partial class BaseCharacter : CharacterBody3D
     public enum EnumCharacterType { Player = 0, Enemy = 1 }
 
     [Export] public PackedScene damageNumber;
-    [Export] public CollisionShape3D triggerShape;
+    [Export] public Area3D damageTrigger;
+    [Export] public CollisionShape3D damageTriggerShape;
 
     public float currentHealth { get; protected set; } // Vida actual del personaje.
     public bool canBeDamaged { get; protected set; } = true; // Booleano que determina si el personaje esta en un estado de invulnerabilidad o no.
@@ -19,7 +20,7 @@ public partial class BaseCharacter : CharacterBody3D
 
     protected virtual Vector3 GetMovementDirection() => Vector3.Zero; //Los personajes lo sobreescriben para determinar la direccion de movimiento.
     protected virtual void OnCollided(Node collider) { }
-    [Export] AnimatedSprite3D characterAnimation { get; set; } // Animacion del personaje.
+    [Export] AnimatedSprite3D characterAnimation = new AnimatedSprite3D(); // Animacion del personaje.
 
     public override void _Ready()
     {  
@@ -125,10 +126,10 @@ public partial class BaseCharacter : CharacterBody3D
 
         DamageNumber damageUI = damageNumber.Instantiate<DamageNumber>();
 
-        BoxShape3D shape = (BoxShape3D) triggerShape.Shape;
+        BoxShape3D shape = (BoxShape3D) damageTriggerShape.Shape;
         Vector3 size = new Vector3((float) Math.Log(shape.Size.X), 0, (float) Math.Log(shape.Size.Z));
         
-        damageUI.Setup(incomingDamage, incomingAttackDirection, size * 5);
+        damageUI.Setup(damage, incomingAttackDirection, size * 5);
         AddChild(damageUI);   
     }
 

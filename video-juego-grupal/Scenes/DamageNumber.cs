@@ -28,11 +28,6 @@ public partial class DamageNumber : Marker3D
 
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
 	public void Setup(float damage, float angle, Vector3 direction)
 	{
 		damageValue = damage;

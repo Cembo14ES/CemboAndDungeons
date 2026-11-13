@@ -14,11 +14,9 @@ public partial class Character_TestPlayer : BasePlayerCharacter
 	{
 		base._PhysicsProcess(delta);
 		if (regularAttackCooldownEmpty && Input.IsActionJustPressed(InputActions.character_RegularAttack))
-            //RegularAttack(this, new Vector3(0, CalculateAimDirection() + Mathf.DegToRad(90), 0), Position);
 			RegularAttack(this, CalculateAimDirection(), Position);
 		
 		if (skillAttackCooldownEmpty && Input.IsActionJustPressed(InputActions.character_SkillAttack))
-            //SkillAttack(this, new Vector3(0, CalculateAimDirection() + Mathf.DegToRad(90), 0), Position);
 			SkillAttack(this, CalculateAimDirection(), Position);
 	
 		pointerArrow.Rotation = new Vector3(0, 0, CalculateAimDirection() - Mathf.DegToRad(90));	

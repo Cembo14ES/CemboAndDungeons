@@ -15,6 +15,7 @@ public partial class BaseAttack : CharacterBody3D
     protected Timer hitboxTimer = new Timer(); //Timer para el tiempo de vida de la hitbox del ataque.
     protected Timer attackTimer = new Timer(); //Timer para el tiempo de vida del ataque.
     protected readonly HashSet<BaseCharacter> alreadyHit = new(); //Contiene todos los personajes que el ataque ya haya golpeado.
+    protected List<BaseCharacter> targets;
 
 
     /// <summary>
@@ -24,14 +25,17 @@ public partial class BaseAttack : CharacterBody3D
     /// <param name="newOwner">El personaje que crea este ataque.</param>
     /// <param name="newDirection">La direccion a la que el ataque apunta.</param>
     /// <param name="newPosition">La posicion en la que el ataque Spawnea.</param>
-    public void Setup(BaseCharacter newOwner, float newDirectionAngle, Vector3 newPosition)
+    public void Setup(BaseCharacter newOwner, List<BaseCharacter> targets, float newDirectionAngle, Vector3 newPosition, float attackDamage)
     {
+        GD.Print("targets counts: " + targets.Count);
         owner = newOwner;
+        this.targets = targets;
         attackDirectionAngle = newDirectionAngle;
         attackPosition = newPosition;
         hitboxTimer.WaitTime = stats.HitboxNodeAliveTimeStat;
         attackTimer.WaitTime = Mathf.Max(stats.AttackNodeAliveTimeStat, 0.05f);
-        stats.AttackDamage = newOwner.stats.Damage; //Obtiene el daño del ataque.
+        stats.AttackDamage = attackDamage; //Obtiene el daño del ataque.
+        GD.Print("targets counts: " + this.targets.Count);
     }
 
     public override void _Ready()
@@ -89,6 +93,10 @@ public partial class BaseAttack : CharacterBody3D
             if (area.GetParent() is BaseAttack) continue;   // Ignora otros ataques.
             if (area.GetParent() is not BaseCharacter target) continue; // Ignora todo lo que no sea personajes.
             if (target == owner) continue; // Ignora el personaje que creo este ataque.
+           // GD.Print("Number targets: " + targets);
+            if (targets.Count == 0 || targets.Contains(target)) continue;
+
+            if (target.damageTrigger != area) continue; //Ignora los Area3D que no sean la hitbox de ataques.
             if (!target.canBeDamaged) continue; //Ignora a los personajes que estan en un estado de invulnerabilidad.
             if (!stats.AttackAlwaysActive)
                 if (!alreadyHit.Add(target)) continue; //Ignora los personajes que el ataque ya haya atacado.

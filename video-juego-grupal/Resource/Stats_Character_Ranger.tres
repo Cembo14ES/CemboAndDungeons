@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CharacterStats" format=3 uid="uid://cpm7r1624uqqp"]
+
+[ext_resource type="Script" uid="uid://tgjnaj6cmewb" path="res://Scripts/Characters/CharacterStats.cs" id="1_tehpq"]
+
+[resource]
+script = ExtResource("1_tehpq")
+MaxHealth = 20.0
+Damage = 2.0
+Defense = 3.0
+MovementSpeed = 5.0
+RegularAttackCooldown = 0.1
+SkillAttackCooldown = 0.1
+UltimateAttackCooldown = 30.0
+InvulnerabilityTimerStat = 2.0
+metadata/_custom_type_script = "uid://tgjnaj6cmewb"

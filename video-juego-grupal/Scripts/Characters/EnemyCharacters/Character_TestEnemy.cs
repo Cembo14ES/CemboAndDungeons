@@ -1,11 +1,12 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class Character_TestEnemy : BaseCharacter
 {
 	[Export] public PackedScene RegularAttackScene { get; set; } // La Escena (.tscn) del ataque del enemigo (hitbox de contacto).
 
-	private Node3D Target { get; set; } //El objetivo que el Slime persigue.
+	[Export] public Node3D Target { get; set; } //El objetivo que el Slime persigue.
 
 	public override void _Ready()
 	{
@@ -14,7 +15,7 @@ public partial class Character_TestEnemy : BaseCharacter
 		// Si el base falló (sin Stats) no seguimos.
 		if (stats == null) return;
 
-		Target = GetTree().GetFirstNodeInGroup("player") as Node3D;
+		//Target = GetTree().GetFirstNodeInGroup("player") as Node3D;
 
 		if (RegularAttackScene == null)
 		{
@@ -23,7 +24,7 @@ public partial class Character_TestEnemy : BaseCharacter
 		}
 
 		BaseAttack attack = RegularAttackScene.Instantiate<BaseAttack>();
-		attack.Setup(this, 0, Vector3.Zero);
+		attack.Setup(this, new List<BaseCharacter>(), 0, Vector3.Zero, stats.Damage);
 		AddChild(attack);    // hijo del personaje; muere con él
 	}
 

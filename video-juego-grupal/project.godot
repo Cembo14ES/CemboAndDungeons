@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Workspace-Iñigp"
+config/name="Workspace-Iñigo"
 run/main_scene="uid://bhx4pfnsu48w0"
 config/features=PackedStringArray("4.7", "C#", "Mobile")
 config/icon="res://icon.svg"

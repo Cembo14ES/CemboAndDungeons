@@ -12,13 +12,14 @@ size = Vector3(3.1172485, 0.2, 2.3677979)
 [sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
 size = Vector3(1.8028107, 0.2, 1.7031174)
 
-[node name="CharacterEnemy" type="CharacterBody3D" unique_id=1405340408 node_paths=PackedStringArray("triggerShape") groups=["enemies"]]
+[node name="CharacterEnemy" type="CharacterBody3D" unique_id=1405340408 node_paths=PackedStringArray("damageTrigger", "damageTriggerShape") groups=["enemies"]]
 script = ExtResource("1_sb3na")
 RegularAttackScene = ExtResource("3_fp2fi")
 stats = ExtResource("2_jbua2")
 characterType = 1
 damageNumber = ExtResource("4_dllhs")
-triggerShape = NodePath("EnemyTriggerCollision/EnemyTriggerCollisionArea")
+damageTrigger = NodePath("EnemyTriggerCollision")
+damageTriggerShape = NodePath("EnemyTriggerCollision/EnemyTriggerCollisionArea")
 
 [node name="EnemySprite" type="Sprite3D" parent="." unique_id=1196324939]
 transform = Transform3D(4, 0, 0, 0, -1.7484555e-07, -4, 0, 4, -1.7484555e-07, -0.2277295, 0, 0.22788906)

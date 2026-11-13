@@ -1,16 +1,26 @@
 [gd_scene format=3 uid="uid://bhx4pfnsu48w0"]
 
-[ext_resource type="PackedScene" uid="uid://bquatbsnyt18i" path="res://Scenes/Character/Character_TestPlayer.tscn" id="1_33jtv"]
 [ext_resource type="PackedScene" uid="uid://b8qlc8oci1tbn" path="res://Scenes/Character/Character_TestEnemy.tscn" id="2_i18vy"]
+[ext_resource type="PackedScene" uid="uid://c043gbum8r3gl" path="res://Scenes/Character/Character_Ranger.tscn" id="2_xcalp"]
 
 [node name="Node3D" type="Node3D" unique_id=32337258]
 
-[node name="Player" parent="." unique_id=1780338015 node_paths=PackedStringArray("camera") instance=ExtResource("1_33jtv")]
+[node name="CharacterRanger" parent="." unique_id=133916822 node_paths=PackedStringArray("camera") instance=ExtResource("2_xcalp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9605255, 0, 0)
 camera = NodePath("../Camera3D")
 
-[node name="Enemy" parent="." unique_id=1405340408 instance=ExtResource("2_i18vy")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.812402, 0, 0.21436119)
+[node name="Enemy" parent="." unique_id=1405340408 node_paths=PackedStringArray("Target") instance=ExtResource("2_i18vy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4315221, 0, 2.8627477)
+Target = NodePath("../CharacterRanger")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=650662303]
-transform = Transform3D(-0.99999994, 8.742277e-08, 3.821371e-15, 0, -4.3711385e-08, 1, 8.742277e-08, 0.99999994, 4.371139e-08, 0, 9.852196, 0)
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 16.08847, 0)
 current = true
+
+[node name="CharacterEnemy" parent="." unique_id=2135156914 node_paths=PackedStringArray("Target") instance=ExtResource("2_i18vy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.4259014)
+Target = NodePath("../CharacterRanger")
+
+[node name="CharacterEnemy2" parent="." unique_id=1362035956 node_paths=PackedStringArray("Target") instance=ExtResource("2_i18vy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.0260696)
+Target = NodePath("../CharacterRanger")

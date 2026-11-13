@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 public partial class BasePlayerCharacter : BaseCharacter
@@ -47,7 +48,6 @@ public partial class BasePlayerCharacter : BaseCharacter
 	public override void _PhysicsProcess(double delta)
 	{
 		base._PhysicsProcess(delta);
-		
 	}
 
 	protected override Vector3 GetMovementDirection()
@@ -62,7 +62,7 @@ public partial class BasePlayerCharacter : BaseCharacter
 	protected virtual void RegularAttack(BaseCharacter owner, float directionAngle, Vector3 position)
 	{	
 		BaseAttack attack = RegularAttackScene.Instantiate<BaseAttack>();
-		attack.Setup(owner, directionAngle, position);
+		attack.Setup(owner, new List<BaseCharacter>(), directionAngle, position, stats.Damage);
 		AddChild(attack);
 
 		regularAttackCooldownEmpty = false;
@@ -75,7 +75,7 @@ public partial class BasePlayerCharacter : BaseCharacter
 	protected virtual void SkillAttack(BaseCharacter owner, float directionAngle, Vector3 position)
 	{
 		BaseAttack skillAttack = SkillAttackScene.Instantiate<BaseAttack>();
-		skillAttack.Setup(owner, directionAngle, position);
+		skillAttack.Setup(owner, new List<BaseCharacter>(), directionAngle, position, stats.Damage);
 		AddChild(skillAttack);
 
 		skillAttackCooldownEmpty = false;
@@ -88,7 +88,7 @@ public partial class BasePlayerCharacter : BaseCharacter
 	protected virtual void UltimateAttack(BaseCharacter owner, float directionAngle, Vector3 position)
 	{
 		BaseAttack ultimateAttack = UltimateAttackScene.Instantiate<BaseAttack>();
-		ultimateAttack.Setup(owner, directionAngle, position);
+		ultimateAttack.Setup(owner, new List<BaseCharacter>(), directionAngle, position, stats.Damage);
 		AddChild(ultimateAttack);
 
 		ultimateAttackCooldownEmpty = false;

@@ -6,7 +6,5 @@
 script = ExtResource("1_obfh2")
 MaxHealth = 30.0
 Damage = 5.0
-Defense = 1.0
-MovementSpeed = 2.0
 RegularAttackCooldown = 2.0
 metadata/_custom_type_script = "uid://tgjnaj6cmewb"
