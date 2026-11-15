@@ -9,7 +9,7 @@ size = Vector3(0.33184814, 0.17797852, 0.82110596)
 
 [node name="AttackRangerMain" type="CharacterBody3D" unique_id=261246223 node_paths=PackedStringArray("hitboxShape", "hitboxArea")]
 script = ExtResource("1_18fpr")
-stats = ExtResource("2_jnnc8")
+originalStats = ExtResource("2_jnnc8")
 hitboxShape = NodePath("Hitbox/HitboxShape")
 hitboxArea = NodePath("Hitbox")
 

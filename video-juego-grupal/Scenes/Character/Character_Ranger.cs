@@ -8,104 +8,137 @@ public partial class Character_Ranger : BasePlayerCharacter
 	[Export] public Camera3D camera;
 
 	[ExportGroup("Main Attack")]
-	[Export] public float maxChargeTime = 1;
-	[Export] public float maxChargeDamageMultiplier = 2;
-	[Export] public float maximunChargeForNoCharge = 10;
-	[Export] public float minimunChargeForMaxCharge = 10;
-	private Timer chargeTimer = new Timer();
-	private float chargeDamageAmount;
+	[Export] public float main_MaxChargeTime = 1;
+	[Export] public float main_MaxChargeDamageMultiplier = 2;
+	[Export] public float main_MaximunChargeForNoCharge = 10;
+	[Export] public float main_MinimunChargeForMaxCharge = 10;
+	private Timer main_ChargeTimer = new Timer();
+	private float main_ChargeDamageAmount;
 
 	[ExportGroup("Skill Attack")]
-	[Export] public Area3D skillRangeArea;
-	[Export] public CollisionShape3D skillRangeAreaShape;
-	[Export] public float areaRadious = 8;
-	[Export] public float delayBettewnArrows = 0.3f;
-	private List<BaseCharacter> skillAttackTargets = new List<BaseCharacter>();
-	private Timer skillAttackDelaysTimer = new Timer();
+	[Export] public Area3D skill_RangeArea;
+	[Export] public CollisionShape3D skill_RangeAreaShape;
+	[Export] public float skill_AreaRadious = 8;
+	[Export] public float skill_DelayBettewnArrows = 0.3f;
+	private List<BaseCharacter> skill_AttackTargets = new List<BaseCharacter>();
+	private Timer skill_AttackDelaysTimer = new Timer();
 
-	[ExportGroup ("Movement Skill")]
-	[Export] public PackedScene movementSkillScene;
+	[ExportGroup("Movement Skill")]
+	[Export] public Area3D movement_GrappleEndArea;
+	[Export] public CollisionShape3D movement_GrappleEndAreaShape;
+	private Attack_Ranger_MovementSkill movement_CurrentInstance;
+	private float movement_dragSpeed = 20;
+
 	private CurrentAttackState currentAttackState = 0;
-	private enum CurrentAttackState { None = 0, NormalAttack = 1, SkillAttack = 2, UltimateAttack = 3}
+	private enum CurrentAttackState { None = 0, NormalAttack = 1, SkillAttack = 2, movementSkill = 3, UltimateAttack = 4, ChargingNormalAttack = 5, MovementSkillClinged = 6 }
 
 	public override void _Ready()
 	{
-		SphereShape3D shape = (SphereShape3D)skillRangeAreaShape.Shape;
-		shape.Radius = areaRadious;
+		SphereShape3D shape = (SphereShape3D)skill_RangeAreaShape.Shape;
+		shape.Radius = skill_AreaRadious;
 
 		base._Ready();
 
-		AddChild(chargeTimer);
-		chargeTimer.WaitTime = maxChargeTime;
-		chargeTimer.OneShot = true;
-		chargeTimer.Timeout += () => chargeDamageAmount = maxChargeDamageMultiplier;
+		AddChild(main_ChargeTimer);
+		main_ChargeTimer.WaitTime = main_MaxChargeTime;
+		main_ChargeTimer.OneShot = true;
+		main_ChargeTimer.Timeout += () => main_ChargeDamageAmount = main_MaxChargeDamageMultiplier;
 
-		AddChild(skillAttackDelaysTimer);
-		skillAttackDelaysTimer.WaitTime = delayBettewnArrows;
-		skillAttackDelaysTimer.OneShot = false;
-		skillAttackDelaysTimer.Timeout += SkillAttackTimeout;
+		AddChild(skill_AttackDelaysTimer);
+		skill_AttackDelaysTimer.WaitTime = skill_DelayBettewnArrows;
+		skill_AttackDelaysTimer.OneShot = false;
+		skill_AttackDelaysTimer.Timeout += SkillAttackTimeout;
 	}
 	public override void _PhysicsProcess(double delta)
 	{
-		if (currentAttackState != CurrentAttackState.SkillAttack)
+		if (currentAttackState != CurrentAttackState.SkillAttack && currentAttackState != CurrentAttackState.movementSkill && currentAttackState != CurrentAttackState.MovementSkillClinged)
 		{
 			Movement();
 		}
 
-		if (currentAttackState == CurrentAttackState.None && regularAttackCooldownEmpty && Input.IsActionJustPressed(InputActions.character_RegularAttack))
+		else if (currentAttackState == CurrentAttackState.MovementSkillClinged)
 		{
-			currentAttackState = CurrentAttackState.NormalAttack;
-			chargeTimer.Start();
+			GrappleMovement();
+
+			foreach(Area3D overlapingArea in movement_GrappleEndArea.GetOverlappingAreas())
+			{
+				
+				GD.Print(overlapingArea.GetParent() is Attack_Ranger_MovementSkill target);
+				GD.Print(movement_CurrentInstance.isClinged == true);
+
+				if(overlapingArea.GetParent() == movement_CurrentInstance && movement_CurrentInstance.isClinged == true)
+				{
+					
+					movement_CurrentInstance.Die();
+					movement_CurrentInstance = null;
+					currentAttackState = CurrentAttackState.None;
+				}
+			}
 		}
 
-		if (currentAttackState == CurrentAttackState.NormalAttack && Input.IsActionJustReleased(InputActions.character_RegularAttack))
+		if (currentAttackState == CurrentAttackState.None && regularAttackCooldownEmpty && Input.IsActionJustPressed(InputActions.character_RegularAttack))
 		{
-			if (chargeTimer.TimeLeft > maxChargeTime - (maxChargeTime / maximunChargeForNoCharge)) //Si el ataque se carga menos de un 10%, realiza daño base.
+			currentAttackState = CurrentAttackState.ChargingNormalAttack;
+			main_ChargeTimer.Start();
+		}
+
+		if (currentAttackState == CurrentAttackState.ChargingNormalAttack && Input.IsActionJustReleased(InputActions.character_RegularAttack))
+		{
+			currentAttackState = CurrentAttackState.NormalAttack;
+
+			if (main_ChargeTimer.TimeLeft > main_MaxChargeTime - (main_MaxChargeTime / main_MaximunChargeForNoCharge)) //Si el ataque se carga menos de un 10%, realiza daño base.
 			{
-				GD.Print("Low charge, base damage");
-				chargeDamageAmount = stats.Damage;
+				GD.Print($"[Main Attack]: Carga del ataque es menor del {main_MaximunChargeForNoCharge}%, por lo que el daño sera el minimo.");
+				main_ChargeDamageAmount = stats.Damage;
 			}
-			else if (chargeTimer.TimeLeft < maxChargeTime / minimunChargeForMaxCharge) //Si el ataque se carga mas de un 90%, realiza daño maximo.
+			else if (main_ChargeTimer.TimeLeft < main_MaxChargeTime / main_MinimunChargeForMaxCharge) //Si el ataque se carga mas de un 90%, realiza daño maximo.
 			{
-				GD.Print("High charge, max damage");
-				chargeDamageAmount = stats.Damage * maxChargeDamageMultiplier;
+				GD.Print($"[Main Attack]: Carga del ataque es mayor del {100 - main_MinimunChargeForMaxCharge}%, por lo que el daño sera el maximo.");
+				main_ChargeDamageAmount = stats.Damage * main_MaxChargeDamageMultiplier;
 			}
 			else //Sino, calcula el daño promedio.
 			{
-				float chargePercent = (maxChargeTime - (float)chargeTimer.TimeLeft) / maxChargeTime;
-				GD.Print("chargePercent:" + chargePercent);
-				chargeDamageAmount = stats.Damage * (1 + (maxChargeDamageMultiplier - 1) * chargePercent);
+				float chargePercent = (main_MaxChargeTime - (float)main_ChargeTimer.TimeLeft) / main_MaxChargeTime;
+				main_ChargeDamageAmount = stats.Damage * (1 + (main_MaxChargeDamageMultiplier - 1) * chargePercent);
+				GD.Print($"[Main Attack]: La carga del ataque es del {chargePercent}%, por lo que le daño base sera {main_ChargeDamageAmount}");
 			}
 
-			GD.Print("chargeDamageAmount:" + chargeDamageAmount);
-			RegularAttack(this, CalculateAimDirection(), Position, chargeDamageAmount);
-			chargeTimer.Stop();
+			RegularAttack(this, CalculateAimDirection(), Position, main_ChargeDamageAmount);
+			main_ChargeTimer.Stop();
 			currentAttackState = CurrentAttackState.None;
 		}
 
 		if (currentAttackState == CurrentAttackState.None && skillAttackCooldownEmpty && Input.IsActionJustPressed(InputActions.character_SkillAttack))
 		{
-			skillAttackTargets.Clear();
-			GD.Print("Start Skill Attack");
-			foreach (Area3D area in skillRangeArea.GetOverlappingAreas())
+			skill_AttackTargets.Clear();
+			GD.Print("[Skill Attack]: Buscando objetivos");
+			foreach (Area3D area in skill_RangeArea.GetOverlappingAreas())
 			{
 				if (area.GetParent() is BaseAttack) continue;   // Ignora otros ataques.
 				if (area.GetParent() is not BaseCharacter target) continue; // Ignora todo lo que no sea personajes.
 				if (target == this) continue; // Ignora el personaje que creo este ataque.
 				if (!target.canBeDamaged) continue; //Ignora a los personajes que estan en un estado de invulnerabilidad.
-				if (skillAttackTargets.Contains(target)) continue; //Ignora los personajes que el ataque ya haya registrado.
+				if (skill_AttackTargets.Contains(target)) continue; //Ignora los personajes que el ataque ya haya registrado.
 
-				skillAttackTargets.Add(target);
+				skill_AttackTargets.Add(target);
 				currentAttackState = CurrentAttackState.SkillAttack;
-				GD.Print("Added Target " + target.ToString());
+				GD.Print($"[Skill Attack]: Se ha encontrado objetivo: {target}");
 			}
 
-			if (skillAttackTargets.Count != 0)
+			if (skill_AttackTargets.Count != 0)
 			{
+				GD.Print($"[Skill Attack]: Se han encontrado {skill_AttackTargets.Count} objetivos.");
 				SkillAttackTimeout();
-				skillAttackDelaysTimer.Start();
-				GD.Print("Skill Target Started");
-			}	
+				skill_AttackDelaysTimer.Start();
+			}
+			else
+			{
+				GD.Print("[Skill Attack]: No se han encotrado objetivos para el ataque.");
+			}
+		}
+		if (currentAttackState == CurrentAttackState.None && movementSkillCooldownEmpty && Input.IsActionJustPressed(InputActions.character_MovementSkill))
+		{
+			MovementSkill(this, CalculateAimDirection(), Position);
 		}
 
 		pointerArrow.Rotation = new Vector3(0, 0, CalculateAimDirection() - Mathf.DegToRad(90));
@@ -117,29 +150,29 @@ public partial class Character_Ranger : BasePlayerCharacter
 	/// </summary>
 	private void SkillAttackTimeout()
 	{
-		GD.Print("Skill Target Timeout");
-		if (skillAttackTargets.Count != 0) //Comprueba si quedan objetivos a los que atacar
-		{		
-			GD.Print("Running Skill Attack");
-			BaseCharacter target = skillAttackTargets[0];
+		GD.Print("[Skill Attack]: Realizando ataque.");
+		if (skill_AttackTargets.Count != 0) //Comprueba si quedan objetivos a los que atacar
+		{
+			BaseCharacter target = skill_AttackTargets[0];
 
-			foreach (BaseCharacter targetCandidate in skillAttackTargets)
+			foreach (BaseCharacter targetCandidate in skill_AttackTargets)
 			{
 				if (Position.DistanceTo(targetCandidate.Position) < Position.DistanceTo(target.Position))
 				{
 					target = targetCandidate;
 				}
 			}
+
 			if (target.canBeDamaged) //Ignora a los personajes que estan en un estado de invulnerabilidad.
 			{
 				SkillAttack(this, target, Position);
-			} 	
-			skillAttackTargets.Remove(target);
+			}
+			skill_AttackTargets.Remove(target);
 		}
 		else //Termina el estado de la habilidad de ataque.
 		{
-			GD.Print("Skill Attack has no more targets");
-			skillAttackDelaysTimer.Stop();
+			GD.Print("[Skill Attack]: No hay mas objetivos para el ataque de habilidad. Finalizado.");
+			skill_AttackDelaysTimer.Stop();
 			currentAttackState = CurrentAttackState.None;
 			skillAttackCooldownEmpty = false;
 			skillAttackCooldownTimer.Start();
@@ -163,11 +196,46 @@ public partial class Character_Ranger : BasePlayerCharacter
 		targetDirection = targetDirection.Normalized();
 		float angle = Mathf.Atan2(targetDirection.X, -targetDirection.Z);
 
-		List<BaseCharacter> targets = [target];
-		
+		List<BaseCharacter> targets = new List<BaseCharacter>();
+		targets.Add(target);
+
 		BaseAttack skillAttack = SkillAttackScene.Instantiate<BaseAttack>();
 		skillAttack.Setup(owner, targets, angle, position, stats.Damage);
 		AddChild(skillAttack);
+	}
+
+	/// <summary>
+	/// Realiza una habilidad de movimiento. Los hijos pueden sobreescribirlo.
+	/// </summary>
+	protected override void MovementSkill(BaseCharacter owner, float directionAngle, Vector3 position)
+	{
+		currentAttackState = CurrentAttackState.movementSkill;
+		Attack_Ranger_MovementSkill movementSkill = MovementSkillScene.Instantiate<Attack_Ranger_MovementSkill>();
+
+		movement_CurrentInstance = movementSkill;
+
+		movementSkill.Setup(owner, new List<BaseCharacter>(), directionAngle, position, stats.Damage);
+		movementSkill.Signal_ResolveClingState += ResolveMovementSkill;
+		AddChild(movementSkill);
+
+		movementSkillCooldownEmpty = false;
+		movementSkillCooldownTimer.Start();
+	}
+
+	private void ResolveMovementSkill(bool hasClinged)
+	{
+		if (hasClinged)
+		{
+			GD.Print("[Movement Skill]: Attack has clinged");
+			currentAttackState = CurrentAttackState.MovementSkillClinged;
+			
+		}
+		else
+		{
+			GD.Print("[Movement Skill]: Attack has not clinged");
+			currentAttackState = CurrentAttackState.None;
+		}
+
 	}
 
 	protected override Vector3 GetMovementDirection()
@@ -199,5 +267,25 @@ public partial class Character_Ranger : BasePlayerCharacter
 		float angle = Mathf.Atan2(direction.X, -direction.Z);
 
 		return angle;
+	}
+
+	private void GrappleMovement()
+	{
+		Vector3 direction = Position.DirectionTo(movement_CurrentInstance.Position);
+        if (direction != Vector3.Zero)
+        {
+            characterFacingDirection = direction;
+            PlayAnimation(GetWalkAnimation(direction));
+        }
+        else
+        {
+            characterAnimation.Play("Idle");
+        }
+
+        Vector3 velocity = Velocity;
+        velocity.X = direction.X * movement_dragSpeed;
+        velocity.Z = direction.Z * movement_dragSpeed;
+        Velocity = velocity;
+        MoveAndSlide();
 	}
 }

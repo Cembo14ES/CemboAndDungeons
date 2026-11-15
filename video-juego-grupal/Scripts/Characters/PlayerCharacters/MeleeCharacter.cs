@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class MeleeCharacter : BasePlayerCharacter
 {
@@ -39,7 +40,7 @@ public partial class MeleeCharacter : BasePlayerCharacter
 	protected override void RegularAttack(BaseCharacter owner, float direction, Vector3 position)
 	{
 		BaseAttack attack = RegularAttackScene.Instantiate<BaseAttack>();
-		attack.Setup(owner, direction, position);
+		attack.Setup(owner, new List<BaseCharacter>(), direction, position, stats.Damage);
 
 		GD.Print(attackIndex);
 

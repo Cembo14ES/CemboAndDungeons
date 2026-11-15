@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://ca70vbi2dt3b1" path="res://Sprites/test_pointerArrow.png" id="2_iuesq"]
 [ext_resource type="Resource" uid="uid://cpm7r1624uqqp" path="res://Resource/Stats_Character_Ranger.tres" id="3_gy27w"]
 [ext_resource type="PackedScene" uid="uid://dktslhr3avluj" path="res://Scenes/Attacks/Attack_Ranger_Skill.tscn" id="3_x52x6"]
+[ext_resource type="PackedScene" uid="uid://bi5o7ino13g8a" path="res://Scenes/Attacks/Movement_Skill_Ranger.tscn" id="4_8tmpw"]
 [ext_resource type="PackedScene" uid="uid://cmsex2telr8lh" path="res://Scenes/DamageNumber.tscn" id="4_x52x6"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_njnsn"]
@@ -184,14 +185,19 @@ size = Vector3(1.7522094, 1.0836303, 2.6966186)
 [sub_resource type="SphereShape3D" id="SphereShape3D_njnsn"]
 radius = 8.0
 
-[node name="CharacterRanger" type="CharacterBody3D" unique_id=133916822 node_paths=PackedStringArray("pointerArrow", "skillRangeArea", "skillRangeAreaShape", "damageTrigger", "damageTriggerShape", "characterAnimation")]
+[sub_resource type="SphereShape3D" id="SphereShape3D_r6a4o"]
+radius = 3.114532
+
+[node name="CharacterRanger" type="CharacterBody3D" unique_id=133916822 node_paths=PackedStringArray("pointerArrow", "skill_RangeArea", "skill_RangeAreaShape", "movement_GrappleEndArea", "movement_GrappleEndAreaShape", "damageTrigger", "damageTriggerShape", "characterAnimation")]
 script = ExtResource("1_iuesq")
 pointerArrow = NodePath("CharacterSprites/PointerArrow")
-skillRangeArea = NodePath("SkillRangeArea")
-skillRangeAreaShape = NodePath("SkillRangeArea/SkillRangeAreaShape")
-areaRadious = 20.0
+skill_RangeArea = NodePath("SkillRangeArea")
+skill_RangeAreaShape = NodePath("SkillRangeArea/SkillRangeAreaShape")
+movement_GrappleEndArea = NodePath("GrappleEndArea")
+movement_GrappleEndAreaShape = NodePath("GrappleEndArea/GrappleEndAreaShape")
 RegularAttackScene = ExtResource("2_0yefb")
 SkillAttackScene = ExtResource("3_x52x6")
+MovementSkillScene = ExtResource("4_8tmpw")
 stats = ExtResource("3_gy27w")
 damageNumber = ExtResource("4_x52x6")
 damageTrigger = NodePath("DamageTriggerCollision")
@@ -223,3 +229,8 @@ shape = SubResource("BoxShape3D_lxmy8")
 
 [node name="SkillRangeAreaShape" type="CollisionShape3D" parent="SkillRangeArea" unique_id=506367603]
 shape = SubResource("SphereShape3D_njnsn")
+
+[node name="GrappleEndArea" type="Area3D" parent="." unique_id=1617737622]
+
+[node name="GrappleEndAreaShape" type="CollisionShape3D" parent="GrappleEndArea" unique_id=2080598929]
+shape = SubResource("SphereShape3D_r6a4o")

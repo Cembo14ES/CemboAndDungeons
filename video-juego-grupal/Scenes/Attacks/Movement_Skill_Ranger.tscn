@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://bi5o7ino13g8a"]
+
+[ext_resource type="Script" uid="uid://rdeuqgcuyh5i" path="res://Scenes/Attacks/Attack_Ranger_MovementSkill.cs" id="1_jst3c"]
+[ext_resource type="Resource" uid="uid://byuvn2qda610i" path="res://Resource/Stats_Attack_Ranger_MovementSkill.tres" id="2_nppwj"]
+[ext_resource type="Texture2D" uid="uid://byv4thk10g2cm" path="res://Sprites/grapple.png" id="3_aqqwj"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r6a4o"]
+size = Vector3(1.2052612, 0.25787354, 1.2442017)
+
+[node name="MovementSkillRanger" type="CharacterBody3D" unique_id=705930722 node_paths=PackedStringArray("hitboxShape", "hitboxArea")]
+script = ExtResource("1_jst3c")
+stats_MaxDistance = 50.0
+originalStats = ExtResource("2_nppwj")
+hitboxShape = NodePath("Hitbox/HitboxShape")
+hitboxArea = NodePath("Hitbox")
+
+[node name="Hitbox" type="Area3D" parent="." unique_id=211018911]
+
+[node name="HitboxShape" type="CollisionShape3D" parent="Hitbox" unique_id=855220715]
+shape = SubResource("BoxShape3D_r6a4o")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1187038856]
+transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, 0, 0, 0)
+pixel_size = 0.08
+texture_filter = 2
+texture = ExtResource("3_aqqwj")

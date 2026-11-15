@@ -5,15 +5,18 @@ public partial class BasePlayerCharacter : BaseCharacter
 {
 	[Export] public PackedScene RegularAttackScene { get; set; } // La Escena (.tscn) del ataque Normal.
 	[Export] public PackedScene SkillAttackScene { get; set; } // La Escena (.tscn) de la habilidad de ataque.
+	[Export] public PackedScene MovementSkillScene { get; set; } // La Escena (.tscn) de la habilidad de movimiento.
 	[Export] public PackedScene UltimateAttackScene { get; set; } // La Escena (.tscn) de la Ulti.
 
 	public bool regularAttackCooldownEmpty { get; protected set; } = true; // Booleano que determina si el personaje puede atacar.
 	public bool skillAttackCooldownEmpty { get; protected set; } = true; // Booleano que determina si el personaje puede usar la habilidad de ataque.
+	public bool movementSkillCooldownEmpty { get; protected set; } = true; // Booleano que determina si el personaje puede usar la habilidad de movimiento.
 	public bool ultimateAttackCooldownEmpty { get; protected set; } = true; // Booleano que determina si el personaje puede usar la ulti.
 
 	protected Timer regularAttackCooldownTimer = new Timer(); //Timer para el cooldown del ataque.
-	protected Timer skillAttackCooldownTimer = new Timer(); //Timer para el cooldown del ataque.
-	protected Timer ultimateAttackCooldownTimer = new Timer(); //Timer para el cooldown del ataque.
+	protected Timer skillAttackCooldownTimer = new Timer(); //Timer para el cooldown de la habilidad de ataque.
+	protected Timer movementSkillCooldownTimer = new Timer(); //Timer para el cooldown de la habilidad de movimiento.
+	protected Timer ultimateAttackCooldownTimer = new Timer(); //Timer para el cooldown de la ulti.
 
 	public override void _Ready()
 	{
@@ -38,6 +41,11 @@ public partial class BasePlayerCharacter : BaseCharacter
 		skillAttackCooldownTimer.WaitTime = stats.SkillAttackCooldown;
 		skillAttackCooldownTimer.OneShot = true;
 		skillAttackCooldownTimer.Timeout += () => skillAttackCooldownEmpty = true;
+
+		AddChild(movementSkillCooldownTimer);
+		movementSkillCooldownTimer.WaitTime = stats.movementSkillCooldown;
+		movementSkillCooldownTimer.OneShot = true;
+		movementSkillCooldownTimer.Timeout += () => movementSkillCooldownEmpty = true;
 
 		AddChild(ultimateAttackCooldownTimer);
 		ultimateAttackCooldownTimer.WaitTime = stats.UltimateAttackCooldown;
@@ -80,6 +88,19 @@ public partial class BasePlayerCharacter : BaseCharacter
 
 		skillAttackCooldownEmpty = false;
 		skillAttackCooldownTimer.Start();
+	}
+
+	/// <summary>
+	/// Realiza una habilidad de movimiento. Los hijos pueden sobreescribirlo.
+	/// </summary>
+	protected virtual void MovementSkill(BaseCharacter owner, float directionAngle, Vector3 position)
+	{
+		BaseAttack movementSkill = MovementSkillScene.Instantiate<BaseAttack>();
+		movementSkill.Setup(owner, new List<BaseCharacter>(), directionAngle, position, stats.Damage);
+		AddChild(movementSkill);
+
+		movementSkillCooldownEmpty = false;
+		movementSkillCooldownTimer.Start();
 	}
 
 	/// <summary>
