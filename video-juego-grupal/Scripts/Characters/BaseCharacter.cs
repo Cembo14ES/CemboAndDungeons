@@ -20,7 +20,7 @@ public partial class BaseCharacter : CharacterBody3D
 
     protected virtual Vector3 GetMovementDirection() => Vector3.Zero; //Los personajes lo sobreescriben para determinar la direccion de movimiento.
     protected virtual void OnCollided(Node collider) { }
-    [Export] AnimatedSprite3D characterAnimation = new AnimatedSprite3D(); // Animacion del personaje.
+    [Export] protected AnimatedSprite3D characterAnimation = new AnimatedSprite3D(); // Animacion del personaje.
 
     public override void _Ready()
     {  
@@ -48,7 +48,6 @@ public partial class BaseCharacter : CharacterBody3D
         invulnerabilityTimer.OneShot = true;
         invulnerabilityTimer.Timeout += () => canBeDamaged = true;
     }
-
 
     public override void _PhysicsProcess(double delta)
     {

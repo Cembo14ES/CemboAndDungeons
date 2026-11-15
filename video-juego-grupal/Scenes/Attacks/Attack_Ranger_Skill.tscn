@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b5pveqsv7wtbl" path="res://Scenes/Attacks/Attack_Ranger_Skill.cs" id="1_8qs4c"]
 [ext_resource type="Texture2D" uid="uid://cl6vmrgwonqba" path="res://Sprites/arrow.png" id="2_1nqjm"]
-[ext_resource type="Resource" uid="uid://38lao0uofqp1" path="res://Resource/Stats_Attack_TestCharacter_SkillAttack.tres" id="2_4hnq3"]
+[ext_resource type="Resource" uid="uid://bkldfk5b875ws" path="res://Resource/Stats_Attack_Ranger_Skill.tres" id="2_4hnq3"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4hnq3"]
 size = Vector3(0.33184814, 0.17797852, 0.82110596)

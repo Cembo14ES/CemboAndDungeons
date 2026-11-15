@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public partial class BaseAttack : CharacterBody3D
 {
     [Export] public AttackStats originalStats; //Las estadisticas del ataque.
-    [Export] public AttackStats stats; //Copia de las estadisticas que guarda los valores originales.
+    public AttackStats stats = new AttackStats();
     [Export] public CollisionShape3D hitboxShape; //El Area3D que contiene la hitbox del ataque.
     [Export] public Area3D hitboxArea;
 
@@ -16,8 +16,7 @@ public partial class BaseAttack : CharacterBody3D
     protected Timer hitboxTimer = new Timer(); //Timer para el tiempo de vida de la hitbox del ataque.
     protected Timer attackTimer = new Timer(); //Timer para el tiempo de vida del ataque.
     protected readonly HashSet<BaseCharacter> alreadyHit = new(); //Contiene todos los personajes que el ataque ya haya golpeado.
-    protected List<BaseCharacter> targets;
-
+    protected List<BaseCharacter> attackTargets;
 
     /// <summary>
     /// Inicializa varios valores del ataque.
@@ -28,19 +27,18 @@ public partial class BaseAttack : CharacterBody3D
     /// <param name="newPosition">La posicion en la que el ataque Spawnea.</param>
     public void Setup(BaseCharacter newOwner, List<BaseCharacter> targets, float newDirectionAngle, Vector3 newPosition, float attackDamage)
     {
-        if (originalStats == null)
-        {
-            GD.PushError($"{Name}: no tiene Original Stats asignado en la escena del ataque.");
-            return;   // _Ready detectará stats == null y destruirá el ataque
-        }
-        stats = (AttackStats)originalStats.Duplicate();
+        stats = (AttackStats) originalStats.Duplicate();
+    
         owner = newOwner;
-        this.targets = targets;
+        attackTargets = targets;
         attackDirectionAngle = newDirectionAngle;
         attackPosition = newPosition;
+        
         hitboxTimer.WaitTime = stats.HitboxNodeAliveTimeStat;
         attackTimer.WaitTime = Mathf.Max(stats.AttackNodeAliveTimeStat, 0.05f);
-        stats.AttackDamage = attackDamage; //Obtiene el daño del ataque.
+        
+        stats.AttackDamage = attackDamage;
+        
     }
 
     public override void _Ready()
@@ -98,9 +96,9 @@ public partial class BaseAttack : CharacterBody3D
             if (area.GetParent() is BaseAttack) continue;   // Ignora otros ataques.
             if (area.GetParent() is not BaseCharacter target) continue; // Ignora todo lo que no sea personajes.
             if (target == owner) continue; // Ignora el personaje que creo este ataque.
-            //GD.Print("Number targets: " + targets);
-            //if (targets.Count == 0 || targets.Contains(target)) continue;
-            
+
+            if (attackTargets.Count == 0 || !attackTargets.Contains(target)) continue;
+
             if (target.damageTrigger != area) continue; //Ignora los Area3D que no sean la hitbox de ataques.
             if (!target.canBeDamaged) continue; //Ignora a los personajes que estan en un estado de invulnerabilidad.
             if (!stats.AttackAlwaysActive)
@@ -121,7 +119,7 @@ public partial class BaseAttack : CharacterBody3D
         Rotation = attackDirection;
     }
 
-    protected virtual void Die()
+    public virtual void Die()
     {
         QueueFree();
     }

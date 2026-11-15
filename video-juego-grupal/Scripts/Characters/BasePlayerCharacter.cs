@@ -91,7 +91,7 @@ public partial class BasePlayerCharacter : BaseCharacter
 	}
 
 	/// <summary>
-	/// Realiza una ataque habilidad de ataque. Los hijos pueden sobreescribirlo.
+	/// Realiza una habilidad de movimiento. Los hijos pueden sobreescribirlo.
 	/// </summary>
 	protected virtual void MovementSkill(BaseCharacter owner, float directionAngle, Vector3 position)
 	{
