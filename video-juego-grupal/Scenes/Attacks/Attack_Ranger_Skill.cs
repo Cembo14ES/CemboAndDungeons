@@ -38,14 +38,15 @@ public partial class Attack_Ranger_Skill : BaseAttack
                 return;
             }
         }
-
+        
         foreach (Area3D area in hitboxArea.GetOverlappingAreas())
         {
             if (area.GetParent() is BaseAttack) continue;   // Ignora otros ataques.
             if (area.GetParent() is not BaseCharacter target) continue; // Ignora todo lo que no sea personajes.
             if (target == owner) continue; // Ignora el personaje que creo este ataque.
-            if (targets.Count == 0 || targets.Contains(target)) continue;
-
+            //GD.Print("aaaaaaaaaaaaaaaa");
+            if (targets.Count == 0 || !targets.Contains(target)) continue;
+            GD.Print(target.Name);
             if (target.damageTrigger != area) continue; //Ignora los Area3D que no sean la hitbox de ataques.
             if (!target.canBeDamaged) continue; //Ignora a los personajes que estan en un estado de invulnerabilidad.
             if (!stats.AttackAlwaysActive)

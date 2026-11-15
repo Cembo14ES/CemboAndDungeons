@@ -24,3 +24,11 @@ Target = NodePath("../CharacterRanger")
 [node name="CharacterEnemy2" parent="." unique_id=1362035956 node_paths=PackedStringArray("Target") instance=ExtResource("2_i18vy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.0260696)
 Target = NodePath("../CharacterRanger")
+
+[node name="CharacterEnemy3" parent="." unique_id=1163206214 node_paths=PackedStringArray("Target") instance=ExtResource("2_i18vy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.573682, 0, -3.6453514)
+Target = NodePath("../CharacterRanger")
+
+[node name="CharacterEnemy4" parent="." unique_id=1856022714 node_paths=PackedStringArray("Target") instance=ExtResource("2_i18vy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.245002, 0, 5.0260696)
+Target = NodePath("../CharacterRanger")

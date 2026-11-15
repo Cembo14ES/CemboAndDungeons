@@ -9,7 +9,7 @@ size = Vector3(2.25, 0.2, 3)
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=732677401 node_paths=PackedStringArray("hitboxShape", "hitboxArea")]
 script = ExtResource("1_xn74l")
-stats = ExtResource("2_i8pbw")
+originalStats = ExtResource("2_i8pbw")
 hitboxShape = NodePath("EnemyAttackHitbox/AttackHitbox")
 hitboxArea = NodePath("EnemyAttackHitbox")
 

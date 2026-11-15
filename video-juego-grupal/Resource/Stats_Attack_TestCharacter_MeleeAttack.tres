@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_1dtdy")
-AttackMultiplier = 1.2
-AttackNodeAliveTimeStat = 0.3
-HitboxNodeAliveTimeStat = 0.3
+AttackMultiplier = 1.0
+AttackNodeAliveTimeStat = 1.0
+HitboxNodeAliveTimeStat = 1.0
 attackTarget = 1
