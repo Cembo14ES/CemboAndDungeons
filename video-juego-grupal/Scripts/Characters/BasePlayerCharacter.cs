@@ -3,6 +3,13 @@ using Godot;
 
 public partial class BasePlayerCharacter : BaseCharacter
 {
+	[ExportGroup ("Misc")]
+	[Export] public Camera3D camera;
+	[Export] public Sprite3D pointerArrow;
+	protected enum CurrentAttackState { None = 0, NormalAttack = 1, SkillAttack = 2, movementSkill = 3, UltimateAttack = 4}
+
+	
+	[ExportGroup ("Attack Scenes")]
 	[Export] public PackedScene RegularAttackScene { get; set; } // La Escena (.tscn) del ataque Normal.
 	[Export] public PackedScene SkillAttackScene { get; set; } // La Escena (.tscn) de la habilidad de ataque.
 	[Export] public PackedScene MovementSkillScene { get; set; } // La Escena (.tscn) de la habilidad de movimiento.
@@ -32,30 +39,31 @@ public partial class BasePlayerCharacter : BaseCharacter
 			return;
 		}
 
-		AddChild(regularAttackCooldownTimer);
-		regularAttackCooldownTimer.WaitTime = stats.RegularAttackCooldown;
-		regularAttackCooldownTimer.OneShot = true;
-		regularAttackCooldownTimer.Timeout += () => regularAttackCooldownEmpty = true;
+		InitializeTimer(regularAttackCooldownTimer, stats.RegularAttackCooldown, true, () => regularAttackCooldownEmpty = true);
 
-		AddChild(skillAttackCooldownTimer);
-		skillAttackCooldownTimer.WaitTime = stats.SkillAttackCooldown;
-		skillAttackCooldownTimer.OneShot = true;
-		skillAttackCooldownTimer.Timeout += () => skillAttackCooldownEmpty = true;
+		InitializeTimer(skillAttackCooldownTimer, stats.SkillAttackCooldown, true, () => skillAttackCooldownEmpty = true);
 
-		AddChild(movementSkillCooldownTimer);
-		movementSkillCooldownTimer.WaitTime = stats.movementSkillCooldown;
-		movementSkillCooldownTimer.OneShot = true;
-		movementSkillCooldownTimer.Timeout += () => movementSkillCooldownEmpty = true;
+		InitializeTimer(movementSkillCooldownTimer, stats.movementSkillCooldown, true, () => movementSkillCooldownEmpty = true);
 
-		AddChild(ultimateAttackCooldownTimer);
-		ultimateAttackCooldownTimer.WaitTime = stats.UltimateAttackCooldown;
-		ultimateAttackCooldownTimer.OneShot = true;
-		ultimateAttackCooldownTimer.Timeout += () => ultimateAttackCooldownEmpty = true;
+		InitializeTimer(ultimateAttackCooldownTimer, stats.UltimateAttackCooldown, true, () => ultimateAttackCooldownEmpty = true);
 	}
 
-	public override void _PhysicsProcess(double delta)
+	protected override void CheckExportedValues()
 	{
-		base._PhysicsProcess(delta);
+		base.CheckExportedValues();
+
+		if (camera == null)
+			GD.PushWarning($"{Name}: No tiene Camera3D asignado.");
+		if (pointerArrow == null)
+			GD.PushWarning($"{Name}: No tiene PointerArrow asignado.");
+		if (RegularAttackScene == null)
+			GD.PushWarning($"{Name}: No tiene Regular Attack asignado.");
+		if (SkillAttackScene == null)
+			GD.PushWarning($"{Name}: No tiene Skill Attack asignado.");
+		if (MovementSkillScene == null)
+			GD.PushWarning($"{Name}: No tiene Movement Skill asignado.");
+		if (UltimateAttackScene == null)
+			GD.PushWarning($"{Name}: No tiene Ultimate asignado.");
 	}
 
 	protected override Vector3 GetMovementDirection()
@@ -116,8 +124,23 @@ public partial class BasePlayerCharacter : BaseCharacter
 		ultimateAttackCooldownTimer.Start();
 	}
 
-	protected override void OnCollided(Node collider)
+	/// <summary>
+	/// Calcula la direcion que el mouse esta apuntando.
+	/// </summary>
+	protected float CalculateMouseAimDirection()
 	{
-		base.OnCollided(collider);
+		Vector2 mousePos = GetViewport().GetMousePosition();
+		Plane plane = new Plane(Vector3.Up, GlobalPosition.Y);
+
+		Vector3? intersection = plane.IntersectsRay(camera.ProjectRayOrigin(mousePos), camera.ProjectRayNormal(mousePos));
+
+		if (!intersection.HasValue)
+			return -1;
+
+		Vector3 direction = (intersection.Value - GlobalPosition).Normalized();
+
+		float angle = Mathf.Atan2(direction.X, -direction.Z);
+
+		return angle;
 	}
 }

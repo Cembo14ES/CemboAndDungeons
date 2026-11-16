@@ -4,9 +4,7 @@ using System.Collections.Generic;
 
 public partial class Character_Ranger : BasePlayerCharacter
 {
-	[Export] public Sprite3D pointerArrow;
-	[Export] public Camera3D camera;
-
+	
 	[ExportGroup("Main Attack")]
 	[Export] public float main_MaxChargeTime = 1;
 	[Export] public float main_MaxChargeDamageMultiplier = 2;
@@ -30,42 +28,32 @@ public partial class Character_Ranger : BasePlayerCharacter
 	private float movement_dragSpeed = 20;
 
 	private CurrentAttackState currentAttackState = 0;
-	private enum CurrentAttackState { None = 0, NormalAttack = 1, SkillAttack = 2, movementSkill = 3, UltimateAttack = 4, ChargingNormalAttack = 5, MovementSkillClinged = 6 }
+	protected new enum CurrentAttackState { None = 0, NormalAttack = 1, SkillAttack = 2, movementSkill = 3, UltimateAttack = 4, ChargingNormalAttack = 5, MovementSkillClinged = 6 }
 
 	public override void _Ready()
 	{
-		SphereShape3D shape = (SphereShape3D)skill_RangeAreaShape.Shape;
-		shape.Radius = skill_AreaRadious;
-
 		base._Ready();
 
-		AddChild(main_ChargeTimer);
-		main_ChargeTimer.WaitTime = main_MaxChargeTime;
-		main_ChargeTimer.OneShot = true;
-		main_ChargeTimer.Timeout += () => main_ChargeDamageAmount = main_MaxChargeDamageMultiplier;
+		SphereShape3D shape = (SphereShape3D) skill_RangeAreaShape.Shape;
+		shape.Radius = skill_AreaRadious;	
 
-		AddChild(skill_AttackDelaysTimer);
-		skill_AttackDelaysTimer.WaitTime = skill_DelayBettewnArrows;
-		skill_AttackDelaysTimer.OneShot = false;
-		skill_AttackDelaysTimer.Timeout += SkillAttackTimeout;
+		InitializeTimer(main_ChargeTimer, main_MaxChargeTime, true, () => main_ChargeDamageAmount = main_MaxChargeDamageMultiplier);
+
+		InitializeTimer(skill_AttackDelaysTimer, skill_DelayBettewnArrows, false, SkillAttackTimeout);
 	}
 	public override void _PhysicsProcess(double delta)
 	{
 		if (currentAttackState != CurrentAttackState.SkillAttack && currentAttackState != CurrentAttackState.movementSkill && currentAttackState != CurrentAttackState.MovementSkillClinged)
 		{
-			Movement();
+			Movement(GetMovementDirection(), stats.MovementSpeed);
 		}
 
 		else if (currentAttackState == CurrentAttackState.MovementSkillClinged)
 		{
-			GrappleMovement();
+			Movement(Position.DirectionTo(movement_CurrentInstance.Position), movement_dragSpeed);
 
 			foreach(Area3D overlapingArea in movement_GrappleEndArea.GetOverlappingAreas())
 			{
-				
-				GD.Print(overlapingArea.GetParent() is Attack_Ranger_MovementSkill target);
-				GD.Print(movement_CurrentInstance.isClinged == true);
-
 				if(overlapingArea.GetParent() == movement_CurrentInstance && movement_CurrentInstance.isClinged == true)
 				{
 					
@@ -103,7 +91,7 @@ public partial class Character_Ranger : BasePlayerCharacter
 				GD.Print($"[Main Attack]: La carga del ataque es del {chargePercent}%, por lo que le daño base sera {main_ChargeDamageAmount}");
 			}
 
-			RegularAttack(this, CalculateAimDirection(), Position, main_ChargeDamageAmount);
+			RegularAttack(this, CalculateMouseAimDirection(), Position, main_ChargeDamageAmount);
 			main_ChargeTimer.Stop();
 			currentAttackState = CurrentAttackState.None;
 		}
@@ -138,10 +126,10 @@ public partial class Character_Ranger : BasePlayerCharacter
 		}
 		if (currentAttackState == CurrentAttackState.None && movementSkillCooldownEmpty && Input.IsActionJustPressed(InputActions.character_MovementSkill))
 		{
-			MovementSkill(this, CalculateAimDirection(), Position);
+			MovementSkill(this, CalculateMouseAimDirection(), Position);
 		}
 
-		pointerArrow.Rotation = new Vector3(0, 0, CalculateAimDirection() - Mathf.DegToRad(90));
+		pointerArrow.Rotation = new Vector3(0, 0, CalculateMouseAimDirection() - Mathf.DegToRad(90));
 	}
 
 	/// <summary>
@@ -227,65 +215,18 @@ public partial class Character_Ranger : BasePlayerCharacter
 		if (hasClinged)
 		{
 			GD.Print("[Movement Skill]: Attack has clinged");
-			currentAttackState = CurrentAttackState.MovementSkillClinged;
-			
+			currentAttackState = CurrentAttackState.MovementSkillClinged;	
 		}
 		else
 		{
 			GD.Print("[Movement Skill]: Attack has not clinged");
 			currentAttackState = CurrentAttackState.None;
 		}
-
 	}
 
 	protected override Vector3 GetMovementDirection()
 	{
 		Vector2 input = Input.GetVector(InputActions.character_Right, InputActions.character_Left, InputActions.character_Down, InputActions.character_Up);
 		return (Transform.Basis * new Vector3(input.X, 0, input.Y)).Normalized();
-	}
-
-	protected override void OnCollided(Node collider)
-	{
-		base.OnCollided(collider);
-	}
-
-	/// <summary>
-	/// Calcula la direcion que el mouse esta apuntando.
-	/// </summary>
-	protected float CalculateAimDirection()
-	{
-		Vector2 mousePos = GetViewport().GetMousePosition();
-		Plane plane = new Plane(Vector3.Up, GlobalPosition.Y);
-
-		Vector3? intersection = plane.IntersectsRay(camera.ProjectRayOrigin(mousePos), camera.ProjectRayNormal(mousePos));
-
-		if (!intersection.HasValue)
-			return -1;
-
-		Vector3 direction = (intersection.Value - GlobalPosition).Normalized();
-
-		float angle = Mathf.Atan2(direction.X, -direction.Z);
-
-		return angle;
-	}
-
-	private void GrappleMovement()
-	{
-		Vector3 direction = Position.DirectionTo(movement_CurrentInstance.Position);
-        if (direction != Vector3.Zero)
-        {
-            characterFacingDirection = direction;
-            PlayAnimation(GetWalkAnimation(direction));
-        }
-        else
-        {
-            characterAnimation.Play("Idle");
-        }
-
-        Vector3 velocity = Velocity;
-        velocity.X = direction.X * movement_dragSpeed;
-        velocity.Z = direction.Z * movement_dragSpeed;
-        Velocity = velocity;
-        MoveAndSlide();
 	}
 }

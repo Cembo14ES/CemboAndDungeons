@@ -1,17 +1,17 @@
 [gd_scene format=3 uid="uid://ftk2hji41s8r"]
 
-[ext_resource type="Script" uid="uid://dapu7j4ruamjw" path="res://Scenes/Attacks/Attack_Melee_Skill.cs" id="1_vwxqg"]
+[ext_resource type="Script" uid="uid://dapu7j4ruamjw" path="res://Scripts/Attacks/PlayerAttacks/Attack_Melee_Skill.cs" id="1_vwxqg"]
 [ext_resource type="Resource" uid="uid://ctgej6rqkbknj" path="res://Resource/Stats_Attack_TestCharacter_MeleeAttack.tres" id="2_gcgo5"]
 [ext_resource type="Texture2D" uid="uid://dgjcrk0gy3yg4" path="res://Sprites/Pistola.png" id="3_p1bk4"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
 size = Vector3(3, 0.2, 1.5)
 
-[node name="CharacterBody3D" type="CharacterBody3D" unique_id=568146570 node_paths=PackedStringArray("hitboxShape", "hitboxArea")]
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=568146570 node_paths=PackedStringArray("hitboxArea", "hitboxAreaShape")]
 script = ExtResource("1_vwxqg")
 originalStats = ExtResource("2_gcgo5")
-hitboxShape = NodePath("PlayerAttackHitbox/AttackHitbox")
 hitboxArea = NodePath("PlayerAttackHitbox")
+hitboxAreaShape = NodePath("PlayerAttackHitbox/AttackHitbox")
 
 [node name="PlayerAttackHitbox" type="Area3D" parent="." unique_id=1401100611]
 

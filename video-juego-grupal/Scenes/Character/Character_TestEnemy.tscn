@@ -15,7 +15,7 @@ size = Vector3(1.8028107, 0.2, 1.7031174)
 [node name="CharacterEnemy" type="CharacterBody3D" unique_id=1405340408 node_paths=PackedStringArray("damageTrigger", "damageTriggerShape") groups=["enemies"]]
 script = ExtResource("1_sb3na")
 RegularAttackScene = ExtResource("3_fp2fi")
-stats = ExtResource("2_jbua2")
+originalStats = ExtResource("2_jbua2")
 characterType = 1
 damageNumber = ExtResource("4_dllhs")
 damageTrigger = NodePath("EnemyTriggerCollision")

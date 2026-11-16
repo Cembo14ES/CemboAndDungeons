@@ -3,8 +3,8 @@ using Godot;
 
 public partial class BaseCharacter : CharacterBody3D
 {
-    [Export] public CharacterStats stats { get; set; } // Las estadisticas del personaje.
-    protected CharacterStats originalStats; // Copia de las estadisticas que guarda los valores originales.
+    [Export] public CharacterStats originalStats { get; set; } // Las estadisticas del personaje.
+    protected CharacterStats stats; // Copia de las estadisticas que guarda los valores originales.
     [Export] public EnumCharacterType characterType { get; set; } // El Tipo de entidad que es.
     public enum EnumCharacterType { Player = 0, Enemy = 1 }
 
@@ -23,35 +23,42 @@ public partial class BaseCharacter : CharacterBody3D
     [Export] protected AnimatedSprite3D characterAnimation = new AnimatedSprite3D(); // Animacion del personaje.
 
     public override void _Ready()
-    {  
+    {
+        CheckExportedValues();
+        stats = (CharacterStats)originalStats.Duplicate();
+        CheckStatsValues();
+
         CollisionLayer = 0;
         CollisionMask = 0;
 
         SetCollisionLayerValue(2, true);  //Asigna a el personaje con la colision tipo "Character"
         SetCollisionMaskValue(1, true); //Asigna que puede interactuar con collisiones tipo "World"
 
-        //Realiza comprobaciones de varias variables para ver si estan inicializadas.
-        if (stats == null)
-        {
-            GD.PushError($"{Name}: No tiene Stats asignado.");
-            SetPhysicsProcess(false);
-            return;
-        }
-
-        originalStats = stats;
-
         currentHealth = stats.MaxHealth;
 
-        //Inicializa los Timers.
-        AddChild(invulnerabilityTimer);
-        invulnerabilityTimer.WaitTime = Mathf.Max(stats.InvulnerabilityTimerStat, 0.05f);
-        invulnerabilityTimer.OneShot = true;
-        invulnerabilityTimer.Timeout += () => canBeDamaged = true;
+        InitializeTimer(invulnerabilityTimer, stats.InvulnerabilityTime, true, () => canBeDamaged = true);
+    }
+
+    
+
+    /// <summary>
+    /// Inicializa un Timer. Lo añade a la escena y inicializa sus valores que siempre necesitan ser asignados.
+    /// </summary>
+    /// <param name="timer">El Timer a ser inicializado.</param>
+    /// <param name="waitTime">El tiempo de duracion del timer en segundos.</param>
+    /// <param name="oneshot">Si el Timer se ejecuta una sola vez, o si se reinicia cada vez que se acaba.</param>
+    /// <param name="onTimeout">La accion que se debe de realizar cuando el Timer termina.</param>
+    protected virtual void InitializeTimer(Timer timer, double waitTime, bool oneshot, Action onTimeout)
+    {
+        AddChild(timer);
+        timer.WaitTime = waitTime;
+        timer.OneShot = oneshot;
+        timer.Timeout += onTimeout;
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        Movement();
+        Movement(GetMovementDirection(), stats.MovementSpeed);
 
         for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
@@ -63,9 +70,8 @@ public partial class BaseCharacter : CharacterBody3D
     /// <summary>
     /// Realiza el movimiento del personaje. Utiliza el valor de GetMovementDirection(). Los hijos pueden sobreescribirlo.
     /// </summary>
-    protected virtual void Movement()
+    protected virtual void Movement(Vector3 direction, float speed)
     {
-        Vector3 direction = GetMovementDirection();
         if (direction != Vector3.Zero)
         {
             characterFacingDirection = direction;
@@ -76,10 +82,9 @@ public partial class BaseCharacter : CharacterBody3D
             characterAnimation.Play("Idle");
         }
 
-        Vector3 velocity = Velocity;
-        velocity.X = direction.X * stats.MovementSpeed;
-        velocity.Z = direction.Z * stats.MovementSpeed;
-        Velocity = velocity;
+
+        Velocity = new Vector3(direction.X * speed, Velocity.Y, direction.Z * speed);
+
         MoveAndSlide();
     }
     protected void PlayAnimation(string animationName)
@@ -125,11 +130,11 @@ public partial class BaseCharacter : CharacterBody3D
 
         DamageNumber damageUI = damageNumber.Instantiate<DamageNumber>();
 
-        BoxShape3D shape = (BoxShape3D) damageTriggerShape.Shape;
-        Vector3 size = new Vector3((float) Math.Log(shape.Size.X), 0, (float) Math.Log(shape.Size.Z));
-        
+        BoxShape3D shape = (BoxShape3D)damageTriggerShape.Shape;
+        Vector3 size = new Vector3((float)Math.Log(shape.Size.X), 0, (float)Math.Log(shape.Size.Z));
+
         damageUI.Setup(damage, incomingAttackDirection, size * 5);
-        AddChild(damageUI);   
+        AddChild(damageUI);
     }
 
     /// <summary>
@@ -139,5 +144,80 @@ public partial class BaseCharacter : CharacterBody3D
     {
         SetPhysicsProcess(false);
         QueueFree();
+    }
+
+    /// <summary>
+    /// Comprueba los variables Exportados para ver si estan asignados, y pushea un Warning sino.
+    /// Los hijos debed sobreescribir el metodo, añadiendo sus propias variables Exportadas.
+    /// </summary>
+    protected virtual void CheckExportedValues()
+    {
+        GD.Print($"{Name}: CharacterType: {characterType}");
+        if (originalStats == null)
+            GD.PushWarning($"{Name}: No tiene Stats asignado.");
+        if (damageNumber == null)
+            GD.PushWarning($"{Name}: No tiene Damage Number asignado.");
+        if (damageTrigger == null)
+            GD.PushWarning($"{Name}: No tiene Damage Trigger asignado.");
+        if (damageTriggerShape == null)
+            GD.PushWarning($"{Name}: No tiene Damage Trigger Shape asignado.");
+    }
+
+    /// <summary>
+    /// Comprueba los valores de las estadisticas del personaje para ver si son validas.
+    /// Asigna valores por defecto en caso de que haya alguna estadistica no valida.
+    /// </summary>
+    protected virtual void CheckStatsValues()
+    {
+        if (stats.MaxHealth < 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de MaxHealth es menor a 0.");
+            stats.MaxHealth = 10;
+        }
+        if (stats.Damage < 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de Damage es menor a 0.");
+            stats.Damage = 0;
+        }
+        if (stats.Defense < 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de Defense es menor a 0.");
+            stats.Defense = 0;
+        }
+        if (stats.MovementSpeed < 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de MovementSpeed es menor a 0.");
+            stats.MovementSpeed = 0;
+        }
+        if (stats.MovementSpeedAcceleration < 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de MovementSpeedAcceleration es menor a 0.");
+            stats.MovementSpeedAcceleration = 0;
+        }
+        if (stats.RegularAttackCooldown <= 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de RegularAttackCooldown es menor o igual a 0.");
+            stats.RegularAttackCooldown = 0.1f;
+        }
+        if (stats.SkillAttackCooldown <= 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de SkillAttackCooldown es menor o igual a 0.");
+            stats.SkillAttackCooldown = 0.1f;
+        }
+        if (stats.movementSkillCooldown <= 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de movementSkillCooldown es menor o igual a 0.");
+            stats.movementSkillCooldown = 0.1f;
+        }
+        if (stats.UltimateAttackCooldown <= 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de UltimateAttackCooldown es menor o igual a 0.");
+            stats.UltimateAttackCooldown = 0.1f;
+        }
+        if (stats.InvulnerabilityTime <= 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de InvulnerabilityTime es menor o igual a 0.");
+            stats.InvulnerabilityTime = 0.1f;
+        }
     }
 }

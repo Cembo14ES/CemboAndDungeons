@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c4y5xxkg43oop"]
 
-[ext_resource type="Script" uid="uid://chqtebhfwufok" path="res://Scripts/Characters/PlayerCharacters/MeleeCharacter.cs" id="1_5cpga"]
-[ext_resource type="PackedScene" uid="uid://b33jt3klgvkga" path="res://Scenes/Attacks/Attack_TestCharacter_Melee.tscn" id="2_gvlla"]
+[ext_resource type="Script" uid="uid://chqtebhfwufok" path="res://Scripts/Characters/PlayerCharacters/Character_Melee.cs" id="1_5cpga"]
+[ext_resource type="PackedScene" uid="uid://b33jt3klgvkga" path="res://Scenes/Attacks/Attack_Melee_Regular.tscn" id="2_gvlla"]
 [ext_resource type="PackedScene" uid="uid://ftk2hji41s8r" path="res://Scenes/Attacks/Attack_Melee_Skill.tscn" id="3_gvlla"]
 [ext_resource type="Resource" uid="uid://ce4ubrhauq5g" path="res://Resource/Stats_Character_TestCharacter.tres" id="4_dne1s"]
 [ext_resource type="PackedScene" uid="uid://cmsex2telr8lh" path="res://Scenes/DamageNumber.tscn" id="4_qq8o4"]
@@ -182,13 +182,13 @@ animations = [{
 [sub_resource type="BoxShape3D" id="BoxShape3D_ud1au"]
 size = Vector3(1.7522094, 1.0836303, 2.6966186)
 
-[node name="TestPlayer" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("camera", "pointerArrow", "damageTrigger", "damageTriggerShape", "characterAnimation") groups=["player"]]
+[node name="Charactr_Melee" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("camera", "pointerArrow", "damageTrigger", "damageTriggerShape", "characterAnimation") groups=["player"]]
 script = ExtResource("1_5cpga")
 camera = NodePath("Camera3D")
 pointerArrow = NodePath("CharacterSprites/PointerArrow")
 RegularAttackScene = ExtResource("2_gvlla")
 SkillAttackScene = ExtResource("3_gvlla")
-stats = ExtResource("4_dne1s")
+originalStats = ExtResource("4_dne1s")
 damageNumber = ExtResource("4_qq8o4")
 damageTrigger = NodePath("PlayerTriggerCollision")
 damageTriggerShape = NodePath("PlayerTriggerCollision/PlayerTriggerCollisionArea")

@@ -1,17 +1,17 @@
 [gd_scene format=3 uid="uid://b1gq3o4gf2awt"]
 
-[ext_resource type="Script" uid="uid://r3ng74v5wj1q" path="res://Scenes/Attacks/Attack_Ranger_Main.cs" id="1_18fpr"]
+[ext_resource type="Script" uid="uid://r3ng74v5wj1q" path="res://Scripts/Attacks/PlayerAttacks/Attack_Ranger_Main.cs" id="1_18fpr"]
 [ext_resource type="Texture2D" uid="uid://cl6vmrgwonqba" path="res://Sprites/arrow.png" id="1_cucm4"]
 [ext_resource type="Resource" uid="uid://ckdml6jbb6tev" path="res://Resource/Stats_Attack_Ranger_Main.tres" id="2_jnnc8"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2xynd"]
 size = Vector3(0.33184814, 0.17797852, 0.82110596)
 
-[node name="AttackRangerMain" type="CharacterBody3D" unique_id=261246223 node_paths=PackedStringArray("hitboxShape", "hitboxArea")]
+[node name="AttackRangerMain" type="CharacterBody3D" unique_id=261246223 node_paths=PackedStringArray("hitboxArea", "hitboxAreaShape")]
 script = ExtResource("1_18fpr")
 originalStats = ExtResource("2_jnnc8")
-hitboxShape = NodePath("Hitbox/HitboxShape")
 hitboxArea = NodePath("Hitbox")
+hitboxAreaShape = NodePath("Hitbox/HitboxShape")
 
 [node name="Hitbox" type="Area3D" parent="." unique_id=235847459]
 

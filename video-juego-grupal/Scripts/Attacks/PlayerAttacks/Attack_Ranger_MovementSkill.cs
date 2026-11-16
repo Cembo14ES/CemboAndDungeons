@@ -8,17 +8,6 @@ public partial class Attack_Ranger_MovementSkill : BaseAttack
 	[Export] public float stats_MaxDistance = 10;
 	public bool isClinged = false;
 
-	public override void _Ready()
-	{
-		base._Ready();
-		if (stats.projectileSpeed != 0)
-		{
-			TopLevel = true;
-		}
-
-		hitboxArea.Monitorable = true;
-	}
-
 	/// <summary>
 	/// Realiza calculos para que el ataque spawnee adelante del jugador.
 	/// </summary>
@@ -42,14 +31,6 @@ public partial class Attack_Ranger_MovementSkill : BaseAttack
 			Die();
 		}
 
-		if (stats.AttackAlwaysActive)
-		{
-			if (!IsInstanceValid(owner)) //Si el padre desaparece, el ataque permanente tambien
-			{
-				QueueFree();
-				return;
-			}
-		}
 		if (!isClinged)
 		{
 			foreach (Node3D body in hitboxArea.GetOverlappingBodies())
@@ -61,29 +42,22 @@ public partial class Attack_Ranger_MovementSkill : BaseAttack
 				}
 			}
 
-			foreach (Area3D area in hitboxArea.GetOverlappingAreas())
-			{
-				if (area.GetParent() is BaseAttack) continue;   // Ignora otros ataques.
-				if (area.GetParent() is not BaseCharacter target) continue; // Ignora todo lo que no sea personajes.
-				if (target == owner) continue; // Ignora el personaje que creo este ataque.
-				
-				//if (attackTargets.Count == 0 || !attackTargets.Contains(target)) continue;
-				
-				if (target.damageTrigger != area) continue; //Ignora los Area3D que no sean la hitbox de ataques.
-				if (!target.canBeDamaged) continue; //Ignora a los personajes que estan en un estado de invulnerabilidad.
-				if (!stats.AttackAlwaysActive)
-					if (!alreadyHit.Add(target)) continue; //Ignora los personajes que el ataque ya haya atacado.
-
-				ClingToTarget();
-				GD.Print("Target Clinged");
-			}
-
 			float rotation = attackDirectionAngle;
 
 			Vector2 velocity = Vector2.FromAngle(rotation - Mathf.DegToRad(90));
 			Velocity = new Vector3(velocity.X, 0, velocity.Y) * stats.projectileSpeed;
 			MoveAndSlide();
 		}
+	}
+
+	protected override void OnAreaEntered(Area3D area)
+	{
+		if (area.GetParent() is BaseCharacter target && target.damageTrigger == area && target != owner) //Comprueba que el objetivo sea la hitbox de otro personaje.
+			if (attackTargets.Contains(target) || attackTargets.Count == 0)
+			{ //Comprueba que el personaje se aun objetivo.
+				target.TakeDamage(stats.FinalDamage, attackDirectionAngle);
+				ClingToTarget();
+			}
 	}
 
 	private void ClingToTarget()

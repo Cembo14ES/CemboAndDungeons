@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class MeleeCharacter : BasePlayerCharacter
+public partial class Character_Melee : BasePlayerCharacter
 {
 	private const int ComboLength = 4; // Nº de golpes del combo; después vuelve al 1º.
 
@@ -11,25 +11,16 @@ public partial class MeleeCharacter : BasePlayerCharacter
 	private Timer comboResetTimer = new Timer(); // Se reinicia en cada click; si termina, el combo vuelve a 0.
 	private Timer ultimateAttackTimer = new Timer(); // Timer para el cooldown de la ulti.
 	[Export] public int attackIndex = 0;                 // Golpe actual del combo (0 = 1º, 1 = 2º, 2 = 3º, 3 = 4º).
-	[Export] public Camera3D camera;
-	[Export] public Sprite3D pointerArrow;
+
 	private float CurrentDamage => stats.Damage * (ultimateAttackTimer.IsStopped() ? 1f : 1.5f);
 
 	public override void _Ready()
 	{
 		base._Ready();
 
-		// Si el base falló (sin Stats o sin ataque normal) no seguimos.
-		if (stats == null || RegularAttackScene == null) return;
-
-		AddChild(comboResetTimer);
-		comboResetTimer.WaitTime = ComboResetTime;
-		comboResetTimer.OneShot = true;
-		comboResetTimer.Timeout += () => attackIndex = 0;
-		AddChild(ultimateAttackTimer);
-		ultimateAttackTimer.WaitTime = UltimateAttackDuration;
-		ultimateAttackTimer.OneShot = true;
-		ultimateAttackTimer.Timeout += () => ultimateAttackCooldownTimer.Start();
+		InitializeTimer(comboResetTimer, ComboResetTime, true, () => attackIndex = 0);
+		
+		InitializeTimer(ultimateAttackTimer, UltimateAttackDuration, true, () => ultimateAttackCooldownTimer.Start());
 	}
 
 	public override void _PhysicsProcess(double delta)

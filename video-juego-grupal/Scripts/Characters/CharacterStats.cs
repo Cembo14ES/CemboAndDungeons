@@ -14,5 +14,5 @@ public partial class CharacterStats : Resource
 	[Export] public float movementSkillCooldown { get; set; } //El cooldown de uso de la habilidad de movimiento.
 	[Export] public float UltimateAttackCooldown { get; set; } //El cooldown de uso de la ulti.
 	[Export] public float PushResistance { get; set; } //Aguante del empuje de los ataques.
-	[Export] public float InvulnerabilityTimerStat { get; set; } //Tiempo de invulnerabilidad
+	[Export] public float InvulnerabilityTime { get; set; } //Tiempo de invulnerabilidad
 }

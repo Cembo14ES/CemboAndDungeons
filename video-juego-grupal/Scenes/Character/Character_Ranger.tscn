@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://c043gbum8r3gl"]
 
-[ext_resource type="Script" uid="uid://fms7xscta24v" path="res://Scenes/Character/Character_Ranger.cs" id="1_iuesq"]
+[ext_resource type="Script" uid="uid://fms7xscta24v" path="res://Scripts/Characters/PlayerCharacters/Character_Ranger.cs" id="1_iuesq"]
 [ext_resource type="Texture2D" uid="uid://bmrl1o2xv7bp3" path="res://Sprites/char.png" id="1_ttho4"]
 [ext_resource type="PackedScene" uid="uid://b1gq3o4gf2awt" path="res://Scenes/Attacks/Attack_Ranger_Main.tscn" id="2_0yefb"]
 [ext_resource type="Texture2D" uid="uid://ca70vbi2dt3b1" path="res://Sprites/test_pointerArrow.png" id="2_iuesq"]
 [ext_resource type="Resource" uid="uid://cpm7r1624uqqp" path="res://Resource/Stats_Character_Ranger.tres" id="3_gy27w"]
 [ext_resource type="PackedScene" uid="uid://dktslhr3avluj" path="res://Scenes/Attacks/Attack_Ranger_Skill.tscn" id="3_x52x6"]
-[ext_resource type="PackedScene" uid="uid://bi5o7ino13g8a" path="res://Scenes/Attacks/Movement_Skill_Ranger.tscn" id="4_8tmpw"]
+[ext_resource type="PackedScene" uid="uid://bi5o7ino13g8a" path="res://Scenes/Attacks/Attack_Ranger_MovementSkill.tscn" id="4_8tmpw"]
 [ext_resource type="PackedScene" uid="uid://cmsex2telr8lh" path="res://Scenes/DamageNumber.tscn" id="4_x52x6"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_njnsn"]
@@ -188,17 +188,17 @@ radius = 8.0
 [sub_resource type="SphereShape3D" id="SphereShape3D_r6a4o"]
 radius = 3.114532
 
-[node name="CharacterRanger" type="CharacterBody3D" unique_id=133916822 node_paths=PackedStringArray("pointerArrow", "skill_RangeArea", "skill_RangeAreaShape", "movement_GrappleEndArea", "movement_GrappleEndAreaShape", "damageTrigger", "damageTriggerShape", "characterAnimation")]
+[node name="CharacterRanger" type="CharacterBody3D" unique_id=133916822 node_paths=PackedStringArray("skill_RangeArea", "skill_RangeAreaShape", "movement_GrappleEndArea", "movement_GrappleEndAreaShape", "pointerArrow", "damageTrigger", "damageTriggerShape", "characterAnimation")]
 script = ExtResource("1_iuesq")
-pointerArrow = NodePath("CharacterSprites/PointerArrow")
 skill_RangeArea = NodePath("SkillRangeArea")
 skill_RangeAreaShape = NodePath("SkillRangeArea/SkillRangeAreaShape")
 movement_GrappleEndArea = NodePath("GrappleEndArea")
 movement_GrappleEndAreaShape = NodePath("GrappleEndArea/GrappleEndAreaShape")
+pointerArrow = NodePath("CharacterSprites/PointerArrow")
 RegularAttackScene = ExtResource("2_0yefb")
 SkillAttackScene = ExtResource("3_x52x6")
 MovementSkillScene = ExtResource("4_8tmpw")
-stats = ExtResource("3_gy27w")
+originalStats = ExtResource("3_gy27w")
 damageNumber = ExtResource("4_x52x6")
 damageTrigger = NodePath("DamageTriggerCollision")
 damageTriggerShape = NodePath("DamageTriggerCollision/DamageTriggerCollisionArea")

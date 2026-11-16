@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cmsex2telr8lh"]
 
-[ext_resource type="Script" uid="uid://cl3ikrc03o08n" path="res://Scenes/DamageNumber.cs" id="1_wgk1c"]
+[ext_resource type="Script" uid="uid://cl3ikrc03o08n" path="res://Scripts/Misc/DamageNumber.cs" id="1_wgk1c"]
 
 [sub_resource type="Animation" id="Animation_wgk1c"]
 length = 0.001

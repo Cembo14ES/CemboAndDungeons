@@ -4,7 +4,7 @@
 [ext_resource type="Resource" uid="uid://ce4ubrhauq5g" path="res://Resource/Stats_Character_TestCharacter.tres" id="2_7n8lb"]
 [ext_resource type="PackedScene" uid="uid://dkmum26xmrdht" path="res://Scenes/Attacks/Attack_TestCharacter_Proyectile.tscn" id="3_nh2ea"]
 [ext_resource type="Texture2D" uid="uid://bmrl1o2xv7bp3" path="res://Sprites/char.png" id="3_ud1au"]
-[ext_resource type="PackedScene" uid="uid://b33jt3klgvkga" path="res://Scenes/Attacks/Attack_TestCharacter_Melee.tscn" id="4_7n8lb"]
+[ext_resource type="PackedScene" uid="uid://b33jt3klgvkga" path="res://Scenes/Attacks/Attack_Melee_Regular.tscn" id="4_7n8lb"]
 [ext_resource type="Texture2D" uid="uid://ca70vbi2dt3b1" path="res://Sprites/test_pointerArrow.png" id="5_1pfka"]
 [ext_resource type="PackedScene" uid="uid://cmsex2telr8lh" path="res://Scenes/DamageNumber.tscn" id="5_pvp1w"]
 

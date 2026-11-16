@@ -4,10 +4,13 @@ using System.Collections.Generic;
 
 public partial class BaseAttack : CharacterBody3D
 {
+    [ExportGroup("Stats")]
     [Export] public AttackStats originalStats; //Las estadisticas del ataque.
     public AttackStats stats = new AttackStats();
-    [Export] public CollisionShape3D hitboxShape; //El Area3D que contiene la hitbox del ataque.
-    [Export] public Area3D hitboxArea;
+
+    [ExportGroup("Attack Hitbox")]
+    [Export] public Area3D hitboxArea; //El Area3D que contiene la hitbox del ataque.
+    [Export] public CollisionShape3D hitboxAreaShape; //El CollisionShape3D de hitboxArea    
 
     protected BaseCharacter owner; //El BaseCharacter que ha spawneado el ataque.
     protected float attackDirectionAngle; //La direcion a la que va a apuntar el ataque.
@@ -15,7 +18,7 @@ public partial class BaseAttack : CharacterBody3D
 
     protected Timer hitboxTimer = new Timer(); //Timer para el tiempo de vida de la hitbox del ataque.
     protected Timer attackTimer = new Timer(); //Timer para el tiempo de vida del ataque.
-    protected readonly HashSet<BaseCharacter> alreadyHit = new(); //Contiene todos los personajes que el ataque ya haya golpeado.
+    protected readonly List<BaseCharacter> alreadyHit = new(); //Contiene todos los personajes que el ataque ya haya golpeado.
     protected List<BaseCharacter> attackTargets;
 
     /// <summary>
@@ -27,85 +30,46 @@ public partial class BaseAttack : CharacterBody3D
     /// <param name="newPosition">La posicion en la que el ataque Spawnea.</param>
     public void Setup(BaseCharacter newOwner, List<BaseCharacter> targets, float newDirectionAngle, Vector3 newPosition, float attackDamage)
     {
-        stats = (AttackStats) originalStats.Duplicate();
-    
+        stats = (AttackStats)originalStats.Duplicate();
+
         owner = newOwner;
         attackTargets = targets;
         attackDirectionAngle = newDirectionAngle;
         attackPosition = newPosition;
-        
-        hitboxTimer.WaitTime = stats.HitboxNodeAliveTimeStat;
-        attackTimer.WaitTime = Mathf.Max(stats.AttackNodeAliveTimeStat, 0.05f);
-        
         stats.AttackDamage = attackDamage;
-        
     }
 
     public override void _Ready()
     {
-        //Realiza comprobaciones de varias variables para ver si estan inicializadas.
-        if (owner == null || originalStats == null)
-        {
-            GD.PushError($"{Name}: Se instanció sin llamar a Setup, o no tiene Stats asignado.");
-            Die();
-            return;
-        }
-        if (hitboxShape == null)
-        {
-            GD.PushError($"{Name}: Se instanció sin asignar la hitbox en el editor");
-            Die();
-            return;
-        }
+        //Comprueba que todas las variables sean validas.
+        CheckExportedValues();
+        CheckStatsValues();
 
-        //Inicializa los Timers de vida.
-
-        if (!stats.AttackAlwaysActive)
+    
+        if (!stats.AttackAlwaysActive) //Inicializa los Timers de vida.
         {
-            AddChild(attackTimer);
-            attackTimer.OneShot = true;
-            attackTimer.Timeout += Die;
+            InitializeTimer(attackTimer, stats.AttackNodeAliveTimeStat, true, Die);
             attackTimer.Start();
 
-            AddChild(hitboxTimer);
-            hitboxTimer.OneShot = true;
-            hitboxTimer.Timeout += () => hitboxShape.SetDeferred("disabled", false);
+            InitializeTimer(hitboxTimer, stats.HitboxNodeAliveTimeStat, true, () => hitboxAreaShape.Disabled = false);
             hitboxTimer.Start();
-        }  
-            
+        }
 
-        // Este área detecta, pero nadie la detecta a ella:
-        // Así un ataque no puede golpear a otro ataque (ni a su dueño a través de él).
-        hitboxArea.Monitorable = false;
+        if (stats.projectileSpeed != 0) //EN caso de que el ataque sea un proyectil, esto desconecta su posicion con la de el personaje.
+        {
+            TopLevel = true;
+        }
+
+        hitboxArea.AreaEntered += OnAreaEntered; //Asigna la señal al metodo
 
         PlaceAttack(new Vector3(0, attackDirectionAngle, 0), attackPosition); //Inicializa la posicion y direccion del ataque.
     }
 
-    public override void _PhysicsProcess(double delta)
+    protected virtual void OnAreaEntered(Area3D area)
     {
-        if (stats.AttackAlwaysActive)
-        {
-            if (!IsInstanceValid(owner)) //Si el padre desaparece, el ataque permanente tambien
-            {
-                Die();
-                return;
-            }
-        }     
-
-        foreach (Area3D area in hitboxArea.GetOverlappingAreas())
-        {
-            if (area.GetParent() is BaseAttack) continue;   // Ignora otros ataques.
-            if (area.GetParent() is not BaseCharacter target) continue; // Ignora todo lo que no sea personajes.
-            if (target == owner) continue; // Ignora el personaje que creo este ataque.
-
-            if (attackTargets.Count == 0 || !attackTargets.Contains(target)) continue;
-
-            if (target.damageTrigger != area) continue; //Ignora los Area3D que no sean la hitbox de ataques.
-            if (!target.canBeDamaged) continue; //Ignora a los personajes que estan en un estado de invulnerabilidad.
-            if (!stats.AttackAlwaysActive)
-                if (!alreadyHit.Add(target)) continue; //Ignora los personajes que el ataque ya haya atacado.
-
-            target.TakeDamage(stats.FinalDamage, attackDirectionAngle);
-        }
+        if (area.GetParent() is BaseCharacter target && target.damageTrigger == area && target != owner) //Comprueba que el objetivo sea la hitbox de otro personaje.
+            if (attackTargets.Contains(target) || attackTargets.Count == 0) //Comprueba que el personaje se aun objetivo.
+                target.TakeDamage(stats.FinalDamage, attackDirectionAngle);
     }
 
     /// <summary>
@@ -122,5 +86,64 @@ public partial class BaseAttack : CharacterBody3D
     public virtual void Die()
     {
         QueueFree();
+    }
+
+    /// <summary>
+    /// Inicializa un Timer. Lo añade a la escena y inicializa sus valores que siempre necesitan ser asignados.
+    /// </summary>
+    /// <param name="timer">El Timer a ser inicializado.</param>
+    /// <param name="waitTime">El tiempo de duracion del timer en segundos.</param>
+    /// <param name="oneshot">Si el Timer se ejecuta una sola vez, o si se reinicia cada vez que se acaba.</param>
+    /// <param name="onTimeout">La accion que se debe de realizar cuando el Timer termina.</param>
+    protected virtual void InitializeTimer(Timer timer, double waitTime, bool oneshot, Action onTimeout)
+    {
+        AddChild(timer);
+        timer.WaitTime = waitTime;
+        timer.OneShot = oneshot;
+        timer.Timeout += onTimeout;
+    }
+
+    /// <summary>
+    /// Comprueba los variables Exportados para ver si estan asignados, y pushea un Warning sino.
+    /// Los hijos debed sobreescribir el metodo, añadiendo sus propias variables Exportadas.
+    /// </summary>
+    protected virtual void CheckExportedValues()
+    {
+        if (originalStats == null)
+            GD.PushWarning($"{Name}: No tiene Stats asignado.");
+        if (hitboxArea == null)
+            GD.PushWarning($"{Name}: No tiene Hitbox Area asignado.");
+        if (hitboxAreaShape == null)
+            GD.PushWarning($"{Name}: No tiene Hitbox Area Shape asignado.");
+    }
+
+    /// <summary>
+    /// Comprueba los valores de las estadisticas del ataque para ver si son validas.
+    /// Asigna valores por defecto en caso de que haya alguna estadistica no valida.
+    /// </summary>
+    protected virtual void CheckStatsValues()
+    {
+        if (stats.AttackMultiplier < 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de AttackMultiplier es menor a 0.");
+            stats.AttackMultiplier = 0;
+        }
+        if (stats.AttackNodeAliveTimeStat <= 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de AttackNodeAliveTimeStat es menor o igual a 0.");
+            stats.AttackNodeAliveTimeStat = 1;
+        }
+        if (stats.HitboxNodeAliveTimeStat <= 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de HitboxNodeAliveTimeStat es menor o igual a 0.");
+            stats.HitboxNodeAliveTimeStat = 1;
+        }
+        GD.Print($"{Name} Stats: AttackAlwaysActive is {stats.AttackAlwaysActive}");
+        GD.Print($"{Name} Stats: attackTarget is {stats.attackTarget.ToString()}");
+        if (stats.projectileSpeed < 0)
+        {
+            GD.PushWarning($"{Name} Stats: El valor de projectileSpeed es menor a 0.");
+            stats.projectileSpeed = 0;
+        }
     }
 }

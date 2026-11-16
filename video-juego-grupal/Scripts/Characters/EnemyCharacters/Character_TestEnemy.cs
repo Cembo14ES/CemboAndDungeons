@@ -5,7 +5,6 @@ using System.Collections.Generic;
 public partial class Character_TestEnemy : BaseCharacter
 {
 	[Export] public PackedScene RegularAttackScene { get; set; } // La Escena (.tscn) del ataque del enemigo (hitbox de contacto).
-
 	[Export] public Node3D Target { get; set; } //El objetivo que el Slime persigue.
 
 	public override void _Ready()

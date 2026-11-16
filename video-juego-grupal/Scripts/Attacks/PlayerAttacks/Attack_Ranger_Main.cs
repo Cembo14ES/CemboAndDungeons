@@ -1,21 +1,17 @@
 using Godot;
 using System;
 
-public partial class Attack_Ranger_Skill : BaseAttack
+public partial class Attack_Ranger_Main : BaseAttack
 {
 	[Export] public float distanceFromPlayer { get; set; } = 2f; //La distancia del centro del jugador a la que spawnea el ataque.
 
     public override void _Ready()
     {
         base._Ready();
-        if (stats.projectileSpeed != 0)
-        {
-            TopLevel = true;
-        }
+        
     }
-
     /// <summary>
-    /// Realiza calculos para que el ataque spawnee adelante del jugador.
+    /// Realiza calculos para que el ataque spawnee adelante del jugador, en las 8 direcciones disponibles.
     /// </summary>
     protected override void PlaceAttack(Vector3 attackDirection, Vector3 attackPosition)
     {    
@@ -38,23 +34,6 @@ public partial class Attack_Ranger_Skill : BaseAttack
                 return;
             }
         }
-        
-        foreach (Area3D area in hitboxArea.GetOverlappingAreas())
-        {
-            if (area.GetParent() is BaseAttack) continue;   // Ignora otros ataques.
-            if (area.GetParent() is not BaseCharacter target) continue; // Ignora todo lo que no sea personajes.
-            if (target == owner) continue; // Ignora el personaje que creo este ataque.
-
-            if (attackTargets.Count == 0 || !attackTargets.Contains(target)) continue;
-
-            if (target.damageTrigger != area) continue; //Ignora los Area3D que no sean la hitbox de ataques.
-            if (!target.canBeDamaged) continue; //Ignora a los personajes que estan en un estado de invulnerabilidad.
-            if (!stats.AttackAlwaysActive)
-                if (!alreadyHit.Add(target)) continue; //Ignora los personajes que el ataque ya haya atacado.
-
-            target.TakeDamage(stats.FinalDamage, attackDirectionAngle);
-            QueueFree();
-        }
 
 		float rotation = attackDirectionAngle;
 
@@ -62,4 +41,13 @@ public partial class Attack_Ranger_Skill : BaseAttack
         Velocity = new Vector3(velocity.X, 0, velocity.Y) * stats.projectileSpeed;
         MoveAndSlide();
 	}
+
+    protected override void OnAreaEntered(Area3D area)
+    {
+        if (area.GetParent() is BaseCharacter target && target.damageTrigger == area && target != owner) //Comprueba que el objetivo sea la hitbox de otro personaje.
+            if (attackTargets.Contains(target) || attackTargets.Count == 0){ //Comprueba que el personaje se aun objetivo.
+                target.TakeDamage(stats.FinalDamage, attackDirectionAngle); 
+                Die(); 
+            }
+    }
 }
