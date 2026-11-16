@@ -22,17 +22,16 @@ public partial class DamageNumber : Marker3D
 
 		Tween tween = GetTree().CreateTween();
 
-		Vector3 offset = new Vector3(Mathf.Sin(-textOffsetAngle), 0, Mathf.Cos(-textOffsetAngle)) * -textOffsetDistance;
+		Vector3 offset = new Vector3(Mathf.Sin(-textOffsetAngle), 0, Mathf.Cos(-textOffsetAngle)) * -textOffsetDistance * 10;
 
 		tween.TweenProperty(this, "position", offset, 0.1);
-
 	}
 
-	public void Setup(float damage, float angle, Vector3 direction)
+	public void Setup(float damage, float angle, CollisionShape3D shape)
 	{
 		damageValue = damage;
 		textOffsetAngle = angle;
-		textOffsetDistance = direction;
+		//textOffsetDistance = direction;
 	}
 
 	private void Die()

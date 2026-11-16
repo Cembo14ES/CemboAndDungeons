@@ -129,11 +129,7 @@ public partial class BaseCharacter : CharacterBody3D
         invulnerabilityTimer.Start();
 
         DamageNumber damageUI = damageNumber.Instantiate<DamageNumber>();
-
-        BoxShape3D shape = (BoxShape3D)damageTriggerShape.Shape;
-        Vector3 size = new Vector3((float)Math.Log(shape.Size.X), 0, (float)Math.Log(shape.Size.Z));
-
-        damageUI.Setup(damage, incomingAttackDirection, size * 5);
+        damageUI.Setup(damage, incomingAttackDirection, damageTriggerShape);
         AddChild(damageUI);
     }
 

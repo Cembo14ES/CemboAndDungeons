@@ -6,11 +6,11 @@
 [ext_resource type="PackedScene" uid="uid://tr6t5rv12txu" path="res://Scenes/Attacks/Attack_TestEnemy_PermanentAttack.tscn" id="3_fp2fi"]
 [ext_resource type="PackedScene" uid="uid://cmsex2telr8lh" path="res://Scenes/DamageNumber.tscn" id="4_dllhs"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_lgw76"]
-size = Vector3(3.1172485, 0.2, 2.3677979)
+[sub_resource type="SphereShape3D" id="SphereShape3D_8tmpw"]
+radius = 1.2603575
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
-size = Vector3(1.8028107, 0.2, 1.7031174)
+[sub_resource type="SphereShape3D" id="SphereShape3D_8qwv4"]
+radius = 0.8427384
 
 [node name="CharacterEnemy" type="CharacterBody3D" unique_id=1405340408 node_paths=PackedStringArray("damageTrigger", "damageTriggerShape") groups=["enemies"]]
 script = ExtResource("1_sb3na")
@@ -22,13 +22,13 @@ damageTrigger = NodePath("EnemyTriggerCollision")
 damageTriggerShape = NodePath("EnemyTriggerCollision/EnemyTriggerCollisionArea")
 
 [node name="EnemySprite" type="Sprite3D" parent="." unique_id=1196324939]
-transform = Transform3D(4, 0, 0, 0, -1.7484555e-07, -4, 0, 4, -1.7484555e-07, -0.2277295, 0, 0.22788906)
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, -0.2277295, 0.27630258, 0.22788906)
 texture = ExtResource("2_ky4g8")
 
 [node name="EnemyCollision" type="CollisionShape3D" parent="." unique_id=1558907576]
-shape = SubResource("BoxShape3D_lgw76")
+shape = SubResource("SphereShape3D_8tmpw")
 
 [node name="EnemyTriggerCollision" type="Area3D" parent="." unique_id=101478440]
 
 [node name="EnemyTriggerCollisionArea" type="CollisionShape3D" parent="EnemyTriggerCollision" unique_id=1005538294]
-shape = SubResource("BoxShape3D_8erxc")
+shape = SubResource("SphereShape3D_8qwv4")

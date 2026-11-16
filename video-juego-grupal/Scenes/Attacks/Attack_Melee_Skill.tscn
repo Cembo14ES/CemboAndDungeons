@@ -4,8 +4,8 @@
 [ext_resource type="Resource" uid="uid://ctgej6rqkbknj" path="res://Resource/Stats_Attack_TestCharacter_MeleeAttack.tres" id="2_gcgo5"]
 [ext_resource type="Texture2D" uid="uid://dgjcrk0gy3yg4" path="res://Sprites/Pistola.png" id="3_p1bk4"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
-size = Vector3(3, 0.2, 1.5)
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jkc2u"]
+height = 4.2871094
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=568146570 node_paths=PackedStringArray("hitboxArea", "hitboxAreaShape")]
 script = ExtResource("1_vwxqg")
@@ -14,12 +14,13 @@ hitboxArea = NodePath("PlayerAttackHitbox")
 hitboxAreaShape = NodePath("PlayerAttackHitbox/AttackHitbox")
 
 [node name="PlayerAttackHitbox" type="Area3D" parent="." unique_id=1401100611]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.0404494)
 
 [node name="AttackHitbox" type="CollisionShape3D" parent="PlayerAttackHitbox" unique_id=282005542]
-shape = SubResource("BoxShape3D_8erxc")
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -1.7032075e-08, 2.0517113)
+shape = SubResource("CapsuleShape3D_jkc2u")
 
-[node name="ExampleForDebugging" type="Sprite3D" parent="PlayerAttackHitbox" unique_id=1531094613]
-transform = Transform3D(-4.371139e-08, 1, 4.371139e-08, 0, -4.371139e-08, 1, 1, 4.371139e-08, 1.9106855e-15, 0, 0.4, 0)
-flip_h = true
+[node name="ExampleForDebugging" type="Sprite3D" parent="." unique_id=1531094613]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0.9602554)
 pixel_size = 0.005
 texture = ExtResource("3_p1bk4")

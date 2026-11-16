@@ -69,6 +69,7 @@ public partial class BaseAttack : CharacterBody3D
     {
         if (area.GetParent() is BaseCharacter target && target.damageTrigger == area && target != owner) //Comprueba que el objetivo sea la hitbox de otro personaje.
             if (attackTargets.Contains(target) || attackTargets.Count == 0) //Comprueba que el personaje se aun objetivo.
+                
                 target.TakeDamage(stats.FinalDamage, attackDirectionAngle);
     }
 

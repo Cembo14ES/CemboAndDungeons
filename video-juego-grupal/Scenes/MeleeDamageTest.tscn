@@ -3,12 +3,25 @@
 [ext_resource type="PackedScene" uid="uid://c4y5xxkg43oop" path="res://Scenes/Character/Character_Melee.tscn" id="1_gt1bw"]
 [ext_resource type="PackedScene" uid="uid://b8qlc8oci1tbn" path="res://Scenes/Character/Character_TestEnemy.tscn" id="2_bao4e"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_njnsn"]
+size = Vector3(1, 1, 12.540161)
+
 [node name="Node3D" type="Node3D" unique_id=1259226138]
 
-[node name="Character_Melee" parent="." unique_id=1780338015 instance=ExtResource("1_gt1bw")]
+[node name="Character_Melee" parent="." unique_id=1780338015 node_paths=PackedStringArray("camera") instance=ExtResource("1_gt1bw")]
+camera = NodePath("../Camera3D")
 
 [node name="CharacterEnemy" parent="." unique_id=1405340408 node_paths=PackedStringArray("Target") instance=ExtResource("2_bao4e")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 0)
 Target = NodePath("../Character_Melee")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1865372788]
+transform = Transform3D(-0.99950445, -9.3086105e-10, 0.031478774, 0.016490374, 0.8518063, 0.52359736, -0.026813818, 0.52385694, -0.85138416, -4.8592334, 13.599314, -21.149052)
+fov = 40.0
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1397017984]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.666132, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=864778121]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01404953, 0, -1.7965236)
+shape = SubResource("BoxShape3D_njnsn")

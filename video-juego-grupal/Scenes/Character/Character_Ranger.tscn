@@ -9,7 +9,9 @@
 [ext_resource type="PackedScene" uid="uid://bi5o7ino13g8a" path="res://Scenes/Attacks/Attack_Ranger_MovementSkill.tscn" id="4_8tmpw"]
 [ext_resource type="PackedScene" uid="uid://cmsex2telr8lh" path="res://Scenes/DamageNumber.tscn" id="4_x52x6"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_njnsn"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4umdl"]
+radius = 1.1381836
+height = 3.801239
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1pfka"]
 atlas = ExtResource("1_ttho4")
@@ -179,8 +181,9 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_lxmy8"]
-size = Vector3(1.7522094, 1.0836303, 2.6966186)
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tbl1t"]
+radius = 0.69921875
+height = 3.1152344
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_njnsn"]
 radius = 8.0
@@ -205,17 +208,17 @@ damageTriggerShape = NodePath("DamageTriggerCollision/DamageTriggerCollisionArea
 characterAnimation = NodePath("CharacterSprites")
 
 [node name="PlayerCollision" type="CollisionShape3D" parent="." unique_id=1005647780]
-shape = SubResource("BoxShape3D_njnsn")
+shape = SubResource("CapsuleShape3D_4umdl")
 
 [node name="CharacterSprites" type="AnimatedSprite3D" parent="." unique_id=1789707408]
-transform = Transform3D(6, 0, 0, 0, -2.6226832e-07, -6, 0, 6, -2.6226832e-07, 0, 0, 0)
+transform = Transform3D(6, 0, 0, 0, 6.0000005, 0, 0, 0, 6.0000005, 0, 0, 0)
 texture_filter = 2
 sprite_frames = SubResource("SpriteFrames_les4p")
 animation = &"Idle"
 autoplay = "Idle"
 
 [node name="PointerArrow" type="Sprite3D" parent="CharacterSprites" unique_id=897100681]
-transform = Transform3D(0.16666667, 0, 0, 0, 0.16666666, 0, 0, 0, 0.16666666, 0, 0, 0)
+transform = Transform3D(0.16666666, 0, 0, 0, 0.16666666, 0, 0, 0, 0.16666666, 0, 0, 0)
 centered = false
 offset = Vector2(0, -50)
 texture = ExtResource("2_iuesq")
@@ -223,7 +226,7 @@ texture = ExtResource("2_iuesq")
 [node name="DamageTriggerCollision" type="Area3D" parent="." unique_id=1134202614]
 
 [node name="DamageTriggerCollisionArea" type="CollisionShape3D" parent="DamageTriggerCollision" unique_id=11816651]
-shape = SubResource("BoxShape3D_lxmy8")
+shape = SubResource("CapsuleShape3D_tbl1t")
 
 [node name="SkillRangeArea" type="Area3D" parent="." unique_id=1968590824]
 

@@ -129,7 +129,7 @@ public partial class Character_Ranger : BasePlayerCharacter
 			MovementSkill(this, CalculateMouseAimDirection(), Position);
 		}
 
-		pointerArrow.Rotation = new Vector3(0, 0, CalculateMouseAimDirection() - Mathf.DegToRad(90));
+		pointerArrow.Rotation = new Vector3(0, -CalculateMouseAimDirection() + Mathf.DegToRad(90), 0);
 	}
 
 	/// <summary>

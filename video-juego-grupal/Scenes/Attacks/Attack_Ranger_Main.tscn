@@ -4,8 +4,9 @@
 [ext_resource type="Texture2D" uid="uid://cl6vmrgwonqba" path="res://Sprites/arrow.png" id="1_cucm4"]
 [ext_resource type="Resource" uid="uid://ckdml6jbb6tev" path="res://Resource/Stats_Attack_Ranger_Main.tres" id="2_jnnc8"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_2xynd"]
-size = Vector3(0.33184814, 0.17797852, 0.82110596)
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_x52x6"]
+radius = 0.1953125
+height = 0.8657837
 
 [node name="AttackRangerMain" type="CharacterBody3D" unique_id=261246223 node_paths=PackedStringArray("hitboxArea", "hitboxAreaShape")]
 script = ExtResource("1_18fpr")
@@ -16,11 +17,11 @@ hitboxAreaShape = NodePath("Hitbox/HitboxShape")
 [node name="Hitbox" type="Area3D" parent="." unique_id=235847459]
 
 [node name="HitboxShape" type="CollisionShape3D" parent="Hitbox" unique_id=1038664861]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0002136229, 0.013305664, 0.003387451)
-shape = SubResource("BoxShape3D_2xynd")
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.0002136229, 0.013305663, 0.0154418945)
+shape = SubResource("CapsuleShape3D_x52x6")
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=103723756]
-transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, 0, 0, 0)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.08
 texture_filter = 2
 texture = ExtResource("1_cucm4")

@@ -25,6 +25,7 @@ public partial class Character_Melee : BasePlayerCharacter
 
 	public override void _PhysicsProcess(double delta)
 	{
+
 		base._PhysicsProcess(delta);
 
 		float aim = CalculateAimDirection();
