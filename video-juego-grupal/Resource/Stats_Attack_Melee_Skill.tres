@@ -4,9 +4,8 @@
 
 [resource]
 script = ExtResource("1_k6t13")
-AttackMultiplier = 2.0
+AttackMultiplier = 1.0
 AttackNodeAliveTimeStat = 3.0
 HitboxNodeAliveTimeStat = 3.0
 attackTarget = 1
-projectileSpeed = 30.0
 metadata/_custom_type_script = "uid://dlxcwswxx3qe0"

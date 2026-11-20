@@ -21,6 +21,10 @@ public partial class BaseAttack : CharacterBody3D
     protected readonly List<BaseCharacter> alreadyHit = new(); //Contiene todos los personajes que el ataque ya haya golpeado.
     protected List<BaseCharacter> attackTargets;
 
+    [ExportGroup("Line Of Sight")]
+    [Export(PropertyHint.Layers3DPhysics)] public uint wallCollisionMask = 1; //SOLO la capa de las paredes.
+    private const float RayHeight = 0.8f; //Altura del rayo (pecho).
+
     /// <summary>
     /// Inicializa varios valores del ataque.
     /// La llama el personaje justo después de Instantiate y ANTES de AddChild.
@@ -44,34 +48,105 @@ public partial class BaseAttack : CharacterBody3D
         //Comprueba que todas las variables sean validas.
         CheckExportedValues();
         CheckStatsValues();
-
-    
-        if (!stats.AttackAlwaysActive) //Inicializa los Timers de vida.
-        {
-            InitializeTimer(attackTimer, stats.AttackNodeAliveTimeStat, true, Die);
-            attackTimer.Start();
-
-            InitializeTimer(hitboxTimer, stats.HitboxNodeAliveTimeStat, true, () => hitboxAreaShape.Disabled = false);
-            hitboxTimer.Start();
-        }
-
-        if (stats.projectileSpeed != 0) //EN caso de que el ataque sea un proyectil, esto desconecta su posicion con la de el personaje.
+        InitializeLifetimeTimers();
+        
+        if (stats.projectileSpeed != 0) //En caso de que el ataque sea un proyectil, esto desconecta su posicion con la de el personaje.
         {
             TopLevel = true;
+            hitboxArea.BodyEntered += OnBodyEntered; //Solo los proyectiles se destruyen al tocar una pared.
         }
 
-        hitboxArea.AreaEntered += OnAreaEntered; //Asigna la señal al metodo
+        hitboxArea.AreaEntered += OnAreaEntered;
 
         PlaceAttack(new Vector3(0, attackDirectionAngle, 0), attackPosition); //Inicializa la posicion y direccion del ataque.
     }
+    protected virtual void InitializeLifetimeTimers()
+    {
+        if (stats.AttackAlwaysActive)
+            return;
 
+        InitializeTimer(attackTimer, stats.AttackNodeAliveTimeStat, true, Die);
+        attackTimer.Start();
+
+        InitializeTimer(hitboxTimer, stats.HitboxNodeAliveTimeStat, true, () => hitboxAreaShape.Disabled = false);
+        hitboxTimer.Start();
+    }
     protected virtual void OnAreaEntered(Area3D area)
     {
-        if (area.GetParent() is BaseCharacter target && target.damageTrigger == area && target != owner) //Comprueba que el objetivo sea la hitbox de otro personaje.
-            if (attackTargets.Contains(target) || attackTargets.Count == 0) //Comprueba que el personaje se aun objetivo.
-                
+        if (area.GetParent() is BaseCharacter target && target.damageTrigger == area && target != owner)
+            if (attackTargets.Contains(target) || attackTargets.Count == 0)
+            {
+                if (IsWallBetween(target)) //Hay una pared entre el atacante y el enemigo.
+                {
+                    GD.Print($"{Name}: {owner.Name} no puede golpear a {target.Name} porque hay una pared entre ellos.");
+
+                    if (stats.projectileSpeed != 0)
+                        Die(); //Proyectil: se destruye.
+
+                    return; //Melee: no hace daño, pero el ataque sigue vivo.
+                }
+
                 target.TakeDamage(stats.FinalDamage, attackDirectionAngle);
+            }
     }
+    protected virtual void OnBodyEntered(Node3D body)
+    {
+        if (body == owner || body is BaseCharacter)
+            return;
+
+        if (body is CollisionObject3D obj && (obj.CollisionLayer & wallCollisionMask) != 0)
+            Die();
+    }
+    /// <summary>
+/// Dibuja una línea en el mundo durante un instante, solo para depurar.
+/// Verde = rayo libre, rojo = rayo bloqueado por una pared.
+/// </summary>
+    protected void DrawDebugRay(Vector3 from, Vector3 to, bool blocked)
+    {
+        var mesh = new ImmediateMesh();
+        var instance = new MeshInstance3D { Mesh = mesh, TopLevel = true };
+
+        var material = new StandardMaterial3D
+        {
+            ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
+            AlbedoColor = blocked ? Colors.Red : Colors.Green
+        };
+
+        mesh.SurfaceBegin(Mesh.PrimitiveType.Lines, material);
+        mesh.SurfaceAddVertex(from);
+        mesh.SurfaceAddVertex(to);
+        mesh.SurfaceEnd();
+
+        GetTree().CurrentScene.AddChild(instance);
+        GetTree().CreateTimer(1.0).Timeout += instance.QueueFree; //Desaparece al cabo de 1 segundo.
+    }
+
+/// <summary>
+/// Devuelve true si hay línea de visión libre entre el origen del ataque y el objetivo.
+/// Lanza varios rayos a distintas alturas del objetivo; basta con que uno llegue limpio.
+/// </summary>
+    protected virtual bool IsWallBetween(BaseCharacter target)
+    {
+        Vector3 origin = stats.projectileSpeed != 0 ? GlobalPosition : owner.GlobalPosition;
+        Vector3 offset = Vector3.Up * RayHeight;
+
+        var ray = PhysicsRayQueryParameters3D.Create(
+            origin + offset,
+            target.GlobalPosition + offset,
+            wallCollisionMask
+        );
+        ray.CollideWithAreas = false;
+        ray.CollideWithBodies = true;
+        ray.HitFromInside = true;
+        ray.Exclude = new Godot.Collections.Array<Rid> { GetRid(), owner.GetRid(), target.GetRid() };
+
+        bool blocked = GetWorld3D().DirectSpaceState.IntersectRay(ray).Count > 0;
+
+        DrawDebugRay(origin + offset, target.GlobalPosition + offset, blocked); //Solo para depurar.
+
+        return blocked;
+    }
+
 
     /// <summary>
     /// Coloca el ataque en el espacio 3D. Los hijos deberian sobreecribirlo.

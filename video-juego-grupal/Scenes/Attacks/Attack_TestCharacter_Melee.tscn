@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bqmsfx747ghja"]
+
+[ext_resource type="Script" uid="uid://wn13u0bdws18" path="res://Scripts/Attacks/PlayerAttacks/Attack_Melee_Basic.cs" id="1_bralm"]
+[ext_resource type="Resource" uid="uid://ctgej6rqkbknj" path="res://Resource/Stats_Attack_Melee_Main.tres" id="2_mawrp"]
+[ext_resource type="Texture2D" uid="uid://dgjcrk0gy3yg4" path="res://Sprites/Pistola.png" id="3_uok2c"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8erxc"]
+size = Vector3(3, 0.2, 1.5)
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=568146570 node_paths=PackedStringArray("hitboxArea")]
+script = ExtResource("1_bralm")
+originalStats = ExtResource("2_mawrp")
+hitboxArea = NodePath("PlayerAttackHitbox")
+
+[node name="PlayerAttackHitbox" type="Area3D" parent="." unique_id=1401100611]
+
+[node name="AttackHitbox" type="CollisionShape3D" parent="PlayerAttackHitbox" unique_id=282005542]
+shape = SubResource("BoxShape3D_8erxc")
+
+[node name="ExampleForDebugging" type="Sprite3D" parent="." unique_id=1531094613]
+transform = Transform3D(-4.371139e-08, 1, 4.371139e-08, 0, -4.371139e-08, 1, 1, 4.371139e-08, 1.9106855e-15, 0, 0.4, 0)
+flip_h = true
+pixel_size = 0.005
+texture = ExtResource("3_uok2c")

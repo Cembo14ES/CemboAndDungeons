@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b8qlc8oci1tbn" path="res://Scenes/Character/Character_TestEnemy.tscn" id="2_bao4e"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_njnsn"]
-size = Vector3(1, 1, 12.540161)
+size = Vector3(1, 4.5028076, 12.540161)
 
 [node name="Node3D" type="Node3D" unique_id=1259226138]
 
@@ -23,5 +23,5 @@ fov = 40.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.666132, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=864778121]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01404953, 0, -1.7965236)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01404953, 1.7514038, -1.7965236)
 shape = SubResource("BoxShape3D_njnsn")

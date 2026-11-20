@@ -186,7 +186,7 @@ height = 2.9121094
 
 [node name="Charactr_Melee" type="CharacterBody3D" unique_id=1780338015 node_paths=PackedStringArray("camera", "pointerArrow", "damageTrigger", "damageTriggerShape", "characterAnimation") groups=["player"]]
 script = ExtResource("1_5cpga")
-camera = NodePath("")
+camera = NodePath("Camera3D")
 pointerArrow = NodePath("CharacterSprites/PointerArrow")
 RegularAttackScene = ExtResource("2_gvlla")
 SkillAttackScene = ExtResource("3_gvlla")
@@ -218,3 +218,6 @@ texture = ExtResource("6_d5wtv")
 [node name="PlayerTriggerCollisionArea" type="CollisionShape3D" parent="PlayerTriggerCollision" unique_id=1301786104]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.047851563, 0)
 shape = SubResource("CapsuleShape3D_r1rw6")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1405451168]
+transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 10, 10)

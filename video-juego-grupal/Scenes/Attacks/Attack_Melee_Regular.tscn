@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b33jt3klgvkga"]
 
-[ext_resource type="Script" uid="uid://wn13u0bdws18" path="res://Scripts/Attacks/PlayerAttacks/Attack_TestCharacter_Melee.cs" id="1_jkc2u"]
-[ext_resource type="Resource" uid="uid://ctgej6rqkbknj" path="res://Resource/Stats_Attack_TestCharacter_MeleeAttack.tres" id="2_k5yfx"]
+[ext_resource type="Script" uid="uid://wn13u0bdws18" path="res://Scripts/Attacks/PlayerAttacks/Attack_Melee_Basic.cs" id="1_jkc2u"]
+[ext_resource type="Resource" uid="uid://ctgej6rqkbknj" path="res://Resource/Stats_Attack_Melee_Main.tres" id="2_k5yfx"]
 [ext_resource type="Texture2D" uid="uid://dgjcrk0gy3yg4" path="res://Sprites/Pistola.png" id="3_0iwdt"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_uocr3"]

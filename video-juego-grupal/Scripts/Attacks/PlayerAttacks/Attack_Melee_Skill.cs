@@ -4,9 +4,10 @@ using System;
 public partial class Attack_Melee_Skill : BaseAttack
 {
 	// Called when the node enters the scene tree for the first time.
+    [Signal] public delegate void Signal_ReturnToNormalityEventHandler();
     [Export] public bool followOwner { get; set; } = true;     // si el ataque sigue al jugador mientras gira
     [Export] public bool clockwise { get; set; } = true;       // sentido del giro
-    [Export] public float turns { get; set; } = 1f;            // vueltas completas (1 = 360°)
+    [Export] public float turns { get; set; } = 4f;            // vueltas completas (1 = 360°)
 	[Export] public float distanceFromPlayer { get; set; } = 2f;
 
     private float spinSpeed;   // radianes por segundo
@@ -18,13 +19,20 @@ public partial class Attack_Melee_Skill : BaseAttack
     public override void _Ready()
     {
         base._Ready();
-
         // Aleja la hitbox del centro; el nodo raíz queda sobre el jugador
         if (hitboxArea != null)
+        {
             hitboxArea.Position = new Vector3(0, 0, distanceFromPlayer);
+        }
     }
 
-	protected override void PlaceAttack(Vector3 attackDirection, Vector3 attackPosition)
+    private void onFinish()
+    {
+        EmitSignal(SignalName.Signal_ReturnToNormality);
+        Die();
+    }
+
+    protected override void PlaceAttack(Vector3 attackDirection, Vector3 attackPosition)
     {
         GlobalPosition = attackPosition;
         Rotation = new Vector3(0, -attackDirection.Y + Mathf.Pi, 0);  // empieza mirando hacia donde mira el jugador
@@ -43,5 +51,16 @@ public partial class Attack_Melee_Skill : BaseAttack
             GlobalPosition = owner.GlobalPosition;
 
         RotateY(spinSpeed * (float)delta);
+    }
+    protected override void InitializeLifetimeTimers()
+    {
+        if (stats.AttackAlwaysActive)
+            return;
+
+        InitializeTimer(attackTimer, stats.AttackNodeAliveTimeStat, true, onFinish);
+        attackTimer.Start();
+
+        InitializeTimer(hitboxTimer, stats.HitboxNodeAliveTimeStat, true, () => hitboxAreaShape.SetDeferred(CollisionShape3D.PropertyName.Disabled, true));
+        hitboxTimer.Start();
     }
 }
